@@ -1,0 +1,34 @@
+packages:
+  - .
+  - '@adapter/*'
+  - '@protocol/*'
+  - '@program/*'
+
+enablePrePostScripts: true
+hoistWorkspacePackages: false
+
+ignoredOptionalDependencies:
+  - fsevents
+onlyBuiltDependencies:
+  - '@biomejs/biome'
+
+strictPeerDependencies: true
+
+hoist: false
+publicHoistPattern:
+  - "@types/*"
+  - "@biomejs/biome"
+  - "source-map-support"
+  - "@build-script/baseline-rig"
+hoistPattern:
+  - ""
+
+saveWorkspaceProtocol: rolling
+savePrefix: '^'
+ignoreWorkspaceCycles: true
+nodeOptions: ''
+
+fetchRetries: 1000
+networkConcurrency: 3
+gitChecks: false
+registry: https://registry.npmmirror.com

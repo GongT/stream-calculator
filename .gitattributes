@@ -1,0 +1,5 @@
+pnpm-lock.yaml               merge=binary
+
+*.json                       linguist-language=JSON-with-Comments
+*.jsonc                      linguist-language=JSON-with-Comments
+package.json                 linguist-language=JSON
