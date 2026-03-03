@@ -1,2 +1,1 @@
-export class AdapterHost {
-}
+export class AdapterHost {}

@@ -1,0 +1,47 @@
+{
+	"[yaml]": {
+		"editor.insertSpaces": true,
+		"editor.tabSize": 2,
+		"editor.autoIndent": "advanced",
+	},
+	"[markdown]": {
+		// "editor.defaultFormatter": ""
+	},
+	"[json][json5][jsonc][typescript][typescriptreact][javascript]": {
+		"editor.defaultFormatter": "biomejs.biome",
+	},
+	"[css][scss]": {
+		"editor.defaultFormatter": "vscode.css-language-features",
+	},
+	"files.associations": {
+		"*.json": "jsonc",
+	},
+	"search.exclude": {
+		"**/node_modules/**/*": true,
+		"**/pnpm-lock.yaml": true,
+		"**/temp/**": true,
+		"*/*/lib": true,
+		"**/*.generated.ts": true,
+		"**/.*/**": true,
+	},
+	"biome.lsp.bin": "./node_modules/.bin/biome",
+	"biome.requireConfiguration": true,
+	"js/ts.preferences.organizeImports": { "typeOrder": "last", "unicodeCollation": "ordinal" },
+	"js/ts.tsdk.path": "./node_modules/typescript/lib",
+	"js/ts.preferences.preferTypeOnlyAutoImports": true,
+	"js/ts.preferences.importModuleSpecifierEnding": "js",
+	"files.readonlyInclude": {
+		"**/lib/**": true,
+		"**/node_modules/**": true,
+		"**/*.generated.ts": true,
+		"**/autoindex.ts": true,
+	},
+	"cSpell.words": ["itypes", "mpis"],
+	"remote.autoForwardPorts": false,
+	"github.copilot.chat.commitMessageGeneration.instructions": [
+		{
+			"file": ".github/copilot-instructions/commit-message.md"
+		}
+	],
+	"json.schemaDownload.enable": true,
+}

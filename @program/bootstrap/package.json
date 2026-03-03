@@ -1,0 +1,16 @@
+{
+	"name": "@program/bootstrap",
+	"bin": "./lib/main.js",
+	"type": "module",
+	"dependencies": {
+		"@idlebox/args": "^0.0.22",
+		"@idlebox/common": "^1.5.13",
+		"@idlebox/logger": "^0.0.16",
+		"@idlebox/node": "^1.4.22",
+		"@shared/common": "workspace:"
+	},
+	"devDependencies": {
+		"@build-script/baseline-rig": "^1.1.0",
+		"@types/node": "^25.3.0"
+	}
+}

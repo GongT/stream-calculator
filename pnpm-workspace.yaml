@@ -1,5 +1,6 @@
 packages:
   - .
+  - '@shared/*'
   - '@adapter/*'
   - '@protocol/*'
   - '@program/*'

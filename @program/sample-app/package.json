@@ -1,5 +1,5 @@
 {
-	"name": "@protocol/networking",
+	"name": "@logic/sample-app",
 	"exports": "./lib/index.js",
 	"type": "module",
 	"dependencies": {},

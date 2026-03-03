@@ -2,6 +2,15 @@ name: stream-calculator-meta
 type: module
 version: 0.0.0
 private: true
+scripts:
+  postinstall: package-tools monorepo-link-binaries --recursive
+  build: tsc -b ./@program/bootstrap/src/tsconfig.json
+  watch: tsc -b ./@program/bootstrap/src/tsconfig.json -w
+  start: nodemon --watch aaa ./@program/bootstrap/lib/main.js sample-app
 dependencies:
   '@biomejs/biome': ^2.4.4
   typescript: ^5.9.3
+devDependencies:
+  '@build-script/package-tools': ^0.0.19
+  '@types/debug': ^4.1.12
+  nodemon: ^3.1.14
