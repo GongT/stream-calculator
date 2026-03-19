@@ -1,5 +1,5 @@
 {
-	"name": "@shared/common",
+	"name": "@core/protocol",
 	"exports": "./lib/autoindex.generated.js",
 	"type": "module",
 	"scripts": {
@@ -10,6 +10,7 @@
 	},
 	"dependencies": {
 		"@idlebox/common": "^1.5.14",
+		"@idlebox/logger": "^0.0.16",
 		"@idlebox/node": "^1.4.24"
 	},
 	"devDependencies": {

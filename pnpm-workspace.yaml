@@ -1,9 +1,9 @@
 packages:
   - .
-  - '@shared/*'
   - '@adapter/*'
-  - '@protocol/*'
+  - '@core/*'
   - '@program/*'
+  - '@shared/*'
 
 enablePrePostScripts: true
 hoistWorkspacePackages: false
@@ -33,3 +33,8 @@ fetchRetries: 1000
 networkConcurrency: 3
 gitChecks: false
 registry: https://registry.npmmirror.com
+
+overrides:
+  "@idlebox/logger": "/data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger"
+#   "@idlebox/node": "/data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/node"
+  "@idlebox/common": "/data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common"

@@ -9,19 +9,15 @@
 	"references": [
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@core/core/src/tsconfig.json"
+			"path": "../../../@shared/common/src/tsconfig.json"
 		},
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@adapter/sensor-sine/src/tsconfig.json"
+			"path": "../../core/src/tsconfig.json"
 		},
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@adapter/sensor-noise/src/tsconfig.json"
-		},
-		{
-			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@adapter/fft-band-value/src/tsconfig.json"
+			"path": "../../../@program/sample-app/src/tsconfig.json"
 		}
 	]
 }

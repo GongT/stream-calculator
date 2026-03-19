@@ -3,12 +3,18 @@ type: module
 version: 0.0.0
 private: true
 scripts:
+  prebuild:codegen: pnpm run --recursive --if-present --aggregate-output prebuild
+  prebuild:tsconfig: package-tools monorepo-tsconfig --force
+  prebuild: pnpm '/^prebuild:/'
+  prewatch: pnpm '/^prebuild:/'
   postinstall: package-tools monorepo-link-binaries --recursive
-  build: tsc -b ./@program/bootstrap/src/tsconfig.json
-  watch: tsc -b ./@program/bootstrap/src/tsconfig.json -w
-  start: nodemon --watch aaa ./@program/bootstrap/lib/main.js sample-app
+  build: tsc -b ./tsconfig.everything.json
+  watch: tsc -b ./tsconfig.everything.json -w
+  start: DEBUG="adapter:* node:*" nodemon ./@core/bootstrap/lib/main.js @program/sample-app
+  clean: pnpm run --if-present --recursive clean
 dependencies:
-  '@biomejs/biome': ^2.4.4
+  '@biomejs/biome': ^2.4.5
+  rimraf: ^6.1.3
   typescript: ^5.9.3
 devDependencies:
   '@build-script/package-tools': ^0.0.19

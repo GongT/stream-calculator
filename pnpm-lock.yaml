@@ -4,13 +4,20 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@idlebox/logger': /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger
+  '@idlebox/common': /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+
 importers:
 
   .:
     dependencies:
       '@biomejs/biome':
-        specifier: ^2.4.4
-        version: 2.4.4
+        specifier: ^2.4.5
+        version: 2.4.5
+      rimraf:
+        specifier: ^6.1.3
+        version: 6.1.3
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -25,150 +32,333 @@ importers:
         specifier: ^3.1.14
         version: 3.1.14
 
-  '@adapter/sensor-sine':
-    devDependencies:
-      '@build-script/baseline-rig':
-        specifier: ^1.1.0
-        version: 1.1.0
-      '@types/node':
-        specifier: ^25.3.0
-        version: 25.3.0
-
-  '@program/adapter-host':
-    devDependencies:
-      '@build-script/baseline-rig':
-        specifier: ^1.1.0
-        version: 1.1.0
-      '@types/node':
-        specifier: ^25.3.0
-        version: 25.3.0
-
-  '@program/bootstrap':
+  '@adapter/fft-band-value':
     dependencies:
-      '@idlebox/args':
-        specifier: ^0.0.22
-        version: 0.0.22
+      '@core/core':
+        specifier: workspace:^
+        version: link:../../@core/core
+      '@core/protocol':
+        specifier: workspace:^
+        version: link:../../@core/protocol
       '@idlebox/common':
-        specifier: ^1.5.13
-        version: 1.5.13
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+        version: link:../../../baobao/@idlebox/common
+      '@shared/testing':
+        specifier: workspace:^
+        version: link:../../@shared/testing
+      execa:
+        specifier: ^9.6.1
+        version: 9.6.1
+    devDependencies:
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@adapter/output-remote':
+    dependencies:
+      '@core/core':
+        specifier: workspace:^
+        version: link:../../@core/core
+    devDependencies:
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@adapter/realtime-publish':
+    dependencies:
+      '@core/core':
+        specifier: workspace:^
+        version: link:../../@core/core
+    devDependencies:
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@adapter/resampler':
+    dependencies:
+      '@core/core':
+        specifier: workspace:^
+        version: link:../../@core/core
+    devDependencies:
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@adapter/sensor-noise':
+    dependencies:
+      '@core/core':
+        specifier: workspace:^
+        version: link:../../@core/core
+    devDependencies:
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@adapter/sensor-remote':
+    dependencies:
+      '@core/core':
+        specifier: workspace:^
+        version: link:../../@core/core
+    devDependencies:
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@adapter/sensor-sine':
+    dependencies:
+      '@core/core':
+        specifier: workspace:^
+        version: link:../../@core/core
+      '@idlebox/common':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+        version: link:../../../baobao/@idlebox/common
+    devDependencies:
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@core/bootstrap':
+    dependencies:
+      '@core/core':
+        specifier: workspace:^
+        version: link:../core
+      '@idlebox/args':
+        specifier: ^0.0.23
+        version: 0.0.23
+      '@idlebox/common':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+        version: link:../../../baobao/@idlebox/common
       '@idlebox/logger':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger
+        version: link:../../../baobao/@idlebox/logger
+      '@idlebox/node':
+        specifier: ^1.4.24
+        version: 1.4.24
+      '@idlebox/source-map-support':
         specifier: ^0.0.16
         version: 0.0.16
-      '@idlebox/node':
-        specifier: ^1.4.22
-        version: 1.4.22
+      '@program/sample-app':
+        specifier: workspace:^
+        version: link:../../@program/sample-app
       '@shared/common':
-        specifier: 'workspace:'
+        specifier: workspace:^
         version: link:../../@shared/common
     devDependencies:
       '@build-script/baseline-rig':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@core/protocol':
+        specifier: 'workspace:'
+        version: link:../protocol
       '@types/node':
-        specifier: ^25.3.0
-        version: 25.3.0
+        specifier: ^25.3.3
+        version: 25.3.3
 
-  '@program/sample-app':
-    devDependencies:
-      '@build-script/baseline-rig':
-        specifier: ^1.1.0
-        version: 1.1.0
-      '@types/node':
-        specifier: ^25.3.0
-        version: 25.3.0
-
-  '@protocol/internal':
-    devDependencies:
-      '@build-script/baseline-rig':
-        specifier: ^1.1.0
-        version: 1.1.0
-      '@types/node':
-        specifier: ^25.3.0
-        version: 25.3.0
-
-  '@protocol/networking':
-    devDependencies:
-      '@build-script/baseline-rig':
-        specifier: ^1.1.0
-        version: 1.1.0
-      '@types/node':
-        specifier: ^25.3.0
-        version: 25.3.0
-
-  '@shared/common':
+  '@core/core':
     dependencies:
+      '@core/protocol':
+        specifier: 'workspace:'
+        version: link:../protocol
       '@idlebox/common':
-        specifier: ^1.5.13
-        version: 1.5.13
-      '@idlebox/node':
-        specifier: ^1.4.22
-        version: 1.4.22
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+        version: link:../../../baobao/@idlebox/common
+      '@idlebox/logger':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger
+        version: link:../../../baobao/@idlebox/logger
     devDependencies:
       '@build-script/autoindex':
         specifier: ^0.0.16
         version: 0.0.16
       '@build-script/baseline-rig':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^1.1.1
+        version: 1.1.1
       '@types/node':
-        specifier: ^25.3.0
-        version: 25.3.0
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@core/database':
+    dependencies:
+      '@core/protocol':
+        specifier: 'workspace:'
+        version: link:../protocol
+      '@idlebox/common':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+        version: link:../../../baobao/@idlebox/common
+    devDependencies:
+      '@build-script/autoindex':
+        specifier: ^0.0.16
+        version: 0.0.16
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@core/protocol':
+    dependencies:
+      '@idlebox/common':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+        version: link:../../../baobao/@idlebox/common
+      '@idlebox/logger':
+        specifier: ^0.0.16
+        version: 0.0.16
+      '@idlebox/node':
+        specifier: ^1.4.24
+        version: 1.4.24
+    devDependencies:
+      '@build-script/autoindex':
+        specifier: ^0.0.16
+        version: 0.0.16
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@program/sample-app':
+    dependencies:
+      '@adapter/fft-band-value':
+        specifier: workspace:^
+        version: link:../../@adapter/fft-band-value
+      '@adapter/sensor-noise':
+        specifier: workspace:^
+        version: link:../../@adapter/sensor-noise
+      '@adapter/sensor-sine':
+        specifier: workspace:^
+        version: link:../../@adapter/sensor-sine
+      '@core/core':
+        specifier: workspace:^
+        version: link:../../@core/core
+    devDependencies:
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@shared/common':
+    dependencies:
+      '@idlebox/common':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+        version: link:../../../baobao/@idlebox/common
+      '@idlebox/node':
+        specifier: ^1.4.24
+        version: 1.4.24
+    devDependencies:
+      '@build-script/autoindex':
+        specifier: ^0.0.16
+        version: 0.0.16
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
+
+  '@shared/testing':
+    dependencies:
+      '@idlebox/common':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+        version: link:../../../baobao/@idlebox/common
+      '@idlebox/logger':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger
+        version: link:../../../baobao/@idlebox/logger
+      '@idlebox/node':
+        specifier: ^1.4.24
+        version: 1.4.24
+      execa:
+        specifier: ^9.6.1
+        version: 9.6.1
+    devDependencies:
+      '@build-script/autoindex':
+        specifier: ^0.0.16
+        version: 0.0.16
+      '@build-script/baseline-rig':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@types/node':
+        specifier: ^25.3.3
+        version: 25.3.3
 
 packages:
 
-  '@biomejs/biome@2.4.4':
-    resolution: {integrity: sha512-tigwWS5KfJf0cABVd52NVaXyAVv4qpUXOWJ1rxFL8xF1RVoeS2q/LK+FHgYoKMclJCuRoCWAPy1IXaN9/mS61Q==}
+  '@biomejs/biome@2.4.5':
+    resolution: {integrity: sha512-OWNCyMS0Q011R6YifXNOg6qsOg64IVc7XX6SqGsrGszPbkVCoaO7Sr/lISFnXZ9hjQhDewwZ40789QmrG0GYgQ==}
     engines: {node: '>=14.21.3'}
     hasBin: true
 
-  '@biomejs/cli-darwin-arm64@2.4.4':
-    resolution: {integrity: sha512-jZ+Xc6qvD6tTH5jM6eKX44dcbyNqJHssfl2nnwT6vma6B1sj7ZLTGIk6N5QwVBs5xGN52r3trk5fgd3sQ9We9A==}
+  '@biomejs/cli-darwin-arm64@2.4.5':
+    resolution: {integrity: sha512-lGS4Nd5O3KQJ6TeWv10mElnx1phERhBxqGP/IKq0SvZl78kcWDFMaTtVK+w3v3lusRFxJY78n07PbKplirsU5g==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [darwin]
 
-  '@biomejs/cli-darwin-x64@2.4.4':
-    resolution: {integrity: sha512-Dh1a/+W+SUCXhEdL7TiX3ArPTFCQKJTI1mGncZNWfO+6suk+gYA4lNyJcBB+pwvF49uw0pEbUS49BgYOY4hzUg==}
+  '@biomejs/cli-darwin-x64@2.4.5':
+    resolution: {integrity: sha512-6MoH4tyISIBNkZ2Q5T1R7dLd5BsITb2yhhhrU9jHZxnNSNMWl+s2Mxu7NBF8Y3a7JJcqq9nsk8i637z4gqkJxQ==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [darwin]
 
-  '@biomejs/cli-linux-arm64-musl@2.4.4':
-    resolution: {integrity: sha512-+sPAXq3bxmFwhVFJnSwkSF5Rw2ZAJMH3MF6C9IveAEOdSpgajPhoQhbbAK12SehN9j2QrHpk4J/cHsa/HqWaYQ==}
+  '@biomejs/cli-linux-arm64-musl@2.4.5':
+    resolution: {integrity: sha512-iqLDgpzobG7gpBF0fwEVS/LT8kmN7+S0E2YKFDtqliJfzNLnAiV2Nnyb+ehCDCJgAZBASkYHR2o60VQWikpqIg==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@biomejs/cli-linux-arm64@2.4.4':
-    resolution: {integrity: sha512-V/NFfbWhsUU6w+m5WYbBenlEAz8eYnSqRMDMAW3K+3v0tYVkNyZn8VU0XPxk/lOqNXLSCCrV7FmV/u3SjCBShg==}
+  '@biomejs/cli-linux-arm64@2.4.5':
+    resolution: {integrity: sha512-U1GAG6FTjhAO04MyH4xn23wRNBkT6H7NentHh+8UxD6ShXKBm5SY4RedKJzkUThANxb9rUKIPc7B8ew9Xo/cWg==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@biomejs/cli-linux-x64-musl@2.4.4':
-    resolution: {integrity: sha512-gGvFTGpOIQDb5CQ2VC0n9Z2UEqlP46c4aNgHmAMytYieTGEcfqhfCFnhs6xjt0S3igE6q5GLuIXtdQt3Izok+g==}
+  '@biomejs/cli-linux-x64-musl@2.4.5':
+    resolution: {integrity: sha512-NlKa7GpbQmNhZf9kakQeddqZyT7itN7jjWdakELeXyTU3pg/83fTysRRDPJD0akTfKDl6vZYNT9Zqn4MYZVBOA==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@biomejs/cli-linux-x64@2.4.4':
-    resolution: {integrity: sha512-R4+ZCDtG9kHArasyBO+UBD6jr/FcFCTH8QkNTOCu0pRJzCWyWC4EtZa2AmUZB5h3e0jD7bRV2KvrENcf8rndBg==}
+  '@biomejs/cli-linux-x64@2.4.5':
+    resolution: {integrity: sha512-NdODlSugMzTlENPTa4z0xB82dTUlCpsrOxc43///aNkTLblIYH4XpYflBbf5ySlQuP8AA4AZd1qXhV07IdrHdQ==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@biomejs/cli-win32-arm64@2.4.4':
-    resolution: {integrity: sha512-trzCqM7x+Gn832zZHgr28JoYagQNX4CZkUZhMUac2YxvvyDRLJDrb5m9IA7CaZLlX6lTQmADVfLEKP1et1Ma4Q==}
+  '@biomejs/cli-win32-arm64@2.4.5':
+    resolution: {integrity: sha512-EBfrTqRIWOFSd7CQb/0ttjHMR88zm3hGravnDwUA9wHAaCAYsULKDebWcN5RmrEo1KBtl/gDVJMrFjNR0pdGUw==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [win32]
 
-  '@biomejs/cli-win32-x64@2.4.4':
-    resolution: {integrity: sha512-gnOHKVPFAAPrpoPt2t+Q6FZ7RPry/FDV3GcpU53P3PtLNnQjBmKyN2Vh/JtqXet+H4pme8CC76rScwdjDcT1/A==}
+  '@biomejs/cli-win32-x64@2.4.5':
+    resolution: {integrity: sha512-Pmhv9zT95YzECfjEHNl3mN9Vhusw9VA5KHY0ZvlGsxsjwS5cb7vpRnHzJIv0vG7jB0JI7xEaMH9ddfZm/RozBw==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [win32]
@@ -177,8 +367,8 @@ packages:
     resolution: {integrity: sha512-wJad9ujaftfw7NMHoI3K66tCUN1+PRY7CO59QSjCXIPs0Cf2/gUlm5X2YIxrlp3VA9gtcSQMzJSkE68rRIB21g==}
     hasBin: true
 
-  '@build-script/baseline-rig@1.1.0':
-    resolution: {integrity: sha512-FrQhvYWnkRBw3M0lU/p6lpKhrVbkOYbPcsi/ee+o/GCRXa3+I++hEkvSgtO76q0TBMF089bd9TJbdO9o0uL1pQ==, tarball: https://registry.npmjs.org/@build-script/baseline-rig/-/baseline-rig-1.1.0.tgz}
+  '@build-script/baseline-rig@1.1.1':
+    resolution: {integrity: sha512-IEkG7RBQkLTxbRj2OSgqX4+858tgNiSKWX/8u5GdhPhBkVLVIBizGV5ZN4TwdAVGjJxWr/imVWGtK+rAlT1h2w==}
 
   '@build-script/monorepo-lib@0.0.17':
     resolution: {integrity: sha512-ecQySGBhN65Msct0w+j6cdXHXVI5q61Ox1OJmXCWC9/v+FXu//x7NNA0cvvAw19vY6rsoCpdcshwBjOJ+bmoVA==}
@@ -198,6 +388,9 @@ packages:
   '@idlebox/args@0.0.22':
     resolution: {integrity: sha512-ZaPcrdtvaEZbPGwE80kPkyi0n0aBIq+om7S746IuonHZ5Yk39R35TXWdM0QvuzOQ110IeZkxSe7qcIc0XgyaTw==}
 
+  '@idlebox/args@0.0.23':
+    resolution: {integrity: sha512-wub223YUq/iUeG6sod2u9d6dOvcDUehTu3nwEHBRwTFLq1M2D31Xdv85uhCFT6IU5B9Q2oNuTiHbyXFbY4+NtA==}
+
   '@idlebox/chokidar@0.1.14':
     resolution: {integrity: sha512-/UmnGe3aFAuS2bww5blImswzJi+Oo+ClWKcK9r7NF9Ag/FkND321kyiS6nEfmYO2OBvXulH4Kj4xIz26xHpa4w==}
 
@@ -212,9 +405,6 @@ packages:
       '@idlebox/cli-static-generator':
         optional: true
 
-  '@idlebox/common@1.5.13':
-    resolution: {integrity: sha512-tyY/OzYR5L2NHvMLO08U68/lepNoDIFBenLb/+KdYMkcLgU+aWu+ODmYXHv6GINWNHpxCPqFrCS4TtM/YdrVhQ==}
-
   '@idlebox/deepmerge@0.0.10':
     resolution: {integrity: sha512-uNLHg6WCc+usyQEYaEP1G5fYVNub2bAhk36o3wjVhRm7NE4OR+Uqmc2mbIAqW3pRL3EOD08PekhRk9kBDNPhzQ==}
 
@@ -224,8 +414,8 @@ packages:
   '@idlebox/ensure-symlink@1.0.39':
     resolution: {integrity: sha512-+27MJl6zUXNThWWgTV28IguYE3jA0/YAnBaROEm+/uwuLd8ufueniN1AvNlV9gP+96dBR+rtZliNdVICp52InA==}
 
-  '@idlebox/errors@0.1.13':
-    resolution: {integrity: sha512-cLgdisUNqnXSy+0FMa95gOKAP4Yeht4rV3dEk4IL2oDJtoGBnL6GN+YW8MU2/+H5RhWLkJ3oqNUpVfGmR1yUhg==}
+  '@idlebox/errors@0.1.14':
+    resolution: {integrity: sha512-uBpLR7GwObW9C6Bgl0895aNq9bmFvhp2Qpuojit49ZDkWl4eRzVmpV9SnQ+BKM1LPX8dwWIylREqMmCXDtnYgA==}
 
   '@idlebox/json-edit@0.0.10':
     resolution: {integrity: sha512-mDh8q9qUVhbQ3Wj6A9+SNsN4ca+UvLR8QlnWyNrnv/fT1k3hYa/Mxd+BgzG7GLWmfx5nFXDs7sbOHukiQNNicg==}
@@ -239,8 +429,8 @@ packages:
   '@idlebox/node-error-codes@0.1.13':
     resolution: {integrity: sha512-Ak7yCS96+CiaDFG/AksrZh0P/cSIrd0EFLAjv9ms7BBJG9uGITsLVMjRnxb6F9VOYuprIx/e1G4i1DpoWjXgeQ==}
 
-  '@idlebox/node@1.4.22':
-    resolution: {integrity: sha512-Nr03x0XL8iVQDfguzZnNRgvyTDOP5MlwazcmkT+veV3w/9YpoGqnyctCBfU9hlySJ/+Jmr52arYAeAQ6orYqJg==}
+  '@idlebox/node@1.4.24':
+    resolution: {integrity: sha512-ROdAu8j1W57+A5s5VBx/C62TQH1w9FusoA+B3fHCUlqaQ+Z5wrGZVAA+zbusxe6mqwHQLajPjtvxjW46ruO3vA==}
 
   '@idlebox/source-map-support@0.0.16':
     resolution: {integrity: sha512-w/SRdfzN7R6whJjJwM/aVURNwxLYO7LY2wEQsc/TQdZ048uuiFhdyRd5M55M26ujVjHZExOD0stQWK4U4y4svQ==}
@@ -352,8 +542,8 @@ packages:
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
-  '@types/node@25.3.0':
-    resolution: {integrity: sha512-4K3bqJpXpqfg2XKGK9bpDTc6xO/xoUP/RBWS7AtRMug6zZFaRekiLzjVtAoZMquxoAbzBvy5nxQ7veS5eYzf8A==}
+  '@types/node@25.3.3':
+    resolution: {integrity: sha512-DpzbrH7wIcBaJibpKo9nnSQL0MTRdnWttGyE5haGwK86xgMOkFLp7vEyfQPGLOJh5wNYiJ3V9PmUMDhV9u8kkQ==}
 
   '@types/source-map-support@0.5.10':
     resolution: {integrity: sha512-tgVP2H469x9zq34Z0m/fgPewGhg/MLClalNOiPIzQlXrSS2YrKu/xCdSCKnEDwkFha51VKEKB6A9wW26/ZNwzA==}
@@ -449,8 +639,8 @@ packages:
   cjke-strings@1.1.14:
     resolution: {integrity: sha512-AACdppaX6vqZRpeZPZLTJHDoy46lTKIUsrB7hOFCL0reXnu2U+9lsDszpHgo+fgFT9rUbDa4WwApfUp4+a0sUg==}
 
-  comment-json@4.6.1:
-    resolution: {integrity: sha512-kdBIsBGqD/sAeqvzeOhBvO/bhtpbfbIU/2lw7bp182FV1cVlY7gr1Jf3Q1I+NOsCk8e4gF5Sl9iYH5cNvVmx5w==}
+  comment-json@4.6.2:
+    resolution: {integrity: sha512-R2rze/hDX30uul4NZoIZ76ImSJLFxn/1/ZxtKC1L77y2X1k+yYu1joKbAtMA2Fg3hZrTOiw0I5mwVMo0cf250w==}
     engines: {node: '>= 6'}
 
   core-util-is@1.0.3:
@@ -845,6 +1035,9 @@ packages:
     resolution: {integrity: sha512-tkAQEw8ysMzmkhgw8k+1U/iPhWNhykKnSk4Rd5zLoPJCuJaGRPo6YposrZgaxHKzDHdDWWZvE/Sk7hsL2X/CpQ==}
     engines: {node: '>=18'}
 
+  package-json-from-dist@1.0.1:
+    resolution: {integrity: sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==}
+
   pacote@21.4.0:
     resolution: {integrity: sha512-DR7mn7HUOomAX1BORnpYy678qVIidbvOojkBscqy27dRKN+s/hLeQT1MeYYrx1Cxh62jyKjiWiDV7RTTqB+ZEQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
@@ -934,6 +1127,11 @@ packages:
   retry@0.13.1:
     resolution: {integrity: sha512-XQBQ3I8W1Cge0Seh+6gjj03LbmRFWuoszgK9ooCpwYIrhhoO80pfq4cUkU5DkknwfOfFteRwlZ56PYOGYyFWdg==}
     engines: {node: '>= 4'}
+
+  rimraf@6.1.3:
+    resolution: {integrity: sha512-LKg+Cr2ZF61fkcaK1UdkH2yEBBKnYjTyWzTJT6KNPcSPaiT7HSdhtMXQuN5wkTX0Xu72KQ1l8S42rlmexS2hSA==}
+    engines: {node: 20 || >=22}
+    hasBin: true
 
   safe-buffer@5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
@@ -1147,39 +1345,39 @@ ignoredOptionalDependencies:
 
 snapshots:
 
-  '@biomejs/biome@2.4.4':
+  '@biomejs/biome@2.4.5':
     optionalDependencies:
-      '@biomejs/cli-darwin-arm64': 2.4.4
-      '@biomejs/cli-darwin-x64': 2.4.4
-      '@biomejs/cli-linux-arm64': 2.4.4
-      '@biomejs/cli-linux-arm64-musl': 2.4.4
-      '@biomejs/cli-linux-x64': 2.4.4
-      '@biomejs/cli-linux-x64-musl': 2.4.4
-      '@biomejs/cli-win32-arm64': 2.4.4
-      '@biomejs/cli-win32-x64': 2.4.4
+      '@biomejs/cli-darwin-arm64': 2.4.5
+      '@biomejs/cli-darwin-x64': 2.4.5
+      '@biomejs/cli-linux-arm64': 2.4.5
+      '@biomejs/cli-linux-arm64-musl': 2.4.5
+      '@biomejs/cli-linux-x64': 2.4.5
+      '@biomejs/cli-linux-x64-musl': 2.4.5
+      '@biomejs/cli-win32-arm64': 2.4.5
+      '@biomejs/cli-win32-x64': 2.4.5
 
-  '@biomejs/cli-darwin-arm64@2.4.4':
+  '@biomejs/cli-darwin-arm64@2.4.5':
     optional: true
 
-  '@biomejs/cli-darwin-x64@2.4.4':
+  '@biomejs/cli-darwin-x64@2.4.5':
     optional: true
 
-  '@biomejs/cli-linux-arm64-musl@2.4.4':
+  '@biomejs/cli-linux-arm64-musl@2.4.5':
     optional: true
 
-  '@biomejs/cli-linux-arm64@2.4.4':
+  '@biomejs/cli-linux-arm64@2.4.5':
     optional: true
 
-  '@biomejs/cli-linux-x64-musl@2.4.4':
+  '@biomejs/cli-linux-x64-musl@2.4.5':
     optional: true
 
-  '@biomejs/cli-linux-x64@2.4.4':
+  '@biomejs/cli-linux-x64@2.4.5':
     optional: true
 
-  '@biomejs/cli-win32-arm64@2.4.4':
+  '@biomejs/cli-win32-arm64@2.4.5':
     optional: true
 
-  '@biomejs/cli-win32-x64@2.4.4':
+  '@biomejs/cli-win32-x64@2.4.5':
     optional: true
 
   '@build-script/autoindex@0.0.16':
@@ -1187,41 +1385,39 @@ snapshots:
       '@build-script/rushstack-config-loader': 0.0.31(typescript@5.9.3)
       '@idlebox/args': 0.0.22
       '@idlebox/chokidar': 0.1.14
-      '@idlebox/common': 1.5.13
-      '@idlebox/logger': 0.0.16
-      '@idlebox/node': 1.4.22
+      '@idlebox/common': link:../baobao/@idlebox/common
+      '@idlebox/logger': link:../baobao/@idlebox/logger
+      '@idlebox/node': 1.4.24
       '@idlebox/source-map-support': 0.0.16
       '@idlebox/typescript-surface-analyzer': 0.0.36
       '@mpis/client': 0.0.16
-      comment-json: 4.6.1
+      comment-json: 4.6.2
       glob: 13.0.6
       tslib: 2.8.1
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@build-script/baseline-rig@1.1.0': {}
+  '@build-script/baseline-rig@1.1.1': {}
 
   '@build-script/monorepo-lib@0.0.17':
     dependencies:
-      '@idlebox/common': 1.5.13
+      '@idlebox/common': link:../baobao/@idlebox/common
       '@idlebox/json-edit': 0.0.10
-      '@idlebox/logger': 0.0.16
-      '@idlebox/node': 1.4.22
+      '@idlebox/logger': link:../baobao/@idlebox/logger
+      '@idlebox/node': 1.4.24
       '@idlebox/source-map-support': 0.0.16
       yaml: 2.8.2
-    transitivePeerDependencies:
-      - supports-color
 
   '@build-script/package-tools@0.0.19':
     dependencies:
       '@build-script/monorepo-lib': 0.0.17
       '@idlebox/cli': 0.0.11
-      '@idlebox/common': 1.5.13
+      '@idlebox/common': link:../baobao/@idlebox/common
       '@idlebox/dependency-graph': 0.0.15
       '@idlebox/ensure-symlink': 1.0.39
       '@idlebox/json-edit': 0.0.10
-      '@idlebox/node': 1.4.22
+      '@idlebox/node': 1.4.24
       '@idlebox/source-map-support': 0.0.16
       '@idlebox/unshare': 0.0.9
       cacache: 20.0.3
@@ -1255,7 +1451,12 @@ snapshots:
 
   '@idlebox/args@0.0.22':
     dependencies:
-      '@idlebox/errors': 0.1.13
+      '@idlebox/errors': 0.1.14
+      cjke-strings: 1.1.14
+
+  '@idlebox/args@0.0.23':
+    dependencies:
+      '@idlebox/errors': 0.1.14
       cjke-strings: 1.1.14
 
   '@idlebox/chokidar@0.1.14':
@@ -1271,73 +1472,57 @@ snapshots:
     dependencies:
       '@idlebox/args': 0.0.22
       '@idlebox/cli-help-builder': 0.0.8
-      '@idlebox/common': 1.5.13
-      '@idlebox/logger': 0.0.16
-      '@idlebox/node': 1.4.22
+      '@idlebox/common': link:../baobao/@idlebox/common
+      '@idlebox/logger': link:../baobao/@idlebox/logger
+      '@idlebox/node': 1.4.24
       '@idlebox/source-map-support': 0.0.16
-    transitivePeerDependencies:
-      - supports-color
-
-  '@idlebox/common@1.5.13':
-    dependencies:
-      '@idlebox/errors': 0.1.13
-      debug: 4.4.3(supports-color@5.5.0)
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - supports-color
 
   '@idlebox/deepmerge@0.0.10': {}
 
   '@idlebox/dependency-graph@0.0.15':
     dependencies:
-      '@idlebox/common': 1.5.13
-      '@idlebox/logger': 0.0.16
+      '@idlebox/common': link:../baobao/@idlebox/common
+      '@idlebox/logger': link:../baobao/@idlebox/logger
       dependency-graph: 1.0.0
-    transitivePeerDependencies:
-      - supports-color
 
   '@idlebox/ensure-symlink@1.0.39': {}
 
-  '@idlebox/errors@0.1.13':
+  '@idlebox/errors@0.1.14':
     dependencies:
       '@idlebox/node-error-codes': 0.1.13
 
   '@idlebox/json-edit@0.0.10':
     dependencies:
-      comment-json: 4.6.1
+      comment-json: 4.6.2
       prettier: 3.8.1
 
   '@idlebox/json-extends-loader@1.0.29':
     dependencies:
       '@idlebox/deepmerge': 0.0.10
-      comment-json: 4.6.1
+      comment-json: 4.6.2
       object-path: 0.11.8
       tslib: 2.8.1
 
   '@idlebox/logger@0.0.16':
     dependencies:
-      '@idlebox/common': 1.5.13
+      '@idlebox/common': link:../baobao/@idlebox/common
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
   '@idlebox/node-error-codes@0.1.13': {}
 
-  '@idlebox/node@1.4.22':
+  '@idlebox/node@1.4.24':
     dependencies:
-      '@idlebox/common': 1.5.13
-      '@idlebox/errors': 0.1.13
+      '@idlebox/common': link:../baobao/@idlebox/common
+      '@idlebox/errors': 0.1.14
       execa: 9.6.1
-    transitivePeerDependencies:
-      - supports-color
 
   '@idlebox/source-map-support@0.0.16':
     dependencies:
-      '@idlebox/common': 1.5.13
+      '@idlebox/common': link:../baobao/@idlebox/common
       '@types/source-map-support': 0.5.10
       source-map-support: 0.5.21
-    transitivePeerDependencies:
-      - supports-color
 
   '@idlebox/tsconfig-loader@1.0.26(typescript@5.9.3)':
     dependencies:
@@ -1345,19 +1530,15 @@ snapshots:
 
   '@idlebox/typescript-surface-analyzer@0.0.36':
     dependencies:
-      '@idlebox/logger': 0.0.16
+      '@idlebox/logger': link:../baobao/@idlebox/logger
       '@idlebox/tsconfig-loader': 1.0.26(typescript@5.9.3)
       minimatch: 10.2.4
       typescript: 5.9.3
-    transitivePeerDependencies:
-      - supports-color
 
   '@idlebox/unshare@0.0.9':
     dependencies:
-      '@idlebox/node': 1.4.22
+      '@idlebox/node': 1.4.24
       execa: 9.6.1
-    transitivePeerDependencies:
-      - supports-color
 
   '@isaacs/fs-minipass@4.0.1':
     dependencies:
@@ -1366,14 +1547,12 @@ snapshots:
   '@mpis/client@0.0.16':
     dependencies:
       '@idlebox/args': 0.0.22
-      '@idlebox/common': 1.5.13
-      '@idlebox/logger': 0.0.16
+      '@idlebox/common': link:../baobao/@idlebox/common
+      '@idlebox/logger': link:../baobao/@idlebox/logger
       '@idlebox/source-map-support': 0.0.16
       '@mpis/shared': 0.0.11
       execa: 9.6.1
       split2: 4.2.0
-    transitivePeerDependencies:
-      - supports-color
 
   '@mpis/shared@0.0.11': {}
 
@@ -1489,7 +1668,7 @@ snapshots:
 
   '@types/ms@2.1.0': {}
 
-  '@types/node@25.3.0':
+  '@types/node@25.3.3':
     dependencies:
       undici-types: 7.18.2
 
@@ -1604,10 +1783,9 @@ snapshots:
       emoji-regex: 10.6.0
       is-fullwidth-code-point: 5.1.0
 
-  comment-json@4.6.1:
+  comment-json@4.6.2:
     dependencies:
       array-timsort: 1.0.3
-      core-util-is: 1.0.3
       esprima: 4.0.1
 
   core-util-is@1.0.3: {}
@@ -2004,6 +2182,8 @@ snapshots:
 
   p-map@7.0.4: {}
 
+  package-json-from-dist@1.0.1: {}
+
   pacote@21.4.0:
     dependencies:
       '@gar/promise-retry': 1.0.2
@@ -2094,6 +2274,11 @@ snapshots:
   retry@0.12.0: {}
 
   retry@0.13.1: {}
+
+  rimraf@6.1.3:
+    dependencies:
+      glob: 13.0.6
+      package-json-from-dist: 1.0.1
 
   safe-buffer@5.1.2: {}
 

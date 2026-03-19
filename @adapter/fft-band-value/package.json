@@ -1,6 +1,6 @@
 {
-	"name": "@adapter/sensor-sine",
-	"description": "正弦波发生器",
+	"name": "@adapter/fft-band-value",
+	"description": "fft特征值提取",
 	"exports": "./lib/index.js",
 	"type": "module",
 	"scripts": {
@@ -10,7 +10,10 @@
 	},
 	"dependencies": {
 		"@core/core": "workspace:^",
-		"@idlebox/common": "^1.5.14"
+		"@core/protocol": "workspace:^",
+		"@idlebox/common": "^1.5.14",
+		"@shared/testing": "workspace:^",
+		"execa": "^9.6.1"
 	},
 	"devDependencies": {
 		"@build-script/baseline-rig": "^1.1.1",

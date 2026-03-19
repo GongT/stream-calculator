@@ -1,5 +1,5 @@
 {
-	"name": "@shared/common",
+	"name": "@core/core",
 	"exports": "./lib/autoindex.generated.js",
 	"type": "module",
 	"scripts": {
@@ -9,8 +9,9 @@
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
+		"@core/protocol": "workspace:",
 		"@idlebox/common": "^1.5.14",
-		"@idlebox/node": "^1.4.24"
+		"@idlebox/logger": "^0.0.16"
 	},
 	"devDependencies": {
 		"@build-script/autoindex": "^0.0.16",

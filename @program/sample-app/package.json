@@ -1,10 +1,20 @@
 {
-	"name": "@logic/sample-app",
+	"name": "@program/sample-app",
 	"exports": "./lib/index.js",
 	"type": "module",
-	"dependencies": {},
+	"scripts": {
+		"build": "tsc -b src",
+		"watch": "tsc -b src -w",
+		"clean": "rimraf lib"
+	},
+	"dependencies": {
+		"@core/core": "workspace:^",
+		"@adapter/sensor-sine": "workspace:^",
+		"@adapter/sensor-noise": "workspace:^",
+		"@adapter/fft-band-value": "workspace:^"
+	},
 	"devDependencies": {
-		"@build-script/baseline-rig": "^1.1.0",
-		"@types/node": "^25.3.0"
+		"@build-script/baseline-rig": "^1.1.1",
+		"@types/node": "^25.3.3"
 	}
 }

@@ -1,18 +1,19 @@
 {
-	"name": "@adapter/sensor-sine",
-	"description": "正弦波发生器",
-	"exports": "./lib/index.js",
+	"name": "@core/database",
+	"exports": "./lib/autoindex.generated.js",
 	"type": "module",
 	"scripts": {
+		"prebuild": "autoindex src/tsconfig.json",
 		"build": "tsc -b src",
 		"watch": "tsc -b src -w",
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
-		"@core/core": "workspace:^",
-		"@idlebox/common": "^1.5.14"
+		"@idlebox/common": "^1.5.14",
+		"@core/protocol": "workspace:"
 	},
 	"devDependencies": {
+		"@build-script/autoindex": "^0.0.16",
 		"@build-script/baseline-rig": "^1.1.1",
 		"@types/node": "^25.3.3"
 	}

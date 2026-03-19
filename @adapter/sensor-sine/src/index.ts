@@ -1,17 +1,82 @@
-export function generateSineSensorData(frequency: number, amplitude: number, sampleRate: number, durationMs: number): Uint32Array {
-	const sampleCount = Math.floor(sampleRate * (durationMs / 1000));
-	const data = new Uint32Array(sampleCount);
+import { Adapter, adapterHost, SendorNode } from '@core/core';
+import { Interval } from '@idlebox/common';
+import { generateSineSensorData } from './math.js';
 
-	for (let i = 0; i < sampleCount; i++) {
-		const time = i / sampleRate;
-		const value = Math.round((Math.sin(2 * Math.PI * frequency * time) + 1) / 2 * amplitude);
-		data[i] = value;
+interface IOptions {
+	readonly name: string;
+	/**
+	 * 频率，单位Hz
+	 */
+	readonly frequency: number;
+	/**
+	 * 振幅
+	 */
+	readonly amplitude?: number;
+
+	/**
+	 * 采样率，单位Hz，默认为 44100Hz
+	 */
+	readonly sampleRate?: number;
+
+	/**
+	 * 生成数据的时间间隔，单位毫秒
+	 */
+	readonly genreateTimer?: number;
+}
+
+export class SensorSine extends SendorNode {
+	protected override expectDataType = Int32Array;
+
+	private readonly frequency: number;
+	private readonly amplitude: number;
+	private readonly sampleRate: number;
+
+	private readonly timer;
+
+	private previousTime: number = Date.now();
+	private previousPhase = 0;
+
+	constructor(options: IOptions) {
+		super(options.name);
+
+		this.frequency = options.frequency;
+		this.amplitude = options.amplitude ?? 1;
+		this.sampleRate = options.sampleRate ?? 44100;
+
+		this.timer = new Interval(options.genreateTimer ?? 1000);
+		this.timer.onTick(this.timerTick.bind(this));
 	}
 
-	return data;
+	override resume() {
+		this.timer.resume();
+	}
+
+	private timerTick() {
+		const currentStartTime = Date.now();
+		const elapsed = currentStartTime - this.previousTime;
+
+		const data = generateSineSensorData(this.frequency, this.previousPhase, this.amplitude, elapsed, this.sampleRate);
+
+		this.previousTime = currentStartTime;
+
+		// Update the phase based on the elapsed time and frequency
+		const phaseIncrement = (2 * Math.PI * this.frequency * elapsed) / 1000;
+		this.previousPhase = (this.previousPhase + phaseIncrement) % (2 * Math.PI);
+
+		this.logger
+			.verbose`产生了 ${data.length} 个数据，${data.byteLength} 字节，长度 ${elapsed}ms，相位+${phaseIncrement.toFixed(0)}=${this.previousPhase.toFixed(2)}`;
+
+		this.emitData({
+			content: data,
+			rate: this.sampleRate,
+			timestamp: currentStartTime,
+			functionNumber: 0,
+		});
+	}
 }
+adapterHost.addNode(SensorSine);
 
-
-export function entry(host: AdapterHost) {
-
+class SensorSineAdapter extends Adapter {
+	public override activate(): void | Promise<void> {}
 }
+adapterHost.register(SensorSineAdapter);

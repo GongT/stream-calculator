@@ -1,6 +1,5 @@
 {
-	"name": "@adapter/sensor-sine",
-	"description": "正弦波发生器",
+	"name": "@adapter/resampler",
 	"exports": "./lib/index.js",
 	"type": "module",
 	"scripts": {
@@ -9,8 +8,7 @@
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
-		"@core/core": "workspace:^",
-		"@idlebox/common": "^1.5.14"
+		"@core/core": "workspace:^"
 	},
 	"devDependencies": {
 		"@build-script/baseline-rig": "^1.1.1",
