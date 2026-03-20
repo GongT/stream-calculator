@@ -11,10 +11,10 @@
 		"@core/core": "workspace:^",
 		"@adapter/sensor-sine": "workspace:^",
 		"@adapter/sensor-noise": "workspace:^",
-		"@adapter/fft-band-value": "workspace:^"
+		"@adapter/fft": "workspace:^"
 	},
 	"devDependencies": {
-		"@build-script/baseline-rig": "^1.1.1",
-		"@types/node": "^25.3.3"
+		"@build-script/baseline-rig": "^1.1.2",
+		"@types/node": "^25.5.0"
 	}
 }

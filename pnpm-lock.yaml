@@ -4,17 +4,13 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@idlebox/logger': /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger
-  '@idlebox/common': /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
-
 importers:
 
   .:
     dependencies:
       '@biomejs/biome':
-        specifier: ^2.4.5
-        version: 2.4.5
+        specifier: ^2.4.8
+        version: 2.4.8
       rimraf:
         specifier: ^6.1.3
         version: 6.1.3
@@ -23,16 +19,16 @@ importers:
         version: 5.9.3
     devDependencies:
       '@build-script/package-tools':
-        specifier: ^0.0.19
-        version: 0.0.19
+        specifier: ^0.0.23
+        version: 0.0.23
       '@types/debug':
-        specifier: ^4.1.12
-        version: 4.1.12
+        specifier: ^4.1.13
+        version: 4.1.13
       nodemon:
         specifier: ^3.1.14
         version: 3.1.14
 
-  '@adapter/fft-band-value':
+  '@adapter/fft':
     dependencies:
       '@core/core':
         specifier: workspace:^
@@ -41,8 +37,8 @@ importers:
         specifier: workspace:^
         version: link:../../@core/protocol
       '@idlebox/common':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
-        version: link:../../../baobao/@idlebox/common
+        specifier: ^1.5.18
+        version: 1.5.18
       '@shared/testing':
         specifier: workspace:^
         version: link:../../@shared/testing
@@ -51,11 +47,11 @@ importers:
         version: 9.6.1
     devDependencies:
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@adapter/output-remote':
     dependencies:
@@ -64,11 +60,11 @@ importers:
         version: link:../../@core/core
     devDependencies:
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@adapter/realtime-publish':
     dependencies:
@@ -77,11 +73,11 @@ importers:
         version: link:../../@core/core
     devDependencies:
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@adapter/resampler':
     dependencies:
@@ -90,11 +86,11 @@ importers:
         version: link:../../@core/core
     devDependencies:
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@adapter/sensor-noise':
     dependencies:
@@ -103,11 +99,11 @@ importers:
         version: link:../../@core/core
     devDependencies:
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@adapter/sensor-remote':
     dependencies:
@@ -116,11 +112,11 @@ importers:
         version: link:../../@core/core
     devDependencies:
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@adapter/sensor-sine':
     dependencies:
@@ -128,15 +124,15 @@ importers:
         specifier: workspace:^
         version: link:../../@core/core
       '@idlebox/common':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
-        version: link:../../../baobao/@idlebox/common
+        specifier: ^1.5.18
+        version: 1.5.18
     devDependencies:
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@core/bootstrap':
     dependencies:
@@ -144,20 +140,20 @@ importers:
         specifier: workspace:^
         version: link:../core
       '@idlebox/args':
-        specifier: ^0.0.23
-        version: 0.0.23
+        specifier: ^0.0.26
+        version: 0.0.26
       '@idlebox/common':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
-        version: link:../../../baobao/@idlebox/common
+        specifier: ^1.5.18
+        version: 1.5.18
       '@idlebox/logger':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger
-        version: link:../../../baobao/@idlebox/logger
+        specifier: ^0.0.22
+        version: 0.0.22
       '@idlebox/node':
-        specifier: ^1.4.24
-        version: 1.4.24
+        specifier: ^1.4.27
+        version: 1.4.27
       '@idlebox/source-map-support':
-        specifier: ^0.0.16
-        version: 0.0.16
+        specifier: ^0.0.19
+        version: 0.0.19
       '@program/sample-app':
         specifier: workspace:^
         version: link:../../@program/sample-app
@@ -166,14 +162,14 @@ importers:
         version: link:../../@shared/common
     devDependencies:
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@core/protocol':
         specifier: 'workspace:'
         version: link:../protocol
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@core/core':
     dependencies:
@@ -181,21 +177,24 @@ importers:
         specifier: 'workspace:'
         version: link:../protocol
       '@idlebox/common':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
-        version: link:../../../baobao/@idlebox/common
+        specifier: ^1.5.18
+        version: 1.5.18
       '@idlebox/logger':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger
-        version: link:../../../baobao/@idlebox/logger
+        specifier: ^0.0.22
+        version: 0.0.22
+      execa:
+        specifier: ^9.6.1
+        version: 9.6.1
     devDependencies:
       '@build-script/autoindex':
-        specifier: ^0.0.16
-        version: 0.0.16
+        specifier: ^0.0.20
+        version: 0.0.20
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@core/database':
     dependencies:
@@ -203,46 +202,46 @@ importers:
         specifier: 'workspace:'
         version: link:../protocol
       '@idlebox/common':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
-        version: link:../../../baobao/@idlebox/common
+        specifier: ^1.5.18
+        version: 1.5.18
     devDependencies:
       '@build-script/autoindex':
-        specifier: ^0.0.16
-        version: 0.0.16
+        specifier: ^0.0.20
+        version: 0.0.20
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@core/protocol':
     dependencies:
       '@idlebox/common':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
-        version: link:../../../baobao/@idlebox/common
+        specifier: ^1.5.18
+        version: 1.5.18
       '@idlebox/logger':
-        specifier: ^0.0.16
-        version: 0.0.16
+        specifier: ^0.0.22
+        version: 0.0.22
       '@idlebox/node':
-        specifier: ^1.4.24
-        version: 1.4.24
+        specifier: ^1.4.27
+        version: 1.4.27
     devDependencies:
       '@build-script/autoindex':
-        specifier: ^0.0.16
-        version: 0.0.16
+        specifier: ^0.0.20
+        version: 0.0.20
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@program/sample-app':
     dependencies:
-      '@adapter/fft-band-value':
+      '@adapter/fft':
         specifier: workspace:^
-        version: link:../../@adapter/fft-band-value
+        version: link:../../@adapter/fft
       '@adapter/sensor-noise':
         specifier: workspace:^
         version: link:../../@adapter/sensor-noise
@@ -254,208 +253,211 @@ importers:
         version: link:../../@core/core
     devDependencies:
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@shared/common':
     dependencies:
       '@idlebox/common':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
-        version: link:../../../baobao/@idlebox/common
+        specifier: ^1.5.18
+        version: 1.5.18
       '@idlebox/node':
-        specifier: ^1.4.24
-        version: 1.4.24
+        specifier: ^1.4.27
+        version: 1.4.27
     devDependencies:
       '@build-script/autoindex':
-        specifier: ^0.0.16
-        version: 0.0.16
+        specifier: ^0.0.20
+        version: 0.0.20
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
   '@shared/testing':
     dependencies:
       '@idlebox/common':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
-        version: link:../../../baobao/@idlebox/common
+        specifier: ^1.5.18
+        version: 1.5.18
       '@idlebox/logger':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger
-        version: link:../../../baobao/@idlebox/logger
+        specifier: ^0.0.22
+        version: 0.0.22
       '@idlebox/node':
-        specifier: ^1.4.24
-        version: 1.4.24
+        specifier: ^1.4.27
+        version: 1.4.27
       execa:
         specifier: ^9.6.1
         version: 9.6.1
     devDependencies:
       '@build-script/autoindex':
-        specifier: ^0.0.16
-        version: 0.0.16
+        specifier: ^0.0.20
+        version: 0.0.20
       '@build-script/baseline-rig':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
       '@types/node':
-        specifier: ^25.3.3
-        version: 25.3.3
+        specifier: ^25.5.0
+        version: 25.5.0
 
 packages:
 
-  '@biomejs/biome@2.4.5':
-    resolution: {integrity: sha512-OWNCyMS0Q011R6YifXNOg6qsOg64IVc7XX6SqGsrGszPbkVCoaO7Sr/lISFnXZ9hjQhDewwZ40789QmrG0GYgQ==}
+  '@biomejs/biome@2.4.8':
+    resolution: {integrity: sha512-ponn0oKOky1oRXBV+rlSaUlixUxf1aZvWC19Z41zBfUOUesthrQqL3OtiAlSB1EjFjyWpn98Q64DHelhA6jNlA==}
     engines: {node: '>=14.21.3'}
     hasBin: true
 
-  '@biomejs/cli-darwin-arm64@2.4.5':
-    resolution: {integrity: sha512-lGS4Nd5O3KQJ6TeWv10mElnx1phERhBxqGP/IKq0SvZl78kcWDFMaTtVK+w3v3lusRFxJY78n07PbKplirsU5g==}
+  '@biomejs/cli-darwin-arm64@2.4.8':
+    resolution: {integrity: sha512-ARx0tECE8I7S2C2yjnWYLNbBdDoPdq3oyNLhMglmuctThwUsuzFWRKrHmIGwIRWKz0Mat9DuzLEDp52hGnrxGQ==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [darwin]
 
-  '@biomejs/cli-darwin-x64@2.4.5':
-    resolution: {integrity: sha512-6MoH4tyISIBNkZ2Q5T1R7dLd5BsITb2yhhhrU9jHZxnNSNMWl+s2Mxu7NBF8Y3a7JJcqq9nsk8i637z4gqkJxQ==}
+  '@biomejs/cli-darwin-x64@2.4.8':
+    resolution: {integrity: sha512-Jg9/PsB9vDCJlANE8uhG7qDhb5w0Ix69D7XIIc8IfZPUoiPrbLm33k2Ig3NOJ/7nb3UbesFz3D1aDKm9DvzjhQ==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [darwin]
 
-  '@biomejs/cli-linux-arm64-musl@2.4.5':
-    resolution: {integrity: sha512-iqLDgpzobG7gpBF0fwEVS/LT8kmN7+S0E2YKFDtqliJfzNLnAiV2Nnyb+ehCDCJgAZBASkYHR2o60VQWikpqIg==}
+  '@biomejs/cli-linux-arm64-musl@2.4.8':
+    resolution: {integrity: sha512-Zo9OhBQDJ3IBGPlqHiTISloo5H0+FBIpemqIJdW/0edJ+gEcLR+MZeZozcUyz3o1nXkVA7++DdRKQT0599j9jA==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@biomejs/cli-linux-arm64@2.4.5':
-    resolution: {integrity: sha512-U1GAG6FTjhAO04MyH4xn23wRNBkT6H7NentHh+8UxD6ShXKBm5SY4RedKJzkUThANxb9rUKIPc7B8ew9Xo/cWg==}
+  '@biomejs/cli-linux-arm64@2.4.8':
+    resolution: {integrity: sha512-5CdrsJct76XG2hpKFwXnEtlT1p+4g4yV+XvvwBpzKsTNLO9c6iLlAxwcae2BJ7ekPGWjNGw9j09T5KGPKKxQig==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@biomejs/cli-linux-x64-musl@2.4.5':
-    resolution: {integrity: sha512-NlKa7GpbQmNhZf9kakQeddqZyT7itN7jjWdakELeXyTU3pg/83fTysRRDPJD0akTfKDl6vZYNT9Zqn4MYZVBOA==}
+  '@biomejs/cli-linux-x64-musl@2.4.8':
+    resolution: {integrity: sha512-Gi8quv8MEuDdKaPFtS2XjEnMqODPsRg6POT6KhoP+VrkNb+T2ywunVB+TvOU0LX1jAZzfBr+3V1mIbBhzAMKvw==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@biomejs/cli-linux-x64@2.4.5':
-    resolution: {integrity: sha512-NdODlSugMzTlENPTa4z0xB82dTUlCpsrOxc43///aNkTLblIYH4XpYflBbf5ySlQuP8AA4AZd1qXhV07IdrHdQ==}
+  '@biomejs/cli-linux-x64@2.4.8':
+    resolution: {integrity: sha512-PdKXspVEaMCQLjtZCn6vfSck/li4KX9KGwSDbZdgIqlrizJ2MnMcE3TvHa2tVfXNmbjMikzcfJpuPWH695yJrw==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@biomejs/cli-win32-arm64@2.4.5':
-    resolution: {integrity: sha512-EBfrTqRIWOFSd7CQb/0ttjHMR88zm3hGravnDwUA9wHAaCAYsULKDebWcN5RmrEo1KBtl/gDVJMrFjNR0pdGUw==}
+  '@biomejs/cli-win32-arm64@2.4.8':
+    resolution: {integrity: sha512-LoFatS0tnHv6KkCVpIy3qZCih+MxUMvdYiPWLHRri7mhi2vyOOs8OrbZBcLTUEWCS+ktO72nZMy4F96oMhkOHQ==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [win32]
 
-  '@biomejs/cli-win32-x64@2.4.5':
-    resolution: {integrity: sha512-Pmhv9zT95YzECfjEHNl3mN9Vhusw9VA5KHY0ZvlGsxsjwS5cb7vpRnHzJIv0vG7jB0JI7xEaMH9ddfZm/RozBw==}
+  '@biomejs/cli-win32-x64@2.4.8':
+    resolution: {integrity: sha512-vAn7iXDoUbqFXqVocuq1sMYAd33p8+mmurqJkWl6CtIhobd/O6moe4rY5AJvzbunn/qZCdiDVcveqtkFh1e7Hg==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [win32]
 
-  '@build-script/autoindex@0.0.16':
-    resolution: {integrity: sha512-wJad9ujaftfw7NMHoI3K66tCUN1+PRY7CO59QSjCXIPs0Cf2/gUlm5X2YIxrlp3VA9gtcSQMzJSkE68rRIB21g==}
+  '@build-script/autoindex@0.0.20':
+    resolution: {integrity: sha512-hrvNsmjQzbgEUommIEvY3N2mWCBuJlYtiHG8abvzShCPFYFJtlNIeQL7cCotkRn4mtmF3SWZCH+8uLU3CzQrfg==}
     hasBin: true
 
-  '@build-script/baseline-rig@1.1.1':
-    resolution: {integrity: sha512-IEkG7RBQkLTxbRj2OSgqX4+858tgNiSKWX/8u5GdhPhBkVLVIBizGV5ZN4TwdAVGjJxWr/imVWGtK+rAlT1h2w==}
+  '@build-script/baseline-rig@1.1.2':
+    resolution: {integrity: sha512-Aw6g82VFDi087mjaHrbKgtfwJFRem1FcE0prH6g0+YWHF+UmGetCEDQEB6/ZNOH2zydK2+02UgaR02OFF7ZLdw==}
 
-  '@build-script/monorepo-lib@0.0.17':
-    resolution: {integrity: sha512-ecQySGBhN65Msct0w+j6cdXHXVI5q61Ox1OJmXCWC9/v+FXu//x7NNA0cvvAw19vY6rsoCpdcshwBjOJ+bmoVA==}
+  '@build-script/monorepo-lib@0.0.23':
+    resolution: {integrity: sha512-VJBemStbyrkfZj6nW/+nFscXHK12dR2B6gaSBjjuTbU8iOEtZsDOTR58Z/8ycclfQtashUrdWEPnZuxNcqr68Q==}
     hasBin: true
 
-  '@build-script/package-tools@0.0.19':
-    resolution: {integrity: sha512-493GodMiBkbzNI+jUxMLtR+trh94Ds4Fd9m30LHDevCgId5m5/cYo26+lP/CHF+3xPGgmo1Ja/vkrGRCXf4nvQ==}
+  '@build-script/package-tools@0.0.23':
+    resolution: {integrity: sha512-u9KPptT2Di1zcaEOU1Wq4PDzGjv3IDvYKtt12QxvQv4h1yhKWevBZTnZlqHH29MLs5bz3XurDrlIXgZsbe6BtQ==}
     hasBin: true
 
-  '@build-script/rushstack-config-loader@0.0.31':
-    resolution: {integrity: sha512-AuyBlq5mqeQ7aYyjnmVZlmJ1hmdIMKZiFOjCYG4uA3FF9dsH07ZoOHYpmc2ANbftt+984gIp9V5g5bJsUjBy1Q==}
+  '@build-script/rushstack-config-loader@0.0.35':
+    resolution: {integrity: sha512-UQeoVFyTg+Q0m8JhASGK77ZWTJuJEov5tXPqHXl9XptZHOHv4X4nvKOY904HzErwp3nqvf2QgBFqqsH/FK/C5Q==}
 
   '@gar/promise-retry@1.0.2':
     resolution: {integrity: sha512-Lm/ZLhDZcBECta3TmCQSngiQykFdfw+QtI1/GYMsZd4l3nG+P8WLB16XuS7WaBGLQ+9E+cOcWQsth9cayuGt8g==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@idlebox/args@0.0.22':
-    resolution: {integrity: sha512-ZaPcrdtvaEZbPGwE80kPkyi0n0aBIq+om7S746IuonHZ5Yk39R35TXWdM0QvuzOQ110IeZkxSe7qcIc0XgyaTw==}
+  '@idlebox/args@0.0.26':
+    resolution: {integrity: sha512-7N+ZfX4Gb45lq4HigCjF03nfdMC3srx9WL2AFwGATGvtyLfVa9PJFvhqun3sm5TRD2hGe+tcNzp60Gv1ZRuQZg==}
 
-  '@idlebox/args@0.0.23':
-    resolution: {integrity: sha512-wub223YUq/iUeG6sod2u9d6dOvcDUehTu3nwEHBRwTFLq1M2D31Xdv85uhCFT6IU5B9Q2oNuTiHbyXFbY4+NtA==}
+  '@idlebox/chokidar@0.1.16':
+    resolution: {integrity: sha512-7tU2TMSAh6GGgJb6ADMJX1HS4ol50SFCX+pw89aYTfcdGAaxrH++J6lw/GlNYKukO3ZCyJYX2uilpQ1C/zAwcA==}
 
-  '@idlebox/chokidar@0.1.14':
-    resolution: {integrity: sha512-/UmnGe3aFAuS2bww5blImswzJi+Oo+ClWKcK9r7NF9Ag/FkND321kyiS6nEfmYO2OBvXulH4Kj4xIz26xHpa4w==}
+  '@idlebox/cli-help-builder@0.0.10':
+    resolution: {integrity: sha512-foAy+21dgcTYGLVoDuCCHTznFbCorhuMU75JAtK9D/3kNxW7PZTPS2uQVHcr8P56K01hJ09DHvscx6zMWdAdrA==}
 
-  '@idlebox/cli-help-builder@0.0.8':
-    resolution: {integrity: sha512-vhMP7a52wwpj3nD6olj7RSwMsRPPqA3SkAVW094SmHHS+DtgZQAlr4SW3sQVmk3Sa+OgLlgP1YdPpoLsxq4WIQ==}
-
-  '@idlebox/cli@0.0.11':
-    resolution: {integrity: sha512-HBPnt4eEigMfE0oqjOESpN3R8F8KcKzy8dbtl6ZPtknGlwY2oZ1M67qSAwwwyavbQ+B7+6kcsP76zR7dWDvgHg==}
+  '@idlebox/cli@0.0.13':
+    resolution: {integrity: sha512-5H7uq+Fgw36h9kWwZe6PaH6sAPrc/P0zH3YEIIvXIQVmgpjq0/gtMhRJCzebbafrnr1Sj+PCccseC1CS/Iiiag==}
     peerDependencies:
-      '@idlebox/cli-static-generator': ^0.0.10
+      '@idlebox/cli-static-generator': ^0.0.12
     peerDependenciesMeta:
       '@idlebox/cli-static-generator':
         optional: true
 
-  '@idlebox/deepmerge@0.0.10':
-    resolution: {integrity: sha512-uNLHg6WCc+usyQEYaEP1G5fYVNub2bAhk36o3wjVhRm7NE4OR+Uqmc2mbIAqW3pRL3EOD08PekhRk9kBDNPhzQ==}
+  '@idlebox/common@1.5.18':
+    resolution: {integrity: sha512-yq55JKKIQyQVtEtDBbbQYSMC+HLujrednVCpaKK2Se+7LvuwN/B3ocYb4PVUxcIaKuYWx7m5tR7nAhcpYjWCjQ==}
 
-  '@idlebox/dependency-graph@0.0.15':
-    resolution: {integrity: sha512-kj/WOi0nni0UE2Zr6sLOsSSNCOos/HBaPQBCgbxtkREwsxiS3HW3PNNiUX3swD7E/LhYm58U2ZBaavADSldsBA==}
+  '@idlebox/deepmerge@0.0.13':
+    resolution: {integrity: sha512-skRbS0bZHha7VWms6L75IrREf0QUdHBQ1WaDKHuuqt9aEqr+U/kmIR1Ms6vk22gIf8NePIvLishNzyBcd8BBOw==}
 
-  '@idlebox/ensure-symlink@1.0.39':
-    resolution: {integrity: sha512-+27MJl6zUXNThWWgTV28IguYE3jA0/YAnBaROEm+/uwuLd8ufueniN1AvNlV9gP+96dBR+rtZliNdVICp52InA==}
+  '@idlebox/dependency-graph@0.0.20':
+    resolution: {integrity: sha512-U/oThodwMg0V+WT10EendC6hfQfQE6IHk9tWI2XK3cXWoSCh+7+60vH7ib9CUc+vT9aioCiCYINlE13YUE6ugQ==}
 
-  '@idlebox/errors@0.1.14':
-    resolution: {integrity: sha512-uBpLR7GwObW9C6Bgl0895aNq9bmFvhp2Qpuojit49ZDkWl4eRzVmpV9SnQ+BKM1LPX8dwWIylREqMmCXDtnYgA==}
+  '@idlebox/ensure-symlink@1.0.40':
+    resolution: {integrity: sha512-/DpXZkjNomoYzBpeUlmvBAGhEz+tymu8WsRZyRpHEULjdpQ5DXzdi4B7GpPldd3dJHxKDkCXW5CRQXt9ywaAgQ==}
 
-  '@idlebox/json-edit@0.0.10':
-    resolution: {integrity: sha512-mDh8q9qUVhbQ3Wj6A9+SNsN4ca+UvLR8QlnWyNrnv/fT1k3hYa/Mxd+BgzG7GLWmfx5nFXDs7sbOHukiQNNicg==}
+  '@idlebox/errors@0.1.17':
+    resolution: {integrity: sha512-hPOM/b7amUESfK4NdSwjoVvXyWLozAwX1/YddHLji2qoTol+BqvLZsUGQ3NdmzyHEBEVxgcqCUNMauDOTwbWkg==}
 
-  '@idlebox/json-extends-loader@1.0.29':
-    resolution: {integrity: sha512-QrRWGJ8MJTcWEGiHP/SfRS1SgOJWGWuFDFcBnq13d/3eOXdoQ1m2LusgvrCTXZVpNLTlG5BNqmeIc3DXYYwXIw==}
+  '@idlebox/json-edit@0.0.14':
+    resolution: {integrity: sha512-JFzSAp/Uf4tD6vZyRj6hRfuAn6HDJLWZUwybJROxK+5bO8E67SjTgvR3EM6sXRNsPfshfq+yz63fe1B1ey35nQ==}
 
-  '@idlebox/logger@0.0.16':
-    resolution: {integrity: sha512-t4MW92RlPYoHm8cA0MBG4pz4WjNQ/Fi5JLTtp3SC/oX/uE7+Q2M1NPku1wWXNZJJsKZGIMak24FamzcUfa5Q1w==}
+  '@idlebox/json-extends-loader@1.0.33':
+    resolution: {integrity: sha512-4COK60J6vk7orh8jmSilNNmGum3Wtnrl3HVhoIEavUwybe1OYkUNvN0v3dyqDjLo9LtfDSvhTSC75Jjq+m+a2A==}
 
-  '@idlebox/node-error-codes@0.1.13':
-    resolution: {integrity: sha512-Ak7yCS96+CiaDFG/AksrZh0P/cSIrd0EFLAjv9ms7BBJG9uGITsLVMjRnxb6F9VOYuprIx/e1G4i1DpoWjXgeQ==}
+  '@idlebox/logger@0.0.20':
+    resolution: {integrity: sha512-w3wQ8mwNcjsFhOk3E1FlqCRYr9DzdsdOieDUOg5VrULZEUkhqPo6bH+ASzyYh8zHpbGHlekJfFRtS8yPLmGsiA==}
 
-  '@idlebox/node@1.4.24':
-    resolution: {integrity: sha512-ROdAu8j1W57+A5s5VBx/C62TQH1w9FusoA+B3fHCUlqaQ+Z5wrGZVAA+zbusxe6mqwHQLajPjtvxjW46ruO3vA==}
+  '@idlebox/logger@0.0.22':
+    resolution: {integrity: sha512-wfjvF+3AISBZLMkfEeC6oVYe+lZwhwEYl966hGDo9NwcqQFD8PKKgNTSJgxf55ScqrE11EBSH3VXmYWCZkDOLQ==}
 
-  '@idlebox/source-map-support@0.0.16':
-    resolution: {integrity: sha512-w/SRdfzN7R6whJjJwM/aVURNwxLYO7LY2wEQsc/TQdZ048uuiFhdyRd5M55M26ujVjHZExOD0stQWK4U4y4svQ==}
+  '@idlebox/node-error-codes@0.1.16':
+    resolution: {integrity: sha512-NpwhNCHcpTAjFeoE71NLcdIn78+w2GobHD5h6VyvDofzEc6+i5OJlhEe68+HwIMY1I9fgda7Zdz2imKaENOf8A==}
 
-  '@idlebox/tsconfig-loader@1.0.26':
-    resolution: {integrity: sha512-HCXcxQ0HznMNVQo5yIYCYom/DsnXN/G8YxcSRXJSfeF/E0XWaOnPoFxK+kAXSc5V+4m+1lHB0CxqXuEb1CqLWg==}
+  '@idlebox/node@1.4.27':
+    resolution: {integrity: sha512-QZFzjkodKChvejkdhDNbThkw4ZcJ2a69aefk4flLlTCaYxNYrxyCqm+IvCo4b1Jpi6TVCZ+PouPrt8ypQWLA9Q==}
+
+  '@idlebox/source-map-support@0.0.19':
+    resolution: {integrity: sha512-0XKSSwNY46/f1ABEEXakS6gatHPH09FprFTF7zhkh+4gKRQ4JPvJ6UqwHKk8wgFSOFhopPza/ScXO5dTqmaxiQ==}
+
+  '@idlebox/tsconfig-loader@1.0.28':
+    resolution: {integrity: sha512-i0uv7tjOBe4GEPUOOkfrvfZeQ+y/8BcWKbO8NOZqCLyXKw9Vuo7CWqCwHtHiWo1rgp35hBxhAslx0gyvyzQgbQ==}
     peerDependencies:
       typescript: ^5.8.2
 
-  '@idlebox/typescript-surface-analyzer@0.0.36':
-    resolution: {integrity: sha512-pexo7FWuRKsHwGf2QvcbpEUx/b019U9YZkgFuFovxAugRSTg9cUhvaFT1tUw5EyWK8eBnlroXcu5N6lUXGwroA==}
+  '@idlebox/typescript-surface-analyzer@0.0.41':
+    resolution: {integrity: sha512-jixp8qjrJvh27yZGlG2ffnvCTha0VkjU8UutBRtwlgs7OaXD/qrROfTjOZy5m8twGp1M4ZVv33nlFdPPOobAbQ==}
 
-  '@idlebox/unshare@0.0.9':
-    resolution: {integrity: sha512-mZCvBGyI5sV6F3/y209UmT/R8kOFRUc/w0lPDtALk/gd4i+mC3Tyt0gZkGq+iBSxgRHf2QRxjnEKTmeT/fXbKg==}
+  '@idlebox/unshare@0.0.12':
+    resolution: {integrity: sha512-+pdob0nvw7w/QBET+WYjOOnALPTgIYcuQAKvkhu2DhgGN3fHoRa19aiC30IioTsfjbYBaA4xcSUrLcyHk/lbFQ==}
 
   '@isaacs/fs-minipass@4.0.1':
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
     engines: {node: '>=18.0.0'}
 
-  '@mpis/client@0.0.16':
-    resolution: {integrity: sha512-JWRNN+9DRhb4/3dT1g61xCnJ7/ZUxteolLBSvcvVjdLE96ek7V5kNjHEg5/VClMV0GiMUeebulkPYLV+5xxfcg==}
+  '@mpis/client@0.0.21':
+    resolution: {integrity: sha512-GgwpT8Il0y2tRx8i2pbqD9c7x4w+SWUqKv2iY68glomLBiMX1UKO1AftlGF7sw8e50PzVDM0FdxPT8mJS7nYxg==}
     hasBin: true
 
-  '@mpis/shared@0.0.11':
-    resolution: {integrity: sha512-PeGndwnokMqbT2kP5GrBmD6HzxyZll/ZKBtB5seFkQqzsA6zTM+LQHCOZDrcp0tybmeiQAkOg/sNHKQFWdpn0g==}
+  '@mpis/shared@0.0.13':
+    resolution: {integrity: sha512-mxfhi2Cck2GxFiIie0HT6VDMoZpTHQ+De9HYQ9qq+T3NhZpNXractgYMzKoQn61oHk3kKEiwt4M1QRrmIVMnAw==}
 
   '@npmcli/agent@4.0.0':
     resolution: {integrity: sha512-kAQTcEN9E8ERLVg5AsGwLNoFb+oEG6engbqAU2P43gD4JEIkNGMHdVQ096FsOAAYpZPB0RSt0zgInKIAS1l5QA==}
@@ -536,14 +538,14 @@ packages:
     resolution: {integrity: sha512-Y8cK9aggNRsqJVaKUlEYs4s7CvQ1b1ta2DVPyAimb0I2qhzjNk+A+mxvll/klL0RlfuIUei8BF7YWiua4kQqww==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@types/debug@4.1.12':
-    resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
+  '@types/debug@4.1.13':
+    resolution: {integrity: sha512-KSVgmQmzMwPlmtljOomayoR89W4FynCAi3E8PPs7vmDVPe84hT+vGPKkJfThkmXs0x0jAaa9U8uW8bbfyS2fWw==}
 
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
-  '@types/node@25.3.3':
-    resolution: {integrity: sha512-DpzbrH7wIcBaJibpKo9nnSQL0MTRdnWttGyE5haGwK86xgMOkFLp7vEyfQPGLOJh5wNYiJ3V9PmUMDhV9u8kkQ==}
+  '@types/node@25.5.0':
+    resolution: {integrity: sha512-jp2P3tQMSxWugkCUKLRPVUpGaL5MVFwF8RDuSRztfwgN1wmqJeMSbKlnEtQqU8UrhTmzEmZdu2I6v2dpp7XIxw==}
 
   '@types/source-map-support@0.5.10':
     resolution: {integrity: sha512-tgVP2H469x9zq34Z0m/fgPewGhg/MLClalNOiPIzQlXrSS2YrKu/xCdSCKnEDwkFha51VKEKB6A9wW26/ZNwzA==}
@@ -605,8 +607,8 @@ packages:
   buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
 
-  cacache@20.0.3:
-    resolution: {integrity: sha512-3pUp4e8hv07k1QlijZu6Kn7c9+ZpWWk4j3F8N3xPuCExULobqJydKYOTj1FTq58srkJsXvO7LbGAH4C0ZU3WGw==}
+  cacache@20.0.4:
+    resolution: {integrity: sha512-M3Lab8NPYlZU2exsL3bMVvMrMqgwCnMWfdZbK28bn3pK6APT/Te/I8hjRPNu1uwORY9a1eEQoifXbKPQMfMTOA==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
   call-bind-apply-helpers@1.0.2:
@@ -636,8 +638,8 @@ packages:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
     engines: {node: '>=18'}
 
-  cjke-strings@1.1.14:
-    resolution: {integrity: sha512-AACdppaX6vqZRpeZPZLTJHDoy46lTKIUsrB7hOFCL0reXnu2U+9lsDszpHgo+fgFT9rUbDa4WwApfUp4+a0sUg==}
+  cjke-strings@1.1.17:
+    resolution: {integrity: sha512-BJiOomOkmmx8Y1VlaLwLy9YVOJ152VsX9Il4aFa0B5rKK0NmDR4bIp91lIia/vfCK+GkaM0poC2Q/wjAm2/bQw==}
 
   comment-json@4.6.2:
     resolution: {integrity: sha512-R2rze/hDX30uul4NZoIZ76ImSJLFxn/1/ZxtKC1L77y2X1k+yYu1joKbAtMA2Fg3hZrTOiw0I5mwVMo0cf250w==}
@@ -828,10 +830,6 @@ packages:
   import-meta-resolve@4.2.0:
     resolution: {integrity: sha512-Iqv2fzaTQN28s/FwZAoFq0ZSs/7hMAHJVX+w8PZl3cY19Pxk6jFFalxQoIfW2826i/fDLXv8IiEZRIT0lDuWcg==}
 
-  imurmurhash@0.1.4:
-    resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
-    engines: {node: '>=0.8.19'}
-
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
 
@@ -915,8 +913,8 @@ packages:
     resolution: {integrity: sha512-ESL2CrkS/2wTPfuend7Zhkzo2u0daGJ/A2VucJOgQ/C48S/zB8MMeMHSGKYpXhIjbPxfuezITkaBH1wqv00DDQ==}
     engines: {node: 20 || >=22}
 
-  make-fetch-happen@15.0.4:
-    resolution: {integrity: sha512-vM2sG+wbVeVGYcCm16mM3d5fuem9oC28n436HjsGO3LcxoTI8LNVa4rwZDn3f76+cWyT4GGJDxjTYU1I2nr6zw==}
+  make-fetch-happen@15.0.5:
+    resolution: {integrity: sha512-uCbIa8jWWmQZt4dSnEStkVC6gdakiinAm4PiGsywIkguF0eWMdcjDz0ECYhUolFU3pFLOev9VNPCEygydXnddg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
   math-intrinsics@1.1.0:
@@ -1038,8 +1036,8 @@ packages:
   package-json-from-dist@1.0.1:
     resolution: {integrity: sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==}
 
-  pacote@21.4.0:
-    resolution: {integrity: sha512-DR7mn7HUOomAX1BORnpYy678qVIidbvOojkBscqy27dRKN+s/hLeQT1MeYYrx1Cxh62jyKjiWiDV7RTTqB+ZEQ==}
+  pacote@21.5.0:
+    resolution: {integrity: sha512-VtZ0SB8mb5Tzw3dXDfVAIjhyVKUHZkS/ZH9/5mpKenwC9sFOXNI0JI7kEF7IMkwOnsWMFrvAZHzx1T5fmrp9FQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
     hasBin: true
 
@@ -1288,14 +1286,6 @@ packages:
     resolution: {integrity: sha512-+QBBXBCvifc56fsbuxZQ6Sic3wqqc3WWaqxs58gvJrcOuN83HGTCwz3oS5phzU9LthRNE9VrJCFCLUgHeeFnfA==}
     engines: {node: '>=18'}
 
-  unique-filename@5.0.0:
-    resolution: {integrity: sha512-2RaJTAvAb4owyjllTfXzFClJ7WsGxlykkPvCr9pA//LD9goVq+m4PPAeBgNodGZ7nSrntT/auWpJ6Y5IFXcfjg==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  unique-slug@6.0.0:
-    resolution: {integrity: sha512-4Lup7Ezn8W3d52/xBhZBVdx323ckxa7DEvd9kPQHppTkLoJXw6ltrBCyj5pnrxj0qKDxYMJ56CoxNuFCscdTiw==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -1345,52 +1335,52 @@ ignoredOptionalDependencies:
 
 snapshots:
 
-  '@biomejs/biome@2.4.5':
+  '@biomejs/biome@2.4.8':
     optionalDependencies:
-      '@biomejs/cli-darwin-arm64': 2.4.5
-      '@biomejs/cli-darwin-x64': 2.4.5
-      '@biomejs/cli-linux-arm64': 2.4.5
-      '@biomejs/cli-linux-arm64-musl': 2.4.5
-      '@biomejs/cli-linux-x64': 2.4.5
-      '@biomejs/cli-linux-x64-musl': 2.4.5
-      '@biomejs/cli-win32-arm64': 2.4.5
-      '@biomejs/cli-win32-x64': 2.4.5
+      '@biomejs/cli-darwin-arm64': 2.4.8
+      '@biomejs/cli-darwin-x64': 2.4.8
+      '@biomejs/cli-linux-arm64': 2.4.8
+      '@biomejs/cli-linux-arm64-musl': 2.4.8
+      '@biomejs/cli-linux-x64': 2.4.8
+      '@biomejs/cli-linux-x64-musl': 2.4.8
+      '@biomejs/cli-win32-arm64': 2.4.8
+      '@biomejs/cli-win32-x64': 2.4.8
 
-  '@biomejs/cli-darwin-arm64@2.4.5':
+  '@biomejs/cli-darwin-arm64@2.4.8':
     optional: true
 
-  '@biomejs/cli-darwin-x64@2.4.5':
+  '@biomejs/cli-darwin-x64@2.4.8':
     optional: true
 
-  '@biomejs/cli-linux-arm64-musl@2.4.5':
+  '@biomejs/cli-linux-arm64-musl@2.4.8':
     optional: true
 
-  '@biomejs/cli-linux-arm64@2.4.5':
+  '@biomejs/cli-linux-arm64@2.4.8':
     optional: true
 
-  '@biomejs/cli-linux-x64-musl@2.4.5':
+  '@biomejs/cli-linux-x64-musl@2.4.8':
     optional: true
 
-  '@biomejs/cli-linux-x64@2.4.5':
+  '@biomejs/cli-linux-x64@2.4.8':
     optional: true
 
-  '@biomejs/cli-win32-arm64@2.4.5':
+  '@biomejs/cli-win32-arm64@2.4.8':
     optional: true
 
-  '@biomejs/cli-win32-x64@2.4.5':
+  '@biomejs/cli-win32-x64@2.4.8':
     optional: true
 
-  '@build-script/autoindex@0.0.16':
+  '@build-script/autoindex@0.0.20':
     dependencies:
-      '@build-script/rushstack-config-loader': 0.0.31(typescript@5.9.3)
-      '@idlebox/args': 0.0.22
-      '@idlebox/chokidar': 0.1.14
-      '@idlebox/common': link:../baobao/@idlebox/common
-      '@idlebox/logger': link:../baobao/@idlebox/logger
-      '@idlebox/node': 1.4.24
-      '@idlebox/source-map-support': 0.0.16
-      '@idlebox/typescript-surface-analyzer': 0.0.36
-      '@mpis/client': 0.0.16
+      '@build-script/rushstack-config-loader': 0.0.35(typescript@5.9.3)
+      '@idlebox/args': 0.0.26
+      '@idlebox/chokidar': 0.1.16
+      '@idlebox/common': 1.5.18
+      '@idlebox/logger': 0.0.22
+      '@idlebox/node': 1.4.27
+      '@idlebox/source-map-support': 0.0.19
+      '@idlebox/typescript-surface-analyzer': 0.0.41
+      '@mpis/client': 0.0.21
       comment-json: 4.6.2
       glob: 13.0.6
       tslib: 2.8.1
@@ -1398,47 +1388,50 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@build-script/baseline-rig@1.1.1': {}
+  '@build-script/baseline-rig@1.1.2': {}
 
-  '@build-script/monorepo-lib@0.0.17':
+  '@build-script/monorepo-lib@0.0.23':
     dependencies:
-      '@idlebox/common': link:../baobao/@idlebox/common
-      '@idlebox/json-edit': 0.0.10
-      '@idlebox/logger': link:../baobao/@idlebox/logger
-      '@idlebox/node': 1.4.24
-      '@idlebox/source-map-support': 0.0.16
+      '@idlebox/common': 1.5.18
+      '@idlebox/json-edit': 0.0.14
+      '@idlebox/logger': 0.0.22
+      '@idlebox/node': 1.4.27
+      '@idlebox/source-map-support': 0.0.19
       yaml: 2.8.2
+    transitivePeerDependencies:
+      - supports-color
 
-  '@build-script/package-tools@0.0.19':
+  '@build-script/package-tools@0.0.23':
     dependencies:
-      '@build-script/monorepo-lib': 0.0.17
-      '@idlebox/cli': 0.0.11
-      '@idlebox/common': link:../baobao/@idlebox/common
-      '@idlebox/dependency-graph': 0.0.15
-      '@idlebox/ensure-symlink': 1.0.39
-      '@idlebox/json-edit': 0.0.10
-      '@idlebox/node': 1.4.24
-      '@idlebox/source-map-support': 0.0.16
-      '@idlebox/unshare': 0.0.9
-      cacache: 20.0.3
+      '@build-script/monorepo-lib': 0.0.23
+      '@idlebox/cli': 0.0.13
+      '@idlebox/common': 1.5.18
+      '@idlebox/dependency-graph': 0.0.20
+      '@idlebox/ensure-symlink': 1.0.40
+      '@idlebox/json-edit': 0.0.14
+      '@idlebox/node': 1.4.27
+      '@idlebox/source-map-support': 0.0.19
+      '@idlebox/unshare': 0.0.12
+      cacache: 20.0.4
       execa: 9.6.1
-      make-fetch-happen: 15.0.4
+      make-fetch-happen: 15.0.5
       minimatch: 10.2.4
       npm-registry-fetch: 19.1.1
-      pacote: 21.4.0
+      pacote: 21.5.0
       semver: 7.7.4
       split-cmd: 1.1.0
       targz: 1.0.1
       tiny-async-pool: 2.1.0
+      yaml: 2.8.2
     transitivePeerDependencies:
       - '@idlebox/cli-static-generator'
       - supports-color
 
-  '@build-script/rushstack-config-loader@0.0.31(typescript@5.9.3)':
+  '@build-script/rushstack-config-loader@0.0.35(typescript@5.9.3)':
     dependencies:
-      '@idlebox/deepmerge': 0.0.10
-      '@idlebox/json-extends-loader': 1.0.29
-      '@idlebox/tsconfig-loader': 1.0.26(typescript@5.9.3)
+      '@idlebox/deepmerge': 0.0.13
+      '@idlebox/json-extends-loader': 1.0.33
+      '@idlebox/tsconfig-loader': 1.0.28(typescript@5.9.3)
       '@rushstack/rig-package': 0.6.0
       ajv: 8.18.0
       import-meta-resolve: 4.2.0
@@ -1449,112 +1442,136 @@ snapshots:
     dependencies:
       retry: 0.13.1
 
-  '@idlebox/args@0.0.22':
+  '@idlebox/args@0.0.26':
     dependencies:
-      '@idlebox/errors': 0.1.14
-      cjke-strings: 1.1.14
+      '@idlebox/errors': 0.1.17
+      cjke-strings: 1.1.17
 
-  '@idlebox/args@0.0.23':
-    dependencies:
-      '@idlebox/errors': 0.1.14
-      cjke-strings: 1.1.14
-
-  '@idlebox/chokidar@0.1.14':
+  '@idlebox/chokidar@0.1.16':
     dependencies:
       chokidar: 5.0.0
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
-  '@idlebox/cli-help-builder@0.0.8': {}
+  '@idlebox/cli-help-builder@0.0.10': {}
 
-  '@idlebox/cli@0.0.11':
+  '@idlebox/cli@0.0.13':
     dependencies:
-      '@idlebox/args': 0.0.22
-      '@idlebox/cli-help-builder': 0.0.8
-      '@idlebox/common': link:../baobao/@idlebox/common
-      '@idlebox/logger': link:../baobao/@idlebox/logger
-      '@idlebox/node': 1.4.24
-      '@idlebox/source-map-support': 0.0.16
+      '@idlebox/args': 0.0.26
+      '@idlebox/cli-help-builder': 0.0.10
+      '@idlebox/common': 1.5.18
+      '@idlebox/logger': 0.0.20
+      '@idlebox/node': 1.4.27
+      '@idlebox/source-map-support': 0.0.19
+    transitivePeerDependencies:
+      - supports-color
 
-  '@idlebox/deepmerge@0.0.10': {}
-
-  '@idlebox/dependency-graph@0.0.15':
+  '@idlebox/common@1.5.18':
     dependencies:
-      '@idlebox/common': link:../baobao/@idlebox/common
-      '@idlebox/logger': link:../baobao/@idlebox/logger
+      '@idlebox/errors': 0.1.17
+      debug: 4.4.3(supports-color@5.5.0)
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@idlebox/deepmerge@0.0.13': {}
+
+  '@idlebox/dependency-graph@0.0.20':
+    dependencies:
+      '@idlebox/common': 1.5.18
+      '@idlebox/logger': 0.0.22
       dependency-graph: 1.0.0
+    transitivePeerDependencies:
+      - supports-color
 
-  '@idlebox/ensure-symlink@1.0.39': {}
+  '@idlebox/ensure-symlink@1.0.40': {}
 
-  '@idlebox/errors@0.1.14':
+  '@idlebox/errors@0.1.17':
     dependencies:
-      '@idlebox/node-error-codes': 0.1.13
+      '@idlebox/node-error-codes': 0.1.16
 
-  '@idlebox/json-edit@0.0.10':
+  '@idlebox/json-edit@0.0.14':
     dependencies:
       comment-json: 4.6.2
       prettier: 3.8.1
 
-  '@idlebox/json-extends-loader@1.0.29':
+  '@idlebox/json-extends-loader@1.0.33':
     dependencies:
-      '@idlebox/deepmerge': 0.0.10
+      '@idlebox/deepmerge': 0.0.13
       comment-json: 4.6.2
       object-path: 0.11.8
       tslib: 2.8.1
 
-  '@idlebox/logger@0.0.16':
+  '@idlebox/logger@0.0.20':
     dependencies:
-      '@idlebox/common': link:../baobao/@idlebox/common
+      '@idlebox/common': 1.5.18
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
-  '@idlebox/node-error-codes@0.1.13': {}
-
-  '@idlebox/node@1.4.24':
+  '@idlebox/logger@0.0.22':
     dependencies:
-      '@idlebox/common': link:../baobao/@idlebox/common
-      '@idlebox/errors': 0.1.14
+      '@idlebox/common': 1.5.18
+      debug: 4.4.3(supports-color@5.5.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@idlebox/node-error-codes@0.1.16': {}
+
+  '@idlebox/node@1.4.27':
+    dependencies:
+      '@idlebox/common': 1.5.18
+      '@idlebox/errors': 0.1.17
       execa: 9.6.1
+    transitivePeerDependencies:
+      - supports-color
 
-  '@idlebox/source-map-support@0.0.16':
+  '@idlebox/source-map-support@0.0.19':
     dependencies:
-      '@idlebox/common': link:../baobao/@idlebox/common
+      '@idlebox/common': 1.5.18
       '@types/source-map-support': 0.5.10
       source-map-support: 0.5.21
+    transitivePeerDependencies:
+      - supports-color
 
-  '@idlebox/tsconfig-loader@1.0.26(typescript@5.9.3)':
+  '@idlebox/tsconfig-loader@1.0.28(typescript@5.9.3)':
     dependencies:
       typescript: 5.9.3
 
-  '@idlebox/typescript-surface-analyzer@0.0.36':
+  '@idlebox/typescript-surface-analyzer@0.0.41':
     dependencies:
-      '@idlebox/logger': link:../baobao/@idlebox/logger
-      '@idlebox/tsconfig-loader': 1.0.26(typescript@5.9.3)
+      '@idlebox/logger': 0.0.22
+      '@idlebox/tsconfig-loader': 1.0.28(typescript@5.9.3)
       minimatch: 10.2.4
       typescript: 5.9.3
+    transitivePeerDependencies:
+      - supports-color
 
-  '@idlebox/unshare@0.0.9':
+  '@idlebox/unshare@0.0.12':
     dependencies:
-      '@idlebox/node': 1.4.24
+      '@idlebox/node': 1.4.27
       execa: 9.6.1
+    transitivePeerDependencies:
+      - supports-color
 
   '@isaacs/fs-minipass@4.0.1':
     dependencies:
       minipass: 7.1.3
 
-  '@mpis/client@0.0.16':
+  '@mpis/client@0.0.21':
     dependencies:
-      '@idlebox/args': 0.0.22
-      '@idlebox/common': link:../baobao/@idlebox/common
-      '@idlebox/logger': link:../baobao/@idlebox/logger
-      '@idlebox/source-map-support': 0.0.16
-      '@mpis/shared': 0.0.11
+      '@idlebox/args': 0.0.26
+      '@idlebox/common': 1.5.18
+      '@idlebox/logger': 0.0.22
+      '@idlebox/source-map-support': 0.0.19
+      '@mpis/shared': 0.0.13
       execa: 9.6.1
       split2: 4.2.0
+    transitivePeerDependencies:
+      - supports-color
 
-  '@mpis/shared@0.0.11': {}
+  '@mpis/shared@0.0.13': {}
 
   '@npmcli/agent@4.0.0':
     dependencies:
@@ -1634,7 +1651,7 @@ snapshots:
       '@sigstore/bundle': 4.0.0
       '@sigstore/core': 3.1.0
       '@sigstore/protobuf-specs': 0.5.0
-      make-fetch-happen: 15.0.4
+      make-fetch-happen: 15.0.5
       proc-log: 6.1.0
       promise-retry: 2.0.1
     transitivePeerDependencies:
@@ -1662,13 +1679,13 @@ snapshots:
       '@tufjs/canonical-json': 2.0.0
       minimatch: 10.2.4
 
-  '@types/debug@4.1.12':
+  '@types/debug@4.1.13':
     dependencies:
       '@types/ms': 2.1.0
 
   '@types/ms@2.1.0': {}
 
-  '@types/node@25.3.3':
+  '@types/node@25.5.0':
     dependencies:
       undici-types: 7.18.2
 
@@ -1728,7 +1745,7 @@ snapshots:
 
   buffer-from@1.1.2: {}
 
-  cacache@20.0.3:
+  cacache@20.0.4:
     dependencies:
       '@npmcli/fs': 5.0.0
       fs-minipass: 3.0.3
@@ -1740,7 +1757,6 @@ snapshots:
       minipass-pipeline: 1.2.4
       p-map: 7.0.4
       ssri: 13.0.1
-      unique-filename: 5.0.0
 
   call-bind-apply-helpers@1.0.2:
     dependencies:
@@ -1777,7 +1793,7 @@ snapshots:
 
   chownr@3.0.0: {}
 
-  cjke-strings@1.1.14:
+  cjke-strings@1.1.17:
     dependencies:
       ansi-regex: 6.2.2
       emoji-regex: 10.6.0
@@ -1971,8 +1987,6 @@ snapshots:
 
   import-meta-resolve@4.2.0: {}
 
-  imurmurhash@0.1.4: {}
-
   inherits@2.0.4: {}
 
   ini@6.0.0: {}
@@ -2027,11 +2041,12 @@ snapshots:
 
   lru-cache@11.2.6: {}
 
-  make-fetch-happen@15.0.4:
+  make-fetch-happen@15.0.5:
     dependencies:
       '@gar/promise-retry': 1.0.2
       '@npmcli/agent': 4.0.0
-      cacache: 20.0.3
+      '@npmcli/redact': 4.0.0
+      cacache: 20.0.4
       http-cache-semantics: 4.2.0
       minipass: 7.1.3
       minipass-fetch: 5.0.2
@@ -2098,7 +2113,7 @@ snapshots:
       env-paths: 2.2.1
       exponential-backoff: 3.1.3
       graceful-fs: 4.2.11
-      make-fetch-happen: 15.0.4
+      make-fetch-happen: 15.0.5
       nopt: 9.0.0
       proc-log: 6.1.0
       semver: 7.7.4
@@ -2160,7 +2175,7 @@ snapshots:
     dependencies:
       '@npmcli/redact': 4.0.0
       jsonparse: 1.3.1
-      make-fetch-happen: 15.0.4
+      make-fetch-happen: 15.0.5
       minipass: 7.1.3
       minipass-fetch: 5.0.2
       minizlib: 3.1.0
@@ -2184,7 +2199,7 @@ snapshots:
 
   package-json-from-dist@1.0.1: {}
 
-  pacote@21.4.0:
+  pacote@21.5.0:
     dependencies:
       '@gar/promise-retry': 1.0.2
       '@npmcli/git': 7.0.2
@@ -2192,7 +2207,7 @@ snapshots:
       '@npmcli/package-json': 7.0.5
       '@npmcli/promise-spawn': 9.0.1
       '@npmcli/run-script': 10.0.4
-      cacache: 20.0.3
+      cacache: 20.0.4
       fs-minipass: 3.0.3
       minipass: 7.1.3
       npm-package-arg: 13.0.2
@@ -2428,7 +2443,7 @@ snapshots:
     dependencies:
       '@tufjs/models': 4.1.0
       debug: 4.4.3(supports-color@5.5.0)
-      make-fetch-happen: 15.0.4
+      make-fetch-happen: 15.0.5
     transitivePeerDependencies:
       - supports-color
 
@@ -2445,14 +2460,6 @@ snapshots:
   undici-types@7.18.2: {}
 
   unicorn-magic@0.3.0: {}
-
-  unique-filename@5.0.0:
-    dependencies:
-      unique-slug: 6.0.0
-
-  unique-slug@6.0.0:
-    dependencies:
-      imurmurhash: 0.1.4
 
   util-deprecate@1.0.2: {}
 

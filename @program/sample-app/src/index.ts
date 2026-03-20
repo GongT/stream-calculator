@@ -1,4 +1,4 @@
-import { FFTBandValue } from '@adapter/fft-band-value';
+import { FFT } from '@adapter/fft';
 import { SensorSine } from '@adapter/sensor-sine';
 import { startProcessing, type IAppHost } from '@core/core';
 
@@ -27,9 +27,8 @@ export async function startup(host: IAppHost) {
 	// 	sampleRate: 1000,
 	// })
 
-	const fft = new FFTBandValue({
-		name: '计算',
-		band: [490, 510],
+	const fft = new FFT({
+		name: 'fft1',
 	});
 
 	// const alert = new ValueAlert({

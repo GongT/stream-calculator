@@ -5,20 +5,20 @@
 		"outDir": "../lib",
 		"rootDir": "./",
 		"types": ["node"],
-		"noEmitOnError": false
+		"noEmitOnError": false,
 	},
 	"references": [
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@core/core/src/tsconfig.json"
+			"path": "../../../@core/core/src/tsconfig.json",
 		},
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@shared/testing/src/tsconfig.json"
+			"path": "../../../@shared/testing/src/tsconfig.json",
 		},
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@core/protocol/src/tsconfig.json"
-		}
-	]
+			"path": "../../../@core/protocol/src/tsconfig.json",
+		},
+	],
 }

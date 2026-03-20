@@ -9,13 +9,13 @@
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
-		"@idlebox/common": "^1.5.14",
-		"@idlebox/logger": "^0.0.16",
-		"@idlebox/node": "^1.4.24"
+		"@idlebox/common": "^1.5.18",
+		"@idlebox/logger": "^0.0.22",
+		"@idlebox/node": "^1.4.27"
 	},
 	"devDependencies": {
-		"@build-script/autoindex": "^0.0.16",
-		"@build-script/baseline-rig": "^1.1.1",
-		"@types/node": "^25.3.3"
+		"@build-script/autoindex": "^0.0.20",
+		"@build-script/baseline-rig": "^1.1.2",
+		"@types/node": "^25.5.0"
 	}
 }

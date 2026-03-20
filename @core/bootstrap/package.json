@@ -8,18 +8,18 @@
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
-		"@idlebox/args": "^0.0.23",
-		"@idlebox/common": "^1.5.14",
-		"@idlebox/logger": "^0.0.16",
-		"@idlebox/node": "^1.4.24",
-		"@idlebox/source-map-support": "^0.0.16",
+		"@idlebox/args": "^0.0.26",
+		"@idlebox/common": "^1.5.18",
+		"@idlebox/logger": "^0.0.22",
+		"@idlebox/node": "^1.4.27",
+		"@idlebox/source-map-support": "^0.0.19",
 		"@core/core": "workspace:^",
 		"@program/sample-app": "workspace:^",
 		"@shared/common": "workspace:^"
 	},
 	"devDependencies": {
-		"@build-script/baseline-rig": "^1.1.1",
+		"@build-script/baseline-rig": "^1.1.2",
 		"@core/protocol": "workspace:",
-		"@types/node": "^25.3.3"
+		"@types/node": "^25.5.0"
 	}
 }

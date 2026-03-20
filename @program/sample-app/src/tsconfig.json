@@ -4,24 +4,24 @@
 		"typeRoots": ["../node_modules/@types", "../node_modules"],
 		"outDir": "../lib",
 		"rootDir": "./",
-		"types": ["node"]
+		"types": ["node"],
 	},
 	"references": [
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@core/core/src/tsconfig.json"
+			"path": "../../../@core/core/src/tsconfig.json",
 		},
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@adapter/sensor-sine/src/tsconfig.json"
+			"path": "../../../@adapter/sensor-sine/src/tsconfig.json",
 		},
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@adapter/sensor-noise/src/tsconfig.json"
+			"path": "../../../@adapter/sensor-noise/src/tsconfig.json",
 		},
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@adapter/fft-band-value/src/tsconfig.json"
-		}
-	]
+			"path": "../../../@adapter/fft/src/tsconfig.json",
+		},
+	],
 }

@@ -4,13 +4,13 @@
 		"typeRoots": ["../node_modules/@types", "../node_modules"],
 		"outDir": "../lib",
 		"rootDir": "./",
-		"types": ["node"]
+		"types": ["node"],
 	},
 	"include": ["**/*.ts"],
 	"references": [
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../protocol/src/tsconfig.json"
-		}
-	]
+			"path": "../../protocol/src/tsconfig.json",
+		},
+	],
 }

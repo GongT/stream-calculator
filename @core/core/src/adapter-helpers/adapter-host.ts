@@ -10,7 +10,7 @@ import {
 import { createLogger } from '@idlebox/logger';
 import { reflectBinding } from '../package-reflect/binding.js';
 import type { BaseNodeConstructor } from '../stream/node.base.js';
-import { Adapter, IBaseAdapterOptions } from './adapter.js';
+import { Adapter, type IBaseAdapterOptions } from './adapter.js';
 
 type AdapterConstructor = new (options: IBaseAdapterOptions) => Adapter;
 

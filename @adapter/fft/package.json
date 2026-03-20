@@ -1,6 +1,6 @@
 {
-	"name": "@adapter/fft-band-value",
-	"description": "fft特征值提取",
+	"name": "@adapter/fft",
+	"description": "傅里叶变换",
 	"exports": "./lib/index.js",
 	"type": "module",
 	"scripts": {
@@ -11,12 +11,12 @@
 	"dependencies": {
 		"@core/core": "workspace:^",
 		"@core/protocol": "workspace:^",
-		"@idlebox/common": "^1.5.14",
+		"@idlebox/common": "^1.5.18",
 		"@shared/testing": "workspace:^",
 		"execa": "^9.6.1"
 	},
 	"devDependencies": {
-		"@build-script/baseline-rig": "^1.1.1",
-		"@types/node": "^25.3.3"
+		"@build-script/baseline-rig": "^1.1.2",
+		"@types/node": "^25.5.0"
 	}
 }

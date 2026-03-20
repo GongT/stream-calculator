@@ -10,10 +10,10 @@
 	},
 	"dependencies": {
 		"@core/core": "workspace:^",
-		"@idlebox/common": "^1.5.14"
+		"@idlebox/common": "^1.5.18"
 	},
 	"devDependencies": {
-		"@build-script/baseline-rig": "^1.1.1",
-		"@types/node": "^25.3.3"
+		"@build-script/baseline-rig": "^1.1.2",
+		"@types/node": "^25.5.0"
 	}
 }

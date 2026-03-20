@@ -7,10 +7,6 @@ import { resolve } from 'node:path';
 
 interface IOptions {
 	readonly name: string;
-	/**
-	 * 频率范围，单位Hz
-	 */
-	readonly band: [number, number];
 }
 
 const spawnOptions = {
@@ -18,10 +14,9 @@ const spawnOptions = {
 	encoding: 'utf8',
 } as const;
 
-export class FFTBandValue extends CalculatorNode<Int32Array> {
+export class FFT extends CalculatorNode<Int32Array> {
 	protected override expectDataType = Int32Array;
 
-	private readonly frequencyRange: [number, number];
 	private readonly communication!: ProtocolStream;
 	private readonly name: string;
 
@@ -29,15 +24,13 @@ export class FFTBandValue extends CalculatorNode<Int32Array> {
 		super(options.name);
 
 		this.name = options.name;
-
-		this.frequencyRange = options.band;
 	}
 
 	protected override async initialize() {
 		const python = await getPython();
 		const pyFile = resolve(import.meta.dirname, '../python/fft.py');
 
-		const process = execa({ ...spawnOptions })`${python} ${pyFile} ${this.frequencyRange[0]} ${this.frequencyRange[1]}`;
+		const process = execa({ ...spawnOptions })`${python} ${pyFile}`;
 		this._register(
 			functionToDisposable(function killProcess() {
 				process.kill();
@@ -57,7 +50,7 @@ export class FFTBandValue extends CalculatorNode<Int32Array> {
 
 		const socket = await createProtocolSocket({
 			address: `[::0]:${listenPort}`,
-			agentName: `fft-band-value-server-${this.name}`,
+			agentName: `fft-server-${this.name}`,
 			agentId: 0,
 			type: 'udp',
 		});
@@ -67,10 +60,10 @@ export class FFTBandValue extends CalculatorNode<Int32Array> {
 	override process(data: IDataFrame<Int32Array>): void {}
 }
 
-adapterHost.addNode(FFTBandValue);
+adapterHost.addNode(FFT);
 
-class FFTBandValueAdapter extends Adapter {
+class FFTAdapter extends Adapter {
 	public override activate(): void | Promise<void> {}
 }
 
-adapterHost.register(FFTBandValueAdapter);
+adapterHost.register(FFTAdapter);
