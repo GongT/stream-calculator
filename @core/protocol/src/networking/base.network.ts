@@ -1,21 +1,26 @@
 import assert from 'node:assert';
-import type { INetworkEncode, IProtocol } from '../common/type.network.js';
-import { getActionPayloadType } from './packet.decoupling.js';
+import type { INetworkEncode, INetworkPayload, IProtocol } from '../common/type.network.js';
+import { getActionPayloadType, type Action } from './packet.decoupling.js';
 
 const VERSION = 1;
 
 const END_MARKER = Buffer.from('END', 'ascii');
+const START_MARKER = Buffer.from('START', 'ascii');
 
 export class NetworkPacket implements INetworkEncode, IProtocol {
-	public readonly payload: INetworkEncode;
+	private _payload!: INetworkPayload;
 
 	constructor(
 		public sender_agent: string = '',
 		public sender_id: number = 0,
-		public action: number = 0,
+		action_or_payload?: INetworkPayload | Action,
 	) {
-		const Class = getActionPayloadType(action);
-		this.payload = new Class();
+		if (typeof action_or_payload === 'number') {
+			const Class = getActionPayloadType(action_or_payload);
+			this._payload = new Class();
+		} else if (action_or_payload) {
+			this._payload = action_or_payload;
+		}
 
 		const saBuff = Buffer.from(sender_agent, 'utf8');
 		if (saBuff.length !== saBuff.byteLength) {
@@ -27,17 +32,30 @@ export class NetworkPacket implements INetworkEncode, IProtocol {
 		this.sender_agent = sender_agent;
 	}
 
+	public get payload(): INetworkEncode {
+		return this._payload;
+	}
+
+	public get action(): Action {
+		return this._payload.kind;
+	}
+
 	payloadAs<T extends INetworkEncode>(Type: new () => T): T {
-		if (!(this.payload instanceof Type)) {
-			throw new Error(`载荷类型不匹配，期望 ${Type.name}，但实际为 ${this.payload.constructor.name}`);
+		if (!(this._payload instanceof Type)) {
+			throw new Error(`载荷类型不匹配，期望 ${Type.name}，但实际为 ${this._payload.constructor.name}`);
 		}
-		return this.payload as T;
+		return this._payload as T;
+	}
+
+	replacePayload(payload: INetworkPayload): void {
+		this._payload = payload;
 	}
 
 	encode(): Buffer {
-		const payload = this.payload.encode();
+		const payload = this._payload.encode();
 		const totalLength =
-			4 + // frame_length
+			4 + // frame_length 自身
+			5 + // START
 			1 + // version
 			1 + // sender_agent_length
 			this.sender_agent.length + // sender_agent
@@ -46,10 +64,14 @@ export class NetworkPacket implements INetworkEncode, IProtocol {
 			4 + // payload_length
 			payload.byteLength +
 			3; // END
+
 		const r = Buffer.allocUnsafe(totalLength);
 		let offset = 0;
-		r.writeUInt32BE(totalLength, offset); // frame_length
+		r.writeUInt32BE(totalLength - 4, offset); // frame_length 不包含自身的长度
 		offset += 4;
+
+		START_MARKER.copy(r, offset); // START
+		offset += START_MARKER.length;
 
 		r.writeUInt8(VERSION, offset); // version
 		offset += 1;
@@ -73,7 +95,7 @@ export class NetworkPacket implements INetworkEncode, IProtocol {
 		payload.copy(r, offset); // payload
 		offset += payload.byteLength;
 
-		END_MARKER.copy(r, offset);
+		END_MARKER.copy(r, offset); // END
 		offset += END_MARKER.length;
 
 		assert.equal(offset, totalLength, '编码长度计算错误');
@@ -83,6 +105,13 @@ export class NetworkPacket implements INetworkEncode, IProtocol {
 
 	decode(data: Buffer): void {
 		let offset = 0;
+
+		const start = data.subarray(offset, offset + START_MARKER.length);
+		if (start.compare(START_MARKER) !== 0) {
+			throw new Error('Invalid packet: missing or invalid START marker');
+		}
+		offset += START_MARKER.length;
+
 		const version = data.readUInt8(offset);
 		offset += 1;
 		if (version !== VERSION) {
@@ -98,20 +127,25 @@ export class NetworkPacket implements INetworkEncode, IProtocol {
 		this.sender_id = data.readUInt32BE(offset);
 		offset += 4;
 
-		this.action = data.readUInt32BE(offset);
+		const action = data.readUInt32BE(offset);
 		offset += 4;
 
 		const payload_length = data.readUInt32BE(offset);
 		offset += 4;
 
-		this.payload.decode(data.subarray(offset, offset + payload_length));
+		if (this._payload?.kind !== action) {
+			const Class = getActionPayloadType(action);
+			this._payload = new Class();
+		}
+		this._payload.decode(data.subarray(offset, offset + payload_length));
 		offset += payload_length;
 
 		const end = data.subarray(offset);
 		if (end.compare(END_MARKER) !== 0) {
 			throw new Error('Invalid packet: missing or invalid END marker');
 		}
+		offset += END_MARKER.length;
 
-		assert.equal(offset + END_MARKER.length, data.length, '解码长度计算错误');
+		assert.equal(offset, data.length, '解码长度计算错误');
 	}
 }

@@ -1,4 +1,6 @@
-import type { SupportedTypedArray } from './type.network.js';
+import * as _TypeArray from '../_internal/type.array.js';
+
+export { _TypeArray as TypeArray };
 
 /**
  * 基础类型定义，此定义仅用于nodejs程序，不涉及网络传输
@@ -8,7 +10,7 @@ export type TimestampT = number;
 /**
  * 数据帧
  */
-export interface IDataFrame<T extends SupportedTypedArray = SupportedTypedArray> {
+export interface IDataFrame<T extends _TypeArray.Any = _TypeArray.Any> {
 	/**
 	 * 数据
 	 */

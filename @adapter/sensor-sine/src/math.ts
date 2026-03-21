@@ -1,3 +1,5 @@
+import { TypeArray } from '@core/protocol';
+
 /**
  * 产生正弦波数据
  *
@@ -8,10 +10,9 @@
  * @param sampleRate 采样率，单位Hz
  * @returns 生成的正弦波数据
  */
-
-export function generateSineSensorData(frequency: number, phase: number, amplitude: number, durationMs: number, sampleRate: number): Int32Array {
+export function generateSineSensorData(frequency: number, phase: number, amplitude: number, durationMs: number, sampleRate: number) {
 	const totalSamples = Math.floor((durationMs / 1000) * sampleRate);
-	const sineData = new Int32Array(totalSamples);
+	const sineData = new TypeArray.S32(totalSamples);
 	const angularFrequency = 2 * Math.PI * frequency;
 
 	for (let i = 0; i < totalSamples; i++) {

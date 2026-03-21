@@ -1,0 +1,13 @@
+{
+	"name": "@core/custom-rig",
+	"exports": "./package.json",
+	"type": "module",
+	"scripts": {
+		"build": "",
+		"watch": "",
+		"clean": ""
+	},
+	"dependencies": {
+		"@build-script/baseline-rig": "^1.1.2"
+	}
+}

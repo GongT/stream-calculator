@@ -1,0 +1,4 @@
+data.json
+poetry.lock
+*.pyc
+__pycache__/

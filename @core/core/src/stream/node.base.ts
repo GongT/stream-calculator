@@ -1,17 +1,9 @@
-import type { IDataFrame, SupportedTypedArray } from '@core/protocol';
-import { convertCaughtError, definePublicConstant, EnhancedAsyncDisposable, linux_case_hyphen } from '@idlebox/common';
-import { createLogger } from '@idlebox/logger';
-import { basename } from 'node:path';
+import type { IDataFrame, TypeArray } from '@core/protocol';
+import { convertCaughtError, definePublicConstant, SoftwareDefectError, timeout } from '@idlebox/common';
 import { Duplex, Readable, Writable } from 'node:stream';
-import { adapterHost } from '../adapter-helpers/adapter-host.js';
+import { getSerialNumber, instanceOf } from '../common/functions.js';
+import { AbstractBaseNode } from './node-tools.js';
 import type { IBaseStreamNode, IReadableStreamNode, IReadWriteStreamNode, IWritableStreamNode } from './types.js';
-
-const idx = new Map<string, number>();
-function getSerialNumber(id: string) {
-	const count = idx.get(id) ?? 0;
-	idx.set(id, count + 1);
-	return count;
-}
 
 /**
  * @internal
@@ -27,17 +19,13 @@ export type ConstructInfo = {
 /**
  * @internal
  */
-export abstract class BaseNode<T extends SupportedTypedArray = any> extends EnhancedAsyncDisposable implements IBaseStreamNode {
+export abstract class BaseNode<T extends TypeArray.Any = TypeArray.Any> extends AbstractBaseNode implements IBaseStreamNode {
 	readonly isSender: boolean = false;
 	readonly isReceiver: boolean = false;
 	protected abstract readonly expectDataType: new () => T;
 
 	protected readonly stream!: NodeJS.ReadWriteStream | NodeJS.ReadableStream | NodeJS.WritableStream;
-	protected readonly logger;
-
-	public readonly id: string;
 	public readonly serial: number;
-	public override readonly displayName: string;
 
 	protected readonly statistic = {
 		sent: 0,
@@ -51,47 +39,12 @@ export abstract class BaseNode<T extends SupportedTypedArray = any> extends Enha
 	public readonly targets: BaseNode[] = [];
 
 	constructor(displayName?: string) {
-		super();
+		super(displayName);
 
-		const info = this.makeInfo(displayName);
-		this.id = info.id;
-		this.displayName = info.displayName;
+		this.adapter._registerNodeInstance(this);
+
 		this.serial = getSerialNumber(this.id);
-		this.logger = createLogger(`node:${this.id}`);
 		this.logger.verbose`构造 | ${this.displayName} | serial = ${this.serial}`;
-		BaseNode.allInstances.push(this);
-	}
-
-	private static readonly allInstances: BaseNode[] = [];
-	static async getAllInstances(): Promise<BaseNode[]> {
-		const r = [];
-		for (const node of BaseNode.allInstances) {
-			await node.__initialize();
-			r.push(node);
-		}
-		return r;
-	}
-
-	protected makeInfo(displayName?: string): ConstructInfo {
-		const nodeInfo = adapterHost.getNodeInfo(this.constructor);
-
-		let _displayName: string;
-		if (displayName) {
-			_displayName = `${nodeInfo.package.description}(${displayName})`;
-		} else {
-			_displayName = nodeInfo.package.description;
-		}
-
-		const bname = basename(nodeInfo.package.name);
-		let id = `${bname}:${nodeInfo.constructorName}`;
-		if (bname === linux_case_hyphen(nodeInfo.constructorName)) {
-			id = bname;
-		}
-
-		return {
-			id,
-			displayName: _displayName,
-		};
 	}
 
 	protected __check() {
@@ -111,85 +64,138 @@ export abstract class BaseNode<T extends SupportedTypedArray = any> extends Enha
 		}
 	}
 
+	private async call_process(data: IDataFrame<T>) {
+		// this.logger.verbose` <<< ${data}`;
+
+		if (!(data.content instanceof this.expectDataType)) {
+			this.logger.error`数据类型不匹配: 期望 ${this.expectDataType.name}，但收到 ${data.content.constructor.name}`;
+			this.statistic.error++;
+			return;
+		}
+
+		this.statistic.received++;
+		this.statistic.receivedBytes += data.content.byteLength;
+
+		try {
+			await this.process(data);
+		} catch (err) {
+			this.statistic.error++;
+			throw convertCaughtError(err);
+		}
+	}
+
+	private create_duplex_stream() {
+		return new Duplex({
+			objectMode: true,
+			read() {},
+			write: (chunk, _enc, callback) => {
+				this.call_process(chunk)
+					.then(() => callback())
+					.catch(callback);
+			},
+		});
+	}
+
+	private create_readable_stream() {
+		return new Readable({
+			objectMode: true,
+			read() {},
+		});
+	}
+
+	private create_writable_stream() {
+		return new Writable({
+			objectMode: true,
+			write: (chunk, _enc, callback) => {
+				this.call_process(chunk)
+					.then(() => callback())
+					.catch(callback);
+			},
+		});
+	}
+
 	protected __create_stream() {
-		let constructor;
+		let stream;
 		if (this.isSender && this.isReceiver) {
-			constructor = Duplex;
+			stream = this.create_duplex_stream();
 		} else if (this.isSender) {
-			constructor = Readable;
+			stream = this.create_readable_stream();
 		} else if (this.isReceiver) {
-			constructor = Writable;
+			stream = this.create_writable_stream();
+			this.emitData = (data: any) => {
+				this.logger.fatal`试图向不可读节点 ${this.displayName} 发出数据: ${data}`;
+			};
 		} else {
 			this.logger.fatal`节点 ${this.displayName} 既不可读也不可写，无法创建流`;
 			throw new Error(`节点 "${this.displayName}" 既不可读也不可写，无法创建流`);
 		}
 
-		const stream = new constructor({ objectMode: true, read() {} });
 		if (this.isReceiver) {
-			stream.on('data', async (data: IDataFrame<T>) => {
-				this.logger.debug` <<< ${data}`;
-
-				if (!(data.content instanceof this.expectDataType)) {
-					this.logger.error`数据类型不匹配: 期望 ${this.expectDataType.name}，但收到 ${data.content.constructor.name}`;
-					this.statistic.error++;
-					return;
-				}
-
-				this.statistic.received++;
-				this.statistic.receivedBytes += data.content.byteLength;
-
-				try {
-					await this.process(data);
-				} catch (err) {
-					const e = convertCaughtError(err);
-					this.logger.error`处理失败: ${e}`;
-					this.statistic.error++;
-				}
+			stream.on('data', (data: IDataFrame<T>) => {
+				this.call_process(data).catch((e) => {
+					stream.emit('error', e);
+				});
 			});
 		}
 
-		if (!this.isSender) {
-			this.emitData = (data: any) => {
-				this.logger.fatal`试图向不可读节点 ${this.displayName} 发出数据: ${data}`;
-			};
-		}
+		stream.on('error', (e) => {
+			const err = convertCaughtError(e);
+			this.logger.error`${this.displayName} [${this.stream.constructor.name}] 处理出错: ${err}`;
+			throw err;
+		});
 
 		return stream;
 	}
 
-	private hasInitialized?: Promise<this>;
+	private hasInitialized?: Promise<void>;
 	/**
 	 * @internal
 	 */
-	private async __initialize() {
+	public __initialize() {
 		if (this.hasInitialized) return this.hasInitialized;
 
 		this.__check();
 		definePublicConstant(this, 'stream', this.__create_stream());
 
-		this.hasInitialized = Promise.resolve(this.initialize()).then(() => this);
-		await this.hasInitialized;
+		this.hasInitialized = Promise.race([this.initialize(), timeout(5000, '未响应')]).then(
+			() => {
+				this.logger.verbose`初始化完成: ${this.displayName}(${this.serial})`;
+			},
+			(e) => {
+				throw new SoftwareDefectError(`初始化节点 ${this.displayName}(${this.serial}) 出错`, { cause: convertCaughtError(e) });
+			},
+		);
 
-		this.logger.verbose`初始化完成: ${this.serial} - ${this.displayName}`;
-		return this;
+		return this.hasInitialized;
 	}
 
-	resume() {
-		// 用于 override
-	}
+	/**
+	 * 异步初始化
+	 * @virtual
+	 */
+	protected initialize(): Promise<void> | void {}
 
-	protected initialize(): Promise<void> | void {
-		// 用于 override
-	}
+	/**
+	 * 开始产生、处理数据
+	 * @virtual
+	 */
+	resume() {}
 
+	/**
+	 * 处理接收到的数据
+	 * *data共享，修改前必须复制*
+	 *
+	 * @virtual
+	 */
 	protected process(data: IDataFrame<T>): void | Promise<void> {
 		throw new Error(`节点 "${this.displayName}" 未实现 process 方法，无法处理数据: ${data}`);
 	}
 
 	protected emitData(data: IDataFrame<T>) {
-		this.logger.debug` >>> ${data}`;
+		// this.logger.verbose` >>> ${data}`;
 
-		if (!(data.content instanceof this.expectDataType)) {
+		if (!instanceOf(data.content, this.expectDataType)) {
+			// if (!((data.content as any) instanceof this.expectDataType)) {
 			this.logger.error`数据类型不匹配: 期望 ${this.expectDataType.name}，但试图发送 ${data.content.constructor.name}`;
 			this.statistic.error++;
 			return;
@@ -199,6 +205,7 @@ export abstract class BaseNode<T extends SupportedTypedArray = any> extends Enha
 
 		this.statistic.sent++;
 		this.statistic.sentBytes += data.content.byteLength;
+
 		(this.stream as Readable).push(data);
 	}
 
@@ -208,6 +215,11 @@ export abstract class BaseNode<T extends SupportedTypedArray = any> extends Enha
 		}
 		this.__initialize();
 
+		if (!nodes.length) {
+			throw new Error(`pipeTo requires at least one target node`);
+		}
+
+		this.logger.debug`pipeTo: ${this.displayName}`;
 		for (const node of nodes) {
 			if (!node.isReceiver) {
 				throw new Error(`Cannot pipe to non-writable node "${node.displayName}"`);
@@ -218,7 +230,7 @@ export abstract class BaseNode<T extends SupportedTypedArray = any> extends Enha
 
 			node.__initialize();
 
-			this.logger.debug`pipeTo: ${node.displayName} (${node.id}:${node.serial})`;
+			this.logger.debug`        -> ${node.displayName}`;
 			const target = node.stream as NodeJS.WritableStream;
 			const source = this.stream as NodeJS.ReadableStream;
 			source.pipe(target);
@@ -236,22 +248,28 @@ export abstract class BaseNode<T extends SupportedTypedArray = any> extends Enha
 /**
  * 只出不进的节点
  * 传感器
+ *
+ * 应该调用 this.emitData 来发出数据
  */
-export abstract class SendorNode<T extends SupportedTypedArray = any> extends BaseNode<T> implements IReadableStreamNode {
+export abstract class SendorNode<T extends TypeArray.Any = TypeArray.Any> extends BaseNode<T> implements IReadableStreamNode {
 	override readonly isSender = true;
 }
 
 /**
  * 只进不出的节点
+ *
+ * 应该实现 process 方法来处理数据
  */
-export abstract class FinalizedNode<T extends SupportedTypedArray = any> extends BaseNode<T> implements IWritableStreamNode {
+export abstract class FinalizedNode<T extends TypeArray.Any = TypeArray.Any> extends BaseNode<T> implements IWritableStreamNode {
 	override readonly isReceiver = true;
 }
 
 /**
  * 既出又进的节点
+ *
+ * 应该实现 process 方法来处理数据，并调用 this.emitData 来发出数据
  */
-export abstract class CalculatorNode<T extends SupportedTypedArray = any> extends BaseNode<T> implements IReadWriteStreamNode {
+export abstract class CalculatorNode<T extends TypeArray.Any = TypeArray.Any> extends BaseNode<T> implements IReadWriteStreamNode {
 	override readonly isSender = true;
 	override readonly isReceiver = true;
 }

@@ -1,8 +1,7 @@
-import { Adapter, adapterHost, CalculatorNode } from '@core/core';
-import { createProtocolSocket, type IDataFrame, type ProtocolStream } from '@core/protocol';
-import { definePublicConstant, functionToDisposable } from '@idlebox/common';
+import { Adapter, adapterHost, CalculatorNode, LineReader } from '@core/core';
+import { assertArrayType, createProtocolSocket, TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
+import { definePublicConstant } from '@idlebox/common';
 import { getPython } from '@shared/testing';
-import { execa } from 'execa';
 import { resolve } from 'node:path';
 
 interface IOptions {
@@ -10,14 +9,17 @@ interface IOptions {
 }
 
 const spawnOptions = {
-	stdio: ['pipe', 'pipe', 'inherit'],
+	// stdio: ['pipe', 'pipe', 'inherit'],
+	stdin: 'pipe',
+	stdout: 'pipe',
+	stderr: 'inherit',
 	encoding: 'utf8',
 } as const;
 
-export class FFT extends CalculatorNode<Int32Array> {
-	protected override expectDataType = Int32Array;
+export class FFT extends CalculatorNode<TypeArray.S32> {
+	protected override expectDataType = TypeArray.S32;
 
-	private readonly communication!: ProtocolStream;
+	protected readonly communication!: ProtocolStream;
 	private readonly name: string;
 
 	constructor(options: IOptions) {
@@ -28,42 +30,43 @@ export class FFT extends CalculatorNode<Int32Array> {
 
 	protected override async initialize() {
 		const python = await getPython();
-		const pyFile = resolve(import.meta.dirname, '../python/fft.py');
+		const args = resolve('-m', 'my_programs.fft.spectrum.server');
 
-		const process = execa({ ...spawnOptions })`${python} ${pyFile}`;
-		this._register(
-			functionToDisposable(function killProcess() {
-				process.kill();
-			}),
-		);
+		const process = this.spawnWorker([python, ...args], spawnOptions);
+		const outputReader = this._register(new LineReader(process.stdout));
 
-		const listenPort = await new Promise<number>((resolve, reject) => {
-			process.on('error', reject);
-			process.stdout.on('data', (data: string) => {
-				resolve(Number.parseInt(data, 10));
-			});
-		});
-
+		const listenPortStr = await outputReader.waitFor((line) => line.length > 0);
+		const listenPort = Number.parseInt(listenPortStr, 10);
 		if (Number.isNaN(listenPort)) {
-			throw new Error('fft.py没有输出一个有效的端口号');
+			throw new Error('py没有立即输出一个有效的端口号');
 		}
 
+		this.logger.success`发现服务器端口: ${listenPort}`;
+
 		const socket = await createProtocolSocket({
-			address: `[::0]:${listenPort}`,
+			address: `[::1]:${listenPort}`,
 			agentName: `fft-server-${this.name}`,
 			agentId: 0,
-			type: 'udp',
 		});
 		definePublicConstant(this, 'communication', socket);
+
+		socket.onDataFrame((dataFrame) => {
+			this.logger.verbose`收到FFT服务器算好的数据，共${dataFrame.content.byteLength}字节`;
+			assertArrayType(dataFrame, TypeArray.S32);
+			this.emitData(dataFrame);
+		});
 	}
 
-	override process(data: IDataFrame<Int32Array>): void {}
+	override async process(data: IDataFrame<TypeArray.S32>) {
+		this.logger.verbose`接收到上级输入数据，长度为${data.content.length}`;
+		await this.communication.sendDataFrame(data);
+	}
 }
 
-adapterHost.addNode(FFT);
+adapterHost.registerNode(FFT);
 
 class FFTAdapter extends Adapter {
 	public override activate(): void | Promise<void> {}
 }
 
-adapterHost.register(FFTAdapter);
+adapterHost.registerAdapter(FFTAdapter);

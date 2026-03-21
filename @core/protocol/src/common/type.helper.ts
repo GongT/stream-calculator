@@ -1,8 +1,7 @@
-import type { NetworkPacket } from '../internal/base.network.js';
-import { Action } from '../internal/packet.decoupling.js';
-import { DataPayload } from '../network-packets/data.payload.js';
-import type { IDataFrame } from './type.base.js';
-import type { SupportedTypedArray } from './type.network.js';
+import type { NetworkPacket } from '../networking/base.network.js';
+import { Action } from '../networking/packet.decoupling.js';
+import { DataPayload } from '../payloads/data-frame.payload.js';
+import type { IDataFrame, TypeArray } from './type.base.js';
 
 /**
  * 计算数据帧的持续时间
@@ -28,7 +27,7 @@ export function timestampAfter(frame: IDataFrame): number {
 	return frame.timestamp + durationOf(frame);
 }
 
-export function getPayloadFrameFromNetwork<T extends SupportedTypedArray = SupportedTypedArray>(
+export function getPayloadFrameFromNetwork<T extends TypeArray.Any = TypeArray.Any>(
 	packet: NetworkPacket,
 	Type?: new (...args: any[]) => T,
 ): IDataFrame<T> {

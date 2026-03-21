@@ -10,8 +10,7 @@ scripts:
   postinstall: package-tools monorepo-link-binaries --recursive
   build: tsc -b ./tsconfig.everything.json
   watch: tsc -b ./tsconfig.everything.json -w
-  start: DEBUG="adapter:* node:*" nodemon ./@core/bootstrap/lib/main.js
-    @program/sample-app
+  start: DEBUG="app app:* adapter adapter:* node node:* text text:*" nodemon ./@core/bootstrap/lib/main.js -- @program/sample-app
   clean: pnpm run --if-present --recursive clean
 dependencies:
   "@biomejs/biome": ^2.4.8

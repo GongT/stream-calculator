@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFT 测试结果</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .chart-container { position: relative; height: 400px; margin-bottom: 30px; }
+        h2 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>FFT 测试结果</h1>
+    
+    <div class="chart-container">
+        <h2>时域波形</h2>
+        <canvas id="waveformChart"></canvas>
+    </div>
+    
+    <div class="chart-container">
+        <h2>频域频谱 (幅度)</h2>
+        <canvas id="spectrumChart"></canvas>
+    </div>
+
+    <!-- 新增：相位图表容器 -->
+    <div class="chart-container">
+        <h2>频域频谱 (相位)</h2>
+        <canvas id="phaseChart"></canvas>
+    </div>
+
+    <script type="module">
+        async function loadDataAndRender(data) {
+            try {
+                // 准备时域数据
+                const signal = data.signal;
+                const samplingRate = data.sampling_rate;
+                const timePoints = signal.map((_, i) => i / samplingRate);
+                
+                // 准备频域数据
+                const freqStart = data.freq_start;
+                const freqStep = data.freq_step;
+                const magnitudes = data.magnitudes;
+                const phases = data.phases; // 新增：获取相位数据
+                const frequencies = magnitudes.map((_, i) => freqStart + i * freqStep);
+                
+                // 只取正频率部分（通常前一半）
+                const halfLength = Math.floor(frequencies.length / 2);
+                const freqLabels = frequencies.slice(0, halfLength);
+                const magnitudeData = magnitudes.slice(0, halfLength);
+                const phaseData = phases.slice(0, halfLength); // 新增：截取相位数据
+                
+                // 采样部分时域数据用于显示（避免点太多）
+                const displayStep = Math.max(1, Math.floor(timePoints.length / 1000));
+                const timeLabels = timePoints.filter((_, i) => i % displayStep === 0);
+                const signalData = signal.filter((_, i) => i % displayStep === 0);
+                
+                // 绘制时域波形
+                const waveformCtx = document.getElementById('waveformChart').getContext('2d');
+                new Chart(waveformCtx, {
+                    type: 'line',
+                    data: {
+                        labels: timeLabels,
+                        datasets: [{
+                            label: '信号幅度',
+                            data: signalData,
+                            borderColor: 'rgb(75, 192, 192)',
+                            borderWidth: 1,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: true }
+                        },
+                        scales: {
+                            x: { 
+                                title: { display: true, text: '时间 (秒)' },
+                                ticks: { maxTicksLimit: 10 }
+                            },
+                            y: { 
+                                title: { display: true, text: '幅度' },
+                                grid: {
+                                    lineWidth: function(context) {
+                                        // 对于 y=0 的网格线，加粗显示
+                                        return context.tick.value === 0 ? 2 : 1;
+                                    },
+                                    color: function(context) {
+                                        // 对于 y=0 的网格线，设置为黑色
+                                        return context.tick.value === 0 ? 'black' : '#e0e0e0';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // 绘制频域频谱
+                const spectrumCtx = document.getElementById('spectrumChart').getContext('2d');
+                new Chart(spectrumCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: freqLabels,
+                        datasets: [{
+                            label: '幅度',
+                            data: magnitudeData,
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: true }
+                        },
+                        scales: {
+                            x: { 
+                                title: { display: true, text: '频率 (Hz)' },
+                                ticks: { maxTicksLimit: 20 }
+                            },
+                            y: { 
+                                title: { display: true, text: '幅度' }
+                            }
+                        }
+                    }
+                });
+
+                // 新增：绘制频域相位
+                const phaseCtx = document.getElementById('phaseChart').getContext('2d');
+                new Chart(phaseCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: freqLabels,
+                        datasets: [{
+                            label: '相位 (rad)',
+                            data: phaseData,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgb(54, 162, 235)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: true }
+                        },
+                        scales: {
+                            x: { 
+                                title: { display: true, text: '频率 (Hz)' },
+                                ticks: { maxTicksLimit: 20 }
+                            },
+                            y: { 
+                                title: { display: true, text: '相位 (rad)' }
+                            }
+                        }
+                    }
+                });
+                
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                document.body.innerHTML += '<p style="color: red;">加载数据失败，请确保 data.json 存在且可访问。</p>';
+            }
+        }
+        
+        // 页面加载后执行
+        const response = await fetch('/data.json');
+        const data = await response.json();
+        loadDataAndRender(data);
+    </script>
+</body>
+</html>

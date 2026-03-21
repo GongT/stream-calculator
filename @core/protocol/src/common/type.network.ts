@@ -1,11 +1,25 @@
-import type { Action } from '../internal/packet.decoupling.js';
+import { logger } from '@idlebox/logger';
+import type { Action } from '../networking/packet.decoupling.js';
+import type { IDataFrame, TypeArray } from './type.base.js';
 
 export type TypeValue = 'u' | 's' | 'f';
 export type BitDepthValue = 8 | 16 | 32 | 64;
 
 export interface INetworkEncode {
 	encode(): Buffer;
+
+	/**
+	 * 将网络包内容转换到自身变量
+	 * 必须复制否则会造成内存错误
+	 */
 	decode(data: Buffer): void;
+}
+
+export interface INetworkPayload extends INetworkEncode {
+	readonly kind: Action;
+}
+export interface INetworkPayloadConstructor {
+	new (...args: any[]): INetworkPayload;
 }
 
 type ActionTypes = string | number | boolean | object | null;
@@ -36,21 +50,32 @@ const typetree = {
 	},
 } as const;
 
-export type SupportedTypedArray =
-	| Uint8Array<ArrayBufferLike>
-	| Uint16Array<ArrayBufferLike>
-	| Uint32Array<ArrayBufferLike>
-	| BigUint64Array<ArrayBufferLike>
-	| Int8Array<ArrayBufferLike>
-	| Int16Array<ArrayBufferLike>
-	| Int32Array<ArrayBufferLike>
-	| BigInt64Array<ArrayBufferLike>
-	| Float16Array<ArrayBufferLike>
-	| Float32Array<ArrayBufferLike>
-	| Float64Array<ArrayBufferLike>;
-
-export function getTypedConstructor<T extends TypeValue, B extends BitDepthValue>(type: T, bitDepth: B): NonNullable<(typeof typetree)[T][B]> {
+export function getTypedArrayClass<T extends TypeValue, B extends BitDepthValue>(type: T, bitDepth: B): NonNullable<(typeof typetree)[T][B]> {
 	const Cls = typetree[type][bitDepth];
 	if (!Cls) throw new Error(`不支持的类型/位深组合: ${type}/${bitDepth}`);
 	return Cls;
+}
+
+const reverseSearch = new Map<TypeArray.Any, readonly [TypeValue, BitDepthValue]>();
+for (const [type, bitDepths] of Object.entries(typetree)) {
+	for (const [bitDepth, Cls] of Object.entries(bitDepths)) {
+		if (Cls) {
+			reverseSearch.set(Cls, [type as TypeValue, Number.parseInt(bitDepth, 10) as BitDepthValue]);
+		}
+	}
+}
+export function getTypeAndBitDepth(instance: TypeArray.Any): readonly [TypeValue, BitDepthValue] {
+	const result = reverseSearch.get(instance.constructor as any);
+	if (!result) {
+		logger.warn`支持的类型list<${reverseSearch.keys()}>`
+		throw new Error(`不支持的类型数组: ${instance.constructor?.name ?? 'null'}`);
+	}
+	return result;
+}
+
+export function assertArrayType<T extends TypeArray.Any>(dataFrame: IDataFrame<TypeArray.Any>, Type: TypeArray.Constructor<T>): asserts dataFrame is IDataFrame<T> {
+	if (dataFrame.content instanceof Type) {
+		return;
+	}
+	throw new Error(`期望的数据类型为 ${Type.name}，但实际为 ${dataFrame.content.constructor.name}`);
 }

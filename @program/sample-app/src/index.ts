@@ -1,6 +1,6 @@
 import { FFT } from '@adapter/fft';
 import { SensorSine } from '@adapter/sensor-sine';
-import { startProcessing, type IAppHost } from '@core/core';
+import { type IAppHost } from '@core/core';
 
 export async function startup(host: IAppHost) {
 	host._register({
@@ -64,6 +64,4 @@ export async function startup(host: IAppHost) {
 	// streamPipeline(sensor2, fft);
 
 	sensor2.pipeTo(fft);
-
-	startProcessing();
 }

@@ -6,7 +6,7 @@ export interface IAppHost {
 	readonly onBeforeDispose: EventRegister<void>;
 	_register(d: IAsyncDisposable): void;
 	readonly api: HttpApiHost;
-	readonly adapter: AdapterHost;
+	readonly adapters: AdapterHost;
 }
 
 export interface IActivateProtocol {

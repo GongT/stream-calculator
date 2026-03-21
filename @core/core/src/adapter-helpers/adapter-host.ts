@@ -8,8 +8,9 @@ import {
 	SoftwareDefectError,
 } from '@idlebox/common';
 import { createLogger } from '@idlebox/logger';
+import { rememberDeclareation } from '../common/debug.js';
 import { reflectBinding } from '../package-reflect/binding.js';
-import type { BaseNodeConstructor } from '../stream/node.base.js';
+import type { BaseNode, BaseNodeConstructor } from '../stream/node.base.js';
 import { Adapter, type IBaseAdapterOptions } from './adapter.js';
 
 type AdapterConstructor = new (options: IBaseAdapterOptions) => Adapter;
@@ -28,12 +29,13 @@ const prefix = /\s*at\s+(.+\()?/;
 const endingRowCol = /:\d+:\d+\)?$/;
 
 /**
+ * 一个Adapter的单例列表
  * @internal
  */
 export class AdapterHost extends EnhancedAsyncDisposable {
 	private readonly _registry = new Set<AdapterConstructor>();
 	private readonly _instances = new Map<AdapterConstructor, Adapter>();
-	private readonly _nodes = new Map<BaseNodeConstructor, Adapter>();
+	private readonly _nodeClasses = new Map<BaseNodeConstructor, Adapter>();
 	private readonly logger;
 
 	constructor() {
@@ -44,10 +46,18 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 		registerGlobalLifecycle(this);
 	}
 
+	get instances() {
+		return this._instances.values();
+	}
+
+	get nodes(): IteratorObject<BaseNode> {
+		return this._instances.values().flatMap((item) => item.getNodes());
+	}
+
 	async activate() {
 		for (const Adapter of this._registry) {
-			this.logger.debug`实例化 ${Adapter.name}`;
-			const adapter = await this.adapterInstance(Adapter);
+			this.logger.log`实例化 ${Adapter.name}`;
+			const adapter = await this.makeAdapterInstance(Adapter);
 			this.logger.debug`  - ${adapter.options.packageJson.name} v${adapter.options.packageJson.version ?? '0'} [${adapter.options.packageJson.description}]`;
 			this._instances.set(Adapter, adapter);
 		}
@@ -62,27 +72,27 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 
 					this._register(adapter);
 
-					this.logger.verbose`${adapter.options.packageJson.name} 已激活`;
+					this.logger.debug`${adapter.options.packageJson.name} 已激活`;
 				} catch (error) {
 					const e = convertCaughtError(error);
-					prettyPrintError('启动适配器失败', e);
+					prettyPrintError('适配器激活失败', e);
 					this.logger.fatal`activate failed ${adapter.options.packageJson.name}`;
 				}
 			}),
 		);
 	}
 
-	private async adapterInstance(Adapter: AdapterConstructor) {
+	private async makeAdapterInstance(Adapter: AdapterConstructor) {
 		const packageJson = await reflectBinding.getPackageJson(Adapter);
 		const instance = new Adapter({ packageJson });
 		return instance;
 	}
 
 	getNodeInfo(constructor: Function): INodeInfo {
-		const adapter = this._nodes.get(constructor as BaseNodeConstructor);
+		const adapter = this._nodeClasses.get(constructor as BaseNodeConstructor);
 		if (!adapter) {
-			this.logger.info`${[...this._nodes.keys().map((e) => e.name)]}`;
-			throw new Error(`未找到节点信息，构造函数: ${constructor.name}，是否正确使用 @adapterHost.addNode 注册了节点？`);
+			this.logger.info`${[...this._nodeClasses.keys().map((e) => e.name)]}`;
+			throw new Error(`未找到节点信息，构造函数: ${constructor.name} (是否正确使用 @adapterHost.registerNode 注册了节点？) `);
 		}
 
 		return {
@@ -96,7 +106,7 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 		};
 	}
 
-	addNode(node: BaseNodeConstructor) {
+	registerNode(node: BaseNodeConstructor) {
 		const caller = getErrorFrame(new Error(), 1);
 		const filepath = caller.replace(prefix, '').replace(endingRowCol, '');
 		this.deferAddNodes.push([node, filepath]);
@@ -107,7 +117,8 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 		for (const [NodeClass, filepath] of this.deferAddNodes) {
 			const AdapterClass = this.getAdapterClassAt(filepath);
 			if (!AdapterClass) {
-				this.logger.fatal`未找到适配器类，无法注册节点 ${NodeClass.name}，来源路径 relative<${filepath}>`;
+				this.logger
+					.fatal`当前包中未找到适配器类 (是否正确使用 @adapterHost.registerAdapter 注册了适配器？)，无法注册节点 ${NodeClass.name}，来源路径 relative<${filepath}>`;
 				break;
 			}
 
@@ -116,15 +127,16 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 				throw new SoftwareDefectError(`实例化顺序异常`);
 			}
 
-			this._addNode(NodeClass, adapter);
+			rememberDeclareation(NodeClass, filepath, true);
+			this._addNodeClass(NodeClass, adapter);
 		}
 	}
 
 	/**
 	 * @internal
 	 */
-	_addNode(node: BaseNodeConstructor, adapter: Adapter) {
-		const exists = this._nodes.get(node);
+	private _addNodeClass(node: BaseNodeConstructor, adapter: Adapter) {
+		const exists = this._nodeClasses.get(node);
 		if (exists) {
 			this.logger.verbose`节点${node.name}已经注册过了(${exists.options.packageJson.name})`;
 			if (exists !== adapter) {
@@ -134,10 +146,10 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 		}
 
 		this.logger.debug`注册节点 ${node.name} 属于适配器${adapter.options.packageJson.name}`;
-		this._nodes.set(node, adapter);
+		this._nodeClasses.set(node, adapter);
 	}
 
-	register(Adapter: AdapterConstructor) {
+	registerAdapter(Adapter: AdapterConstructor) {
 		const caller = getErrorFrame(new Error(), 1);
 		const filepath = caller.replace(prefix, '').replace(endingRowCol, '');
 		const packagePath = reflectBinding.getPackageJsonPath(filepath);
@@ -149,6 +161,7 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 
 		this.logger.debug`注册适配器 ${Adapter.name}，来源包 relative<${packagePath}>`;
 
+		rememberDeclareation(Adapter, filepath, true);
 		reflectBinding.addClass(Adapter, packagePath);
 		this._registry.add(Adapter);
 	}

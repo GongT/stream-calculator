@@ -1,5 +1,7 @@
-import type { TimestampT } from '../common/type.base.js';
-import { getTypedConstructor, type BitDepthValue, type INetworkEncode, type SupportedTypedArray, type TypeValue } from '../common/type.network.js';
+import type { IDataFrame, TimestampT, TypeArray } from '../common/type.base.js';
+import { getTypeAndBitDepth, getTypedArrayClass, type BitDepthValue, type INetworkPayload, type TypeValue } from '../common/type.network.js';
+import { Action, Payload } from '../networking/packet.decoupling.js';
+import { swapToLocalEndian, swapToNetworkEndian } from '../networking/swap-array.js';
 
 export interface IDataPayload {
 	readonly func: number;
@@ -12,6 +14,13 @@ export interface IDataPayload {
 
 const HEADER_MARKER = Buffer.from('DATA', 'ascii').readUInt32BE(0);
 
+const emptyFrame: IDataFrame = {
+	content: new Uint8Array(0),
+	rate: 0,
+	timestamp: 0,
+	functionNumber: 0,
+};
+
 /**
 | 字段 | 类型/长度(字节) | 描述 |
 | --- | --- | --- |
@@ -23,13 +32,29 @@ const HEADER_MARKER = Buffer.from('DATA', 'ascii').readUInt32BE(0);
 | header | uint8*4 | 固定为 `DATA`，用于验证逻辑 |
 | array | ... | 数据内容 |
  */
-export class DataPayload implements INetworkEncode, IDataPayload {
+export class DataPayload implements INetworkPayload, IDataPayload {
 	public func = 0;
-	public timestamp = 0;
 	public type: TypeValue = 'u';
 	public bit_depth: BitDepthValue = 32;
 	public rate = 0;
+	public timestamp = 0;
 	public content = Buffer.alloc(0);
+
+	public readonly kind = Action.DATA;
+
+	constructor(buffer: IDataFrame = emptyFrame) {
+		if (buffer) {
+			const [type, bit_depth] = getTypeAndBitDepth(buffer.content);
+			this.type = type;
+			this.bit_depth = bit_depth;
+			this.rate = buffer.rate;
+			this.timestamp = buffer.timestamp;
+			this.func = buffer.functionNumber ?? 0;
+			if (buffer.content.length) {
+				this.content = Buffer.from(buffer.content.buffer);
+			}
+		}
+	}
 
 	encode(): Buffer {
 		const header = Buffer.allocUnsafe(4 + 8 + 1 + 1 + 4 + 4);
@@ -52,10 +77,10 @@ export class DataPayload implements INetworkEncode, IDataPayload {
 		header.writeUInt32BE(HEADER_MARKER, offset);
 		offset += 4;
 
-		return Buffer.concat([header, this.content]);
+		return Buffer.concat([header, swapToNetworkEndian(this.content, this.bit_depth)]);
 	}
 
-	decode(data: Buffer): void {
+	decode(data: Buffer<ArrayBuffer>): void {
 		let offset = 0;
 		this.func = data.readUInt32BE(offset);
 		offset += 4;
@@ -78,14 +103,16 @@ export class DataPayload implements INetworkEncode, IDataPayload {
 			throw new Error(`Invalid header: ${header.toString(16)} (expect ${HEADER_MARKER.toString(16)})`);
 		}
 
-		this.content = Buffer.copyBytesFrom(data, offset);
+		this.content = swapToLocalEndian(data.subarray(offset), this.bit_depth, true);
 	}
 
-	asTypedArray<T extends SupportedTypedArray>(Type?: new (...args: any[]) => T): T {
-		const Cls = getTypedConstructor(this.type, this.bit_depth);
+	asTypedArray<T extends TypeArray.Any>(Type?: new (...args: any[]) => T): T {
+		const Cls = getTypedArrayClass(this.type, this.bit_depth);
 		if (Type && (Cls as any) !== Type) {
 			throw new Error(`类型不匹配：数据包中的类型是 ${Cls.name}，但请求的类型是 ${Type.name}`);
 		}
 		return new Cls(this.content.buffer) as unknown as T;
 	}
 }
+
+Payload(DataPayload);

@@ -7,10 +7,10 @@ export interface IConnectOptions {
 	readonly agentId: number;
 }
 interface ICreateOptions extends IConnectOptions {
-	readonly type: 'udp' | 'tcp';
+	readonly type?: 'udp' | 'tcp';
 }
 
-export function createProtocolSocket({ type, ...options }: ICreateOptions) {
+export function createProtocolSocket({ type = 'tcp', ...options }: ICreateOptions) {
 	if (type === 'udp') {
 		return connectUdp(options);
 	} else {

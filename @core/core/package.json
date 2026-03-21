@@ -12,11 +12,14 @@
 		"@core/protocol": "workspace:",
 		"@idlebox/common": "^1.5.18",
 		"@idlebox/logger": "^0.0.22",
-		"execa": "^9.6.1"
+		"@idlebox/node": "^1.4.27",
+		"@types/split2": "^4.2.3",
+		"execa": "^9.6.1",
+		"split2": "^4.2.0"
 	},
 	"devDependencies": {
-		"@build-script/autoindex": "^0.0.20",
-		"@build-script/baseline-rig": "^1.1.2",
+		"@build-script/autoindex": "^0.0.21",
+		"@core/custom-rig": "workspace:",
 		"@types/node": "^25.5.0"
 	}
 }

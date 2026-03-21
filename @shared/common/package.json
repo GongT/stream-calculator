@@ -13,8 +13,8 @@
 		"@idlebox/node": "^1.4.27"
 	},
 	"devDependencies": {
-		"@build-script/autoindex": "^0.0.20",
-		"@build-script/baseline-rig": "^1.1.2",
+		"@build-script/autoindex": "^0.0.21",
+		"@core/custom-rig": "workspace:",
 		"@types/node": "^25.5.0"
 	}
 }

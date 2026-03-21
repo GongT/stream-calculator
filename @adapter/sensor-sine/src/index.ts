@@ -48,6 +48,7 @@ export class SensorSine extends SendorNode {
 	}
 
 	override resume() {
+		this.logger.verbose`开始生成正弦波数据`;
 		this.timer.resume();
 	}
 
@@ -74,9 +75,9 @@ export class SensorSine extends SendorNode {
 		});
 	}
 }
-adapterHost.addNode(SensorSine);
+adapterHost.registerNode(SensorSine);
 
 class SensorSineAdapter extends Adapter {
 	public override activate(): void | Promise<void> {}
 }
-adapterHost.register(SensorSineAdapter);
+adapterHost.registerAdapter(SensorSineAdapter);
