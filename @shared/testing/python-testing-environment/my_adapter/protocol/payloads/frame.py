@@ -8,7 +8,7 @@ from ..base import PayloadKind
 from ..base.packet import AbstractPayload
 from ..helpers.dtype import get_dtype, get_pack_format_from_dtype
 
-_fmt = struct.Struct("!IQcBI4s")
+_fmt = struct.Struct("!I Q c B I 4s")
 
 
 class DataFramePayload(AbstractPayload):
@@ -21,7 +21,7 @@ class DataFramePayload(AbstractPayload):
     ):
         super().__init__()
 
-        assert content.ndim == 1, "在网络环境中仅支持一维数组"
+        assert content.ndim == 1, f"在网络环境中仅支持一维数组，当前数组维度为 {content.ndim}"
 
         self.content = content
         self.rate = rate
@@ -47,13 +47,13 @@ class DataFramePayload(AbstractPayload):
 
     def serialize(self) -> bytes:
         header = _fmt.pack(
-            self.function, self.timestamp, self.type, self.bit_depth, self.rate, b"DATA"
+            self.function, self.timestamp, self.type.encode(), self.bit_depth, self.rate, b"DATA"
         )
 
         size = self.content.size
         f = get_pack_format_from_dtype(self.content.dtype)
 
-        return header + struct.pack(f"!{size}{f}", self.content)
+        return header + struct.pack(f"!{size}{f}", *self.content)
 
     @classmethod
     def deserialize(cls, data: bytes) -> Self:

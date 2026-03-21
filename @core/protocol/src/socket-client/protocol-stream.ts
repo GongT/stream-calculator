@@ -1,61 +1,36 @@
 import { convertCaughtError, DeferredPromise, Emitter, EnhancedAsyncDisposable, prettyPrintError } from '@idlebox/common';
 import { logger } from '@idlebox/logger';
-import type { RemoteInfo, Socket as UDPSocket } from 'node:dgram';
 import type { Socket as TCPSocket } from 'node:net';
+import { debugDumpBuffer } from '../common/dump.js';
 import type { IDataFrame, TypeArray } from '../common/type.base.js';
-import { getPayloadFrameFromNetwork } from '../common/type.helper.js';
 import { NetworkPacket } from '../networking/base.network.js';
 import { Action } from '../networking/packet.decoupling.js';
 import { DataPayload } from '../payloads/data-frame.payload.js';
 
-type ICommonSendFunction = (packet: Uint8Array, callback?: (err?: Error | null) => void) => void;
+// type ICommonSendFunction = (packet: Uint8Array, callback?: (err?: Error | null) => void) => void;
 
 export class ProtocolStream extends EnhancedAsyncDisposable {
-	private readonly _onDataFrame = this._register(new Emitter<IDataFrame>());
-	public readonly onDataFrame = this._onDataFrame.event;
+	private readonly _onNetworkPacket = this._register(new Emitter<NetworkPacket>());
+	/**
+	 * 除了keep-alive以外的所有数据包都会通过这个事件发出
+	 */
+	public readonly onNetworkPacket = this._onNetworkPacket.event;
 
 	private buffer = Buffer.alloc(0);
-	private readonly _raw_send: ICommonSendFunction;
-	public readonly isUdp: boolean;
 
 	constructor(
 		private readonly agent: string,
 		private readonly agentId: number,
-		protected readonly socket: TCPSocket | UDPSocket,
+		protected readonly socket: TCPSocket,
 	) {
 		super(`protocol-socket`);
 
 		this.handleData = this.handleData.bind(this);
 
-		if ('send' in socket) {
-			this.isUdp = true;
-			this._raw_send = socket.send.bind(socket);
-			try {
-				socket.remoteAddress();
-				// 已经连接了
-				socket.on('message', this.handleData);
-			} catch {
-				// 没有连接，等待第一个数据包来确定对端地址
-				socket.once('message', this.handleFirstPacket.bind(this));
-			}
-		} else {
-			this.isUdp = false;
-			this._raw_send = socket.write.bind(socket);
-			socket.on('data', this.handleData);
-		}
+		socket.on('data', this.handleData);
 
 		socket.on('error', (err) => {
 			logger.fatal`网络连接发生错误 ${err}`;
-		});
-	}
-
-	private handleFirstPacket(data: Buffer, rinfo: RemoteInfo) {
-		// TODO: 有重复风险？
-		logger.debug`收到UDP首个数据包，来自 ${rinfo.address}:${rinfo.port}`;
-		this.socket.connect(rinfo.port, rinfo.address, () => {
-			this.socket.removeAllListeners('message');
-			this.socket.on('message', this.handleData);
-			this.handleData(data);
 		});
 	}
 
@@ -70,6 +45,7 @@ export class ProtocolStream extends EnhancedAsyncDisposable {
 			try {
 				packet.decode(packetData);
 			} catch (e) {
+				debugDumpBuffer(this.buffer.subarray(0, Math.max(4 + packetLength, 128)), '(E) ');
 				const err = convertCaughtError(e);
 				prettyPrintError('解析网络包出错', err);
 				logger.fatal`解析网络包出错 ${err}`;
@@ -119,8 +95,7 @@ export class ProtocolStream extends EnhancedAsyncDisposable {
 				break;
 			case Action.DATA:
 				{
-					const frame = getPayloadFrameFromNetwork(data);
-					this._onDataFrame.fire(frame);
+					this._onNetworkPacket.fire(data);
 				}
 				break;
 			default:
@@ -132,7 +107,7 @@ export class ProtocolStream extends EnhancedAsyncDisposable {
 		const encoded = packet.encode();
 		// debugDumpBuffer(encoded, '>>> ');
 		return new Promise<void>((resolve, reject) => {
-			this._raw_send(encoded, (err) => {
+			this.socket.write(encoded, (err) => {
 				if (err) {
 					logger.warn`发送数据包失败 ${err}`;
 					reject(err);

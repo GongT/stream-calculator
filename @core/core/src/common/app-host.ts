@@ -35,4 +35,8 @@ export class AppHost extends EnhancedAsyncDisposable implements IAppHost {
 
 		this.logger.debug`数据流处理中`;
 	}
+
+	printStatus() {
+		// TODO
+	}
 }

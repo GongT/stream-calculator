@@ -1,3 +1,4 @@
+import json
 import struct
 from abc import ABC, abstractmethod
 from typing import Self, TypeVar
@@ -35,14 +36,21 @@ class NetworkPacket(Serializable):
     agent: str = ""
     agent_id: int = 0
     payload: AbstractPayload
+    metadata: dict | None
 
     def __init__(
-        self, agent: str, agent_id: int, payload: AbstractPayload | None = None
+        self,
+        agent: str,
+        agent_id: int,
+        payload: AbstractPayload | None = None,
+        metadata: dict | None = None,
     ):
         self.agent = agent
         self.agent_id = agent_id
         if payload is not None:
             self.payload = payload
+
+        self.metadata = metadata
 
     def get_type(self) -> PayloadKind:
         return self.payload.get_type()
@@ -64,6 +72,14 @@ class NetworkPacket(Serializable):
         # 获取 payload 序列化结果
         payload_bytes = self.payload.serialize()
 
+        # 序列化 metadata
+        metadata_bytes = b""
+        if self.metadata:
+            metadata_json = json.dumps(self.metadata, ensure_ascii=False)
+
+            if metadata_json != "{}":
+                metadata_bytes = metadata_json.encode("utf-8")
+
         # 获取 action 码，根据 payload 类型
         action = int(self.payload.get_type().value)
 
@@ -79,15 +95,16 @@ class NetworkPacket(Serializable):
             + agent_length  # sender_agent 字符串
             + 4  # sender_id uint32
             + 4  # action uint32
+            + 4  # metadata_length uint32
+            + len(metadata_bytes)  # metadata 数据
             + 4  # payload_length uint32
             + len(payload_bytes)  # payload 数据
             + 3  # END 标记
         )
 
         # 构建数据
-        # 版本号 + agent 长度 + agent + agent_id + action + payload_length
-
-        fmt = f"!I 5s B B {agent_length}s I I I {len(payload_bytes)}s 3s"
+        # 版本号 + agent 长度 + agent + agent_id + action + metadata_length + metadata + payload_length + payload + END
+        fmt = f"!I 5s B B {agent_length}s I I I {len(metadata_bytes)}s I {len(payload_bytes)}s 3s"
         buffer = struct.pack(
             fmt,
             frame_length - 4,  # frame_length 不包含自身的长度
@@ -97,6 +114,8 @@ class NetworkPacket(Serializable):
             agent_bytes,
             self.agent_id,
             action,
+            len(metadata_bytes),
+            metadata_bytes,
             len(payload_bytes),
             payload_bytes,
             b"END",
@@ -142,6 +161,16 @@ class NetworkPacket(Serializable):
         action = PayloadKind.from_int(action_num)
         # debug_output(f"+{offset} | Action: {str(action)}")
 
+        # 解析 metadata_length 和 metadata 数据
+        metadata_length: int = struct.unpack_from("!I", data, offset)[0]
+        offset += 4
+        metadata_bytes = data[offset : offset + metadata_length]
+        offset += metadata_length
+
+        metadata_object = {}
+        if metadata_bytes:
+            metadata_object = json.loads(metadata_bytes.decode("utf-8"))
+
         # 解析 payload_length 和 payload 数据
         payload_length: int = struct.unpack_from("!I", data, offset)[0]
         offset += 4
@@ -160,4 +189,6 @@ class NetworkPacket(Serializable):
         Class = get_payload_class_from_kind(action)
         payload = Class.deserialize(payload_data)
 
-        return cls(agent=agent, agent_id=agent_id, payload=payload)
+        return cls(
+            agent=agent, agent_id=agent_id, payload=payload, metadata=metadata_object
+        )

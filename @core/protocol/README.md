@@ -15,6 +15,8 @@
 | sender_agent | ... | 发送者类型，表示数据包的来源，调试用 |
 | sender_id | uint32 | 发送者ID，表示数据包的来源，调试用 |
 | action | uint32 | 行为码（见下） |
+| metadata_length | uint32 | 元数据长度，表示metadata字段的字节数 |
+| metadata | ... | 元数据，JSON字符串，随意使用 |
 | payload_length | uint32 | 数据长度，表示后续数据的字节数，不包括前面所有字段 |
 | payload | ... | 数据包 |
 | END | uint8 * 3 | 结束标志，固定为 'END' ，验证逻辑是否正确 |
@@ -56,5 +58,7 @@
 
 决定payload应该如何解释，例如：
 > 如果bit_depth为16，payload中的每个数据点占用2字节。即 uint16 数组。 **再次注意，大端序**
+
+**不支持fp8**
 
 对于任意一套系统，理论上不应该存在多个bit_depth的情况，该值基本取决于传感器采样精度。

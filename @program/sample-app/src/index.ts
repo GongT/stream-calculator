@@ -1,6 +1,7 @@
 import { FFT } from '@adapter/fft';
+import { SensorNoise } from '@adapter/sensor-noise';
 import { SensorSine } from '@adapter/sensor-sine';
-import { type IAppHost } from '@core/core';
+import type { IAppHost } from '@core/core';
 
 export async function startup(host: IAppHost) {
 	host._register({
@@ -9,14 +10,16 @@ export async function startup(host: IAppHost) {
 		},
 	});
 
-	// const sensor1 = new SensorNoise({
-	// 	name: 'S1',
-	// });
+	const sensor1 = new SensorNoise({
+		name: 'S1',
+		sampleRate: 100000,
+		genreateTimer: 300,
+	});
 	const sensor2 = new SensorSine({
 		name: 'S2',
 		frequency: 3,
 		amplitude: 100,
-		sampleRate: 44100,
+		sampleRate: 100000,
 		genreateTimer: 700,
 	});
 
@@ -27,9 +30,7 @@ export async function startup(host: IAppHost) {
 	// 	sampleRate: 1000,
 	// })
 
-	const fft = new FFT({
-		name: 'fft1',
-	});
+	const fft = new FFT({ name: 'fft1' });
 
 	// const alert = new ValueAlert({
 	// 	name: '报警器',
@@ -63,5 +64,17 @@ export async function startup(host: IAppHost) {
 	// streamPipeline(sensor2, rawRecord2);
 	// streamPipeline(sensor2, fft);
 
+	sensor1.pipeTo(fft);
 	sensor2.pipeTo(fft);
+
+	for (let i = 1; i <= 10; i++) {
+		const fft = new FFT({ name: `fft-x${i + 1}` });
+		const sensor = new SensorNoise({
+			name: `noise-x${i}`,
+			sampleRate: 100000,
+			genreateTimer: 300,
+		});
+
+		sensor.pipeTo(fft);
+	}
 }

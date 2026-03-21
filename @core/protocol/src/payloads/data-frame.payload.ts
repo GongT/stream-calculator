@@ -12,7 +12,7 @@ export interface IDataPayload {
 	readonly content: Buffer;
 }
 
-const HEADER_MARKER = Buffer.from('DATA', 'ascii').readUInt32BE(0);
+const HEADER_MARKER = Buffer.from('DATA', 'ascii');
 
 const emptyFrame: IDataFrame = {
 	content: new Uint8Array(0),
@@ -22,15 +22,7 @@ const emptyFrame: IDataFrame = {
 };
 
 /**
-| 字段 | 类型/长度(字节) | 描述 |
-| --- | --- | --- |
-| function | uint32 | 功能码，表示具体的操作或命令，各程序自己定义，也可不用（设为0） |
-| timestamp | uint64 | 时间戳，表示数据包所包含数据的**开始**时间，单位为**毫秒** |
-| type | uint8 | 符号和类型，`'u'(0x75)` 表示无符号整数，`'s'(0x73)` 表示有符号整数，`'f'(0x66)` 表示有符号浮点数 |
-| bit_depth | int8 | 位深（见下方） |
-| rate | uint32 | 采样率，每**秒**点数 |
-| header | uint8*4 | 固定为 `DATA`，用于验证逻辑 |
-| array | ... | 数据内容 |
+ * 
  */
 export class DataPayload implements INetworkPayload, IDataPayload {
 	public func = 0;
@@ -74,7 +66,7 @@ export class DataPayload implements INetworkPayload, IDataPayload {
 		header.writeUInt32BE(this.rate, offset);
 		offset += 4;
 
-		header.writeUInt32BE(HEADER_MARKER, offset);
+		HEADER_MARKER.copy(header, offset);
 		offset += 4;
 
 		return Buffer.concat([header, swapToNetworkEndian(this.content, this.bit_depth)]);
@@ -97,10 +89,10 @@ export class DataPayload implements INetworkPayload, IDataPayload {
 		this.rate = data.readUInt32BE(offset);
 		offset += 4;
 
-		const header = data.readUInt32BE(offset);
+		const header = data.subarray(offset, offset + 4);
 		offset += 4;
-		if (header !== HEADER_MARKER) {
-			throw new Error(`Invalid header: ${header.toString(16)} (expect ${HEADER_MARKER.toString(16)})`);
+		if (Buffer.compare(header, HEADER_MARKER) !== 0) {
+			throw new Error(`Invalid header: ${header} (expect ${HEADER_MARKER})`);
 		}
 
 		this.content = swapToLocalEndian(data.subarray(offset), this.bit_depth, true);

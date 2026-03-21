@@ -1,6 +1,6 @@
 import { AppHost, convertToSourcePath, type IActivateProtocol } from '@core/core';
 import { createArgsReader } from '@idlebox/args';
-import { convertCaughtError, ErrorWithCode, ExitCode, registerGlobalLifecycle, SoftwareDefectError } from '@idlebox/common';
+import { convertCaughtError, ErrorWithCode, ExitCode, interval, registerGlobalLifecycle, SoftwareDefectError } from '@idlebox/common';
 import { createRootLogger, EnableLogLevel, logger, set_default_log_level } from '@idlebox/logger';
 import { workingDirectory } from '@idlebox/node';
 import { REPO_ROOT } from '@shared/common';
@@ -60,5 +60,17 @@ registerGlobalLifecycle(host);
 await host.activate();
 
 await mainAppExports.startup(host);
+
+if (process.stderr.isTTY && !d && !v) {
+	registerGlobalLifecycle(
+		interval(
+			1000,
+			() => {
+				host.printStatus();
+			},
+			true,
+		),
+	);
+}
 
 await host.start();

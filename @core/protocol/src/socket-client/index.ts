@@ -1,5 +1,4 @@
 import { connectTcp } from './connect.tcp.js';
-import { connectUdp } from './connect.udp.js';
 
 export interface IConnectOptions {
 	readonly address: string;
@@ -11,9 +10,8 @@ interface ICreateOptions extends IConnectOptions {
 }
 
 export function createProtocolSocket({ type = 'tcp', ...options }: ICreateOptions) {
-	if (type === 'udp') {
-		return connectUdp(options);
-	} else {
-		return connectTcp(options);
+	if (type !== 'tcp') {
+		throw new Error(`未实现: ${type}`);
 	}
+	return connectTcp(options);
 }

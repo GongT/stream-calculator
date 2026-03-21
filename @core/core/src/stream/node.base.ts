@@ -207,6 +207,11 @@ export abstract class BaseNode<T extends TypeArray.Any = TypeArray.Any> extends 
 		this.statistic.sentBytes += data.content.byteLength;
 
 		(this.stream as Readable).push(data);
+
+		const alertSize = 1024 * 64;
+		if ((this.stream as Readable).readableLength > alertSize) {
+			this.logger.warn`节点 ${this.displayName} 输出缓冲区长度 ${(this.stream as Readable).readableLength} 超过警戒线 ${alertSize}`;
+		}
 	}
 
 	public pipeTo(...nodes: IBaseStreamNode[]) {

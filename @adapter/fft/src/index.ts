@@ -1,11 +1,12 @@
 import { Adapter, adapterHost, CalculatorNode, LineReader } from '@core/core';
-import { assertArrayType, createProtocolSocket, TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
+import { createProtocolSocket, DataPayload, TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
 import { definePublicConstant } from '@idlebox/common';
 import { getPython } from '@shared/testing';
-import { resolve } from 'node:path';
 
 interface IOptions {
 	readonly name: string;
+	readonly magnitudeScale?: number;
+	readonly phaseScale?: number;
 }
 
 const spawnOptions = {
@@ -21,16 +22,20 @@ export class FFT extends CalculatorNode<TypeArray.S32> {
 
 	protected readonly communication!: ProtocolStream;
 	private readonly name: string;
+	private readonly mScale: number;
+	private readonly pScale: number;
 
 	constructor(options: IOptions) {
 		super(options.name);
 
 		this.name = options.name;
+		this.mScale = options.magnitudeScale ?? 10;
+		this.pScale = options.phaseScale ?? 1000;
 	}
 
 	protected override async initialize() {
 		const python = await getPython();
-		const args = resolve('-m', 'my_programs.fft.spectrum.server');
+		const args = ['-m', 'my_programs.fft.spectrum.server', '--magnitude-scale', this.mScale.toFixed(2), '--phase-scale', this.pScale.toFixed(2)];
 
 		const process = this.spawnWorker([python, ...args], spawnOptions);
 		const outputReader = this._register(new LineReader(process.stdout));
@@ -50,10 +55,24 @@ export class FFT extends CalculatorNode<TypeArray.S32> {
 		});
 		definePublicConstant(this, 'communication', socket);
 
-		socket.onDataFrame((dataFrame) => {
-			this.logger.verbose`收到FFT服务器算好的数据，共${dataFrame.content.byteLength}字节`;
-			assertArrayType(dataFrame, TypeArray.S32);
-			this.emitData(dataFrame);
+		await socket.sendKeepAlive();
+
+		this.logger.success`握手成功`;
+
+		socket.onNetworkPacket((packet) => {
+			const dataFrame = packet.payloadAs(DataPayload);
+			switch (dataFrame.func) {
+				case 1: // 频谱数据
+					this.logger.verbose`收到频谱数据，共${dataFrame.content.byteLength}字节`;
+					dataFrame.asTypedArray(TypeArray.S32);
+					break;
+				case 2: // 相位数据
+					this.logger.verbose`收到相位数据，共${dataFrame.content.byteLength}字节`;
+					dataFrame.asTypedArray(TypeArray.S32);
+					break;
+				default:
+					this.logger.warn`收到未知功能号的数据帧: ${dataFrame.func}`;
+			}
 		});
 	}
 

@@ -2,7 +2,7 @@ import asyncio
 import socket
 import struct
 from traceback import print_exc
-from typing import Callable, Coroutine, Literal
+from typing import Callable, Coroutine, Literal, Protocol
 
 from ..common import debug_dump_buffer, debug_output
 from .base.encoder import ProtocolEncoder
@@ -10,6 +10,12 @@ from .base.packet import AbstractPayload
 from .payloads.keep_alive import KeepAlivePayload, KeepAliveResponsePayload
 
 NetworkKind = Literal["tcp", "udp"]
+
+
+class ProtocolCallback(Protocol):
+    def __call__(
+        self, payload: AbstractPayload, metadata: dict | None
+    ) -> None | Coroutine: ...
 
 
 class ProtocolServer:
@@ -29,12 +35,12 @@ class ProtocolServer:
     ):
         self.encoder = ProtocolEncoder(agent, agent_id)
         self.kind = kind
-        self._on_data_received: list[Callable[[AbstractPayload], None]] = []
+        self._on_data_received: list[ProtocolCallback] = []
 
         self.server = None
         self.sock = None
 
-    def on_data_received(self, callback: Callable[[AbstractPayload], None | Coroutine]):
+    def on_data_received(self, callback: ProtocolCallback):
         self._on_data_received.append(callback)
 
     async def start(self, port: int = 0):
@@ -70,6 +76,7 @@ class ProtocolServer:
             self.sock = None
         else:
             self.sock = self.server
+            assert self.sock is not None, "Socket does not ready"
             await self.start_event_loop(self.sock)
 
     async def connect(self, address: str, port: int):
@@ -104,12 +111,12 @@ class ProtocolServer:
         loop = asyncio.get_running_loop()
         return await loop.sock_accept(sock)
 
-    async def send(self, payload: AbstractPayload):
+    async def send(self, payload: AbstractPayload, metadata: dict | None = None):
         assert self.sock is not None, "Socket does not ready"
 
-        packet = self.encoder.encode(payload)
+        packet = self.encoder.encode(payload, metadata)
 
-        debug_dump_buffer(packet, ">>> ")
+        # debug_dump_buffer(packet, ">>> ")
 
         loop = asyncio.get_running_loop()
         await loop.sock_sendall(self.sock, packet)
@@ -159,9 +166,11 @@ class ProtocolServer:
                 elif packet.try_get_payload(KeepAliveResponsePayload):
                     debug_output("Keep alive response received")
                 else:
-                    debug_output(f"Data frame received! ({packet.get_type()})")
+                    # debug_output(f"Data frame received! ({packet.get_type()})")
                     for callback in self._on_data_received:
-                        await callback(packet.payload)
+                        r = callback(packet.payload, metadata=packet.metadata)
+                        if r is not None:
+                            await r
             except Exception:
                 debug_output(f"事件循环中发生错误:")
                 print_exc()

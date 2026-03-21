@@ -32,6 +32,7 @@ export class SensorSine extends SendorNode {
 	private readonly sampleRate: number;
 
 	private readonly timer;
+	private readonly intervalMs: number;
 
 	private previousTime: number = Date.now();
 	private previousPhase = 0;
@@ -42,8 +43,9 @@ export class SensorSine extends SendorNode {
 		this.frequency = options.frequency;
 		this.amplitude = options.amplitude ?? 1;
 		this.sampleRate = options.sampleRate ?? 44100;
+		this.intervalMs = options.genreateTimer ?? 1000;
 
-		this.timer = new Interval(options.genreateTimer ?? 1000);
+		this.timer = new Interval(this.intervalMs);
 		this.timer.onTick(this.timerTick.bind(this));
 	}
 

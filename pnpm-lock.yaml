@@ -94,6 +94,12 @@ importers:
       '@core/core':
         specifier: workspace:^
         version: link:../../@core/core
+      '@core/protocol':
+        specifier: workspace:^
+        version: link:../../@core/protocol
+      '@idlebox/common':
+        specifier: ^1.5.18
+        version: 1.5.18
     devDependencies:
       '@core/custom-rig':
         specifier: 'workspace:'
