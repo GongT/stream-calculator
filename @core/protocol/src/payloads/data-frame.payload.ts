@@ -14,15 +14,14 @@ export interface IDataPayload {
 
 const HEADER_MARKER = Buffer.from('DATA', 'ascii');
 
-const emptyFrame: IDataFrame = {
+const emptyFrame: IDataFrame<TypeArray.Any> = {
 	content: new Uint8Array(0),
 	rate: 0,
 	timestamp: 0,
-	functionNumber: 0,
 };
 
 /**
- * 
+ *
  */
 export class DataPayload implements INetworkPayload, IDataPayload {
 	public func = 0;
@@ -34,7 +33,7 @@ export class DataPayload implements INetworkPayload, IDataPayload {
 
 	public readonly kind = Action.DATA;
 
-	constructor(buffer: IDataFrame = emptyFrame) {
+	constructor(buffer: IDataFrame<TypeArray.Any> = emptyFrame) {
 		if (buffer) {
 			const [type, bit_depth] = getTypeAndBitDepth(buffer.content);
 			this.type = type;

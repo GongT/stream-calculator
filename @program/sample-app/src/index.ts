@@ -1,6 +1,8 @@
 import { FFT } from '@adapter/fft';
+import { PublishWeb } from '@adapter/output-web';
 import { SensorNoise } from '@adapter/sensor-noise';
 import { SensorSine } from '@adapter/sensor-sine';
+import { WaveMerger } from '@adapter/wave-merge';
 import type { IAppHost } from '@core/core';
 
 export async function startup(host: IAppHost) {
@@ -21,6 +23,12 @@ export async function startup(host: IAppHost) {
 		amplitude: 100,
 		sampleRate: 100000,
 		genreateTimer: 700,
+	});
+
+	const merge = new WaveMerger({
+		name: 'm1',
+		dataType: Int32Array,
+		method: 'add',
 	});
 
 	// console.log(`sensor2:`, sensor2);
@@ -57,8 +65,16 @@ export async function startup(host: IAppHost) {
 	// 	options: {},
 	// });
 
-	sensor1.pipeTo(fft);
-	sensor2.pipeTo(fft);
+	sensor2.pipeTo(merge);
+	sensor1.pipeTo(merge);
+
+	merge.pipeTo(fft);
+
+	const pub1 = new PublishWeb({
+		guid: '2f4e73a4-5c74-4dab-bb6a-6cc8a8f9eeb1',
+		name: `sensor1`,
+	});
+	fft.pipeTo(pub1);
 
 	// for (let i = 1; i <= 10; i++) {
 	// 	const fft = new FFT({ name: `fft-x${i + 1}` });

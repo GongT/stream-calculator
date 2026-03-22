@@ -22,6 +22,14 @@
 		{
 			"$id": "package-tools/monorepo-tsconfig",
 			"path": "../../../@adapter/fft/src/tsconfig.json"
+		},
+		{
+			"$id": "package-tools/monorepo-tsconfig",
+			"path": "../../../@adapter/output-web/src/tsconfig.json"
+		},
+		{
+			"$id": "package-tools/monorepo-tsconfig",
+			"path": "../../../@adapter/wave-merge/src/tsconfig.json"
 		}
 	]
 }

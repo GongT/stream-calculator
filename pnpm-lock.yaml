@@ -160,6 +160,28 @@ importers:
         specifier: ^25.5.0
         version: 25.5.0
 
+  '@adapter/wave-merge':
+    dependencies:
+      '@core/core':
+        specifier: 'workspace:'
+        version: link:../../@core/core
+      '@core/protocol':
+        specifier: 'workspace:'
+        version: link:../../@core/protocol
+      '@idlebox/common':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+        version: link:../../../baobao/@idlebox/common
+      '@shared/testing':
+        specifier: 'workspace:'
+        version: link:../../@shared/testing
+    devDependencies:
+      '@core/custom-rig':
+        specifier: 'workspace:'
+        version: link:../../@core/custom-rig
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.5.0
+
   '@core/api':
     dependencies:
       '@idlebox/common':
@@ -351,12 +373,18 @@ importers:
       '@adapter/fft':
         specifier: 'workspace:'
         version: link:../../@adapter/fft
+      '@adapter/output-web':
+        specifier: 'workspace:'
+        version: link:../../@adapter/output-web
       '@adapter/sensor-noise':
         specifier: 'workspace:'
         version: link:../../@adapter/sensor-noise
       '@adapter/sensor-sine':
         specifier: 'workspace:'
         version: link:../../@adapter/sensor-sine
+      '@adapter/wave-merge':
+        specifier: 'workspace:'
+        version: link:../../@adapter/wave-merge
       '@core/core':
         specifier: 'workspace:'
         version: link:../../@core/core

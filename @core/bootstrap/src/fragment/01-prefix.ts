@@ -4,6 +4,7 @@ import { REPO_ROOT } from '@shared/common';
 import { logger } from '../tools/misc.js';
 
 workingDirectory.chdir(REPO_ROOT);
+process.stderr.setMaxListeners(20);
 
 registerNodejsExitHandler({
 	output(message) {

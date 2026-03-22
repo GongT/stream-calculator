@@ -1,4 +1,4 @@
-import { ExitCode, interval, registerGlobalLifecycle } from '@idlebox/common';
+import { ExitCode, interval, registerGlobalLifecycle, SoftwareDefectError } from '@idlebox/common';
 import { loadPackageByName } from '../tools/loader.js';
 import { logger } from '../tools/misc.js';
 import { applicationPackageName, backendPackageName, isDebug, isVerbose } from './00-args.js';
@@ -41,6 +41,9 @@ await Promise.all(nodes.map((node) => node.__initialize()));
 logger.info`开始数据流处理，总共${nodes.length}个节点`;
 for (const node of nodes) {
 	node.resume();
+	node.pipeTo = () => {
+		throw new SoftwareDefectError(`错过调用pipeTo的时机，必须在主程序(${applicationPackageName})的startup函数中调用pipeTo来连接节点 "${node.displayName}"`);
+	};
 }
 
 logger.debug`数据流处理中`;

@@ -1,7 +1,8 @@
-import type { IDataFrame, TypeArray } from '@core/protocol';
+import type { IDataFrame, IWithType, TypeArray } from '@core/protocol';
 import { convertCaughtError, definePublicConstant, SoftwareDefectError, timeout } from '@idlebox/common';
+import { randomUUID } from 'node:crypto';
 import { Duplex, Readable, Writable } from 'node:stream';
-import { getSerialNumber, instanceOf } from '../common/functions.js';
+import { getSerialNumber } from '../common/functions.js';
 import { AbstractBaseNode } from './node-tools.js';
 import type { IBaseStreamNode, IReadableStreamNode, IReadWriteStreamNode, IWritableStreamNode } from './types.js';
 
@@ -19,10 +20,11 @@ export type ConstructInfo = {
 /**
  * @internal
  */
-export abstract class BaseNode<T extends TypeArray.Any = TypeArray.Any> extends AbstractBaseNode implements IBaseStreamNode {
+export abstract class BaseNode<T = unknown> extends AbstractBaseNode implements IBaseStreamNode {
 	readonly isSender: boolean = false;
 	readonly isReceiver: boolean = false;
-	protected abstract readonly expectDataType: new () => T;
+	protected readonly expectDataType?: new () => T;
+	public readonly nodeGuid: string = randomUUID();
 
 	protected readonly stream!: NodeJS.ReadWriteStream | NodeJS.ReadableStream | NodeJS.WritableStream;
 	public readonly serial: number;
@@ -37,6 +39,7 @@ export abstract class BaseNode<T extends TypeArray.Any = TypeArray.Any> extends 
 	};
 
 	public readonly targets: BaseNode[] = [];
+	public readonly sources: BaseNode[] = [];
 
 	constructor(displayName?: string) {
 		super(displayName);
@@ -67,20 +70,27 @@ export abstract class BaseNode<T extends TypeArray.Any = TypeArray.Any> extends 
 	private async call_process(data: IDataFrame<T>) {
 		// this.logger.verbose` <<< ${data}`;
 
+		const contentAsTyped = data.content as TypeArray.Any;
+
 		const WantClass = this.expectDataType;
 		if (WantClass) {
-			if (data.content instanceof WantClass === false) {
-				this.logger.error`数据类型不匹配: 期望 ${WantClass.name}，但收到 ${data.content.constructor.name}`;
+			if (contentAsTyped instanceof WantClass === false) {
+				this.logger.error`数据类型不匹配: 期望 ${WantClass.name}，但收到 ${contentAsTyped.constructor.name}`;
 				this.statistic.error++;
 				return;
 			}
 		}
 
+		const metadata = (data as any).metadata;
+
 		this.statistic.received++;
-		this.statistic.receivedBytes += data.content.byteLength;
+
+		if (contentAsTyped.byteLength) {
+			this.statistic.receivedBytes += contentAsTyped.byteLength;
+		}
 
 		try {
-			await this.process(data);
+			await this.process(data, metadata);
 		} catch (err) {
 			this.statistic.error++;
 			throw convertCaughtError(err);
@@ -190,26 +200,37 @@ export abstract class BaseNode<T extends TypeArray.Any = TypeArray.Any> extends 
 	 *
 	 * @virtual
 	 */
-	protected process(data: IDataFrame<T>): void | Promise<void> {
+	protected process(data: IDataFrame<T>, _metadata?: IWithType): void | Promise<void> {
 		throw new Error(`节点 "${this.displayName}" 未实现 process 方法，无法处理数据: ${data}`);
 	}
 
-	protected emitData(data: IDataFrame<T>) {
+	protected emitData(data: IDataFrame<T>, metadata?: IWithType) {
 		// this.logger.verbose` >>> ${data}`;
 
-		if (!instanceOf(data.content, this.expectDataType)) {
-			// if (!((data.content as any) instanceof this.expectDataType)) {
-			this.logger.error`数据类型不匹配: 期望 ${this.expectDataType.name}，但试图发送 ${data.content.constructor.name}`;
-			this.statistic.error++;
-			return;
+		const contentAsTyped = data.content as TypeArray.Any;
+
+		const WantClass = this.expectDataType;
+		if (WantClass) {
+			if (contentAsTyped instanceof WantClass === false) {
+				// if (!((data.content as any) instanceof this.expectDataType)) {
+				this.logger.error`数据类型不匹配: 期望 ${this.expectDataType.name}，但试图发送 ${contentAsTyped.constructor.name}`;
+				this.statistic.error++;
+				return;
+			}
 		}
 
 		if (!data.functionNumber) data.functionNumber = 0;
 
 		this.statistic.sent++;
-		this.statistic.sentBytes += data.content.byteLength;
+		if (contentAsTyped.byteLength) {
+			this.statistic.sentBytes += contentAsTyped.byteLength;
+		}
 
-		(this.stream as Readable).push(data);
+		(this.stream as Readable).push({
+			...data,
+			flow: data.flow ? [...data.flow, this.nodeGuid] : [this.nodeGuid],
+			metadata: metadata,
+		});
 
 		const alertSize = 1024 * 64;
 		if ((this.stream as Readable).readableLength > alertSize) {
@@ -243,6 +264,7 @@ export abstract class BaseNode<T extends TypeArray.Any = TypeArray.Any> extends 
 			const source = this.stream as NodeJS.ReadableStream;
 			source.pipe(target);
 			this.targets.push(node);
+			node.sources.push(this);
 		}
 
 		return nodes[0];

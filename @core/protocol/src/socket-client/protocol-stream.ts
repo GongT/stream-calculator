@@ -69,10 +69,13 @@ export class ProtocolStream extends EnhancedAsyncDisposable {
 		return this._ka.p;
 	}
 
-	async sendDataFrame<T extends TypeArray.Any>(data: IDataFrame<T>) {
+	async sendDataFrame<T extends TypeArray.Any>(data: IDataFrame<T>, metadata?: any) {
 		const payload = new DataPayload(data);
 
 		const packet = new NetworkPacket(this.agent, this.agentId, payload);
+		if (metadata !== undefined) {
+			packet.metadata = metadata;
+		}
 
 		await this.send(packet);
 	}

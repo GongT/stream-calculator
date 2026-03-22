@@ -2,8 +2,8 @@ from typing import Literal
 
 import numpy
 
-DataType = Literal[b"u"] | Literal[b"s"] | Literal[b"f"]
-BitDepth = Literal[8] | Literal[16] | Literal[32] | Literal[64]
+DataType = Literal[b"u", b"s", b"f"]
+BitDepth = Literal[8, 16, 32, 64]
 
 
 def get_dtype(type: DataType, bit_depth: BitDepth):

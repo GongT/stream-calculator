@@ -1,0 +1,24 @@
+{
+	"extends": "../node_modules/@core/custom-rig/package/tsconfig.json",
+	"compilerOptions": {
+		"typeRoots": ["../node_modules/@types", "../node_modules"],
+		"outDir": "../lib",
+		"rootDir": "./",
+		"types": ["node"],
+		"noEmitOnError": false
+	},
+	"references": [
+		{
+			"$id": "package-tools/monorepo-tsconfig",
+			"path": "../../../@core/core/src/tsconfig.json"
+		},
+		{
+			"$id": "package-tools/monorepo-tsconfig",
+			"path": "../../../@shared/testing/src/tsconfig.json"
+		},
+		{
+			"$id": "package-tools/monorepo-tsconfig",
+			"path": "../../../@core/protocol/src/tsconfig.json"
+		}
+	]
+}

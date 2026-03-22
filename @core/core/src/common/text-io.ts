@@ -69,8 +69,11 @@ export class LineReader extends AbstractTextReader {
 	}
 }
 
-type ObjectMatchFunction<T> = (obj: T) => boolean;
-export class JsonReader<T> extends AbstractTextReader {
+export interface ITypedProtocol {
+	readonly type: string;
+}
+
+export class JsonReader<T = ITypedProtocol> extends AbstractTextReader {
 	private readonly _onData = new Emitter<T>();
 	public readonly onData = this._onData.event;
 
@@ -93,8 +96,8 @@ export class JsonReader<T> extends AbstractTextReader {
 		});
 	}
 
-	waitFor(matcher: ObjectMatchFunction<T>, cancellationToken?: CancellationToken) {
-		return new Promise<T>((resolve, reject) => {
+	waitFor<R extends T>(matcher: (obj: T) => obj is R, cancellationToken?: CancellationToken) {
+		return new Promise<R>((resolve, reject) => {
 			const dis = this.onData((data) => {
 				if (matcher(data)) {
 					dis.dispose();

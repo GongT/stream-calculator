@@ -11,7 +11,7 @@ import type { IDataFrame, TypeArray } from './type.base.js';
  * @param frame 数据帧
  * @returns 持续时间，单位为毫秒
  */
-export function durationOf(frame: IDataFrame): number {
+export function durationOf(frame: IDataFrame<TypeArray.Any>): number {
 	return (1000 * frame.content.length) / frame.rate;
 }
 
@@ -23,7 +23,7 @@ export function durationOf(frame: IDataFrame): number {
  * @param frame 数据帧
  * @returns 时间戳，单位为毫秒
  */
-export function timestampAfter(frame: IDataFrame): number {
+export function timestampAfter(frame: IDataFrame<TypeArray.Any>): number {
 	return frame.timestamp + durationOf(frame);
 }
 

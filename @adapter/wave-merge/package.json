@@ -1,20 +1,20 @@
 {
-	"name": "@core/protocol",
-	"exports": "./lib/autoindex.generated.js",
+	"name": "@adapter/wave-merge",
+	"description": "合并多个输入流",
+	"exports": "./lib/index.js",
 	"type": "module",
 	"scripts": {
-		"prebuild": "autoindex",
 		"build": "tsc -b src",
 		"watch": "tsc -b src -w",
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
+		"@core/core": "workspace:",
+		"@core/protocol": "workspace:",
 		"@idlebox/common": "^1.5.20",
-		"@idlebox/logger": "^0.0.22",
-		"@idlebox/node": "^1.4.29"
+		"@shared/testing": "workspace:"
 	},
 	"devDependencies": {
-		"@build-script/autoindex": "^0.0.21",
 		"@core/custom-rig": "workspace:",
 		"@types/node": "^25.5.0"
 	}
