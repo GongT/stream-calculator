@@ -1,0 +1,31 @@
+{
+	"name": "@core/api",
+	"exports": {
+		".": "./lib/autoindex.generated.js",
+		"./private": "./lib/private.js"
+	},
+	"type": "module",
+	"scripts": {
+		"prebuild": "autoindex",
+		"build": "tsc -b src",
+		"watch": "tsc -b src -w",
+		"clean": "rimraf lib"
+	},
+	"dependencies": {
+		"@idlebox/common": "^1.5.20",
+		"@idlebox/logger": "^0.0.22",
+		"@idlebox/node": "^1.4.29",
+		"bufferutil": "^4.1.0",
+		"express": "^5.2.1",
+		"ws": "^8.20.0",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@build-script/autoindex": "^0.0.21",
+		"@core/core": "workspace:",
+		"@core/custom-rig": "workspace:",
+		"@types/express": "^5.0.6",
+		"@types/node": "^25.5.0",
+		"@types/ws": "^8.18.1"
+	}
+}

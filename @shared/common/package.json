@@ -9,8 +9,8 @@
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
-		"@idlebox/common": "^1.5.18",
-		"@idlebox/node": "^1.4.27"
+		"@idlebox/common": "^1.5.20",
+		"@idlebox/node": "^1.4.29"
 	},
 	"devDependencies": {
 		"@build-script/autoindex": "^0.0.21",

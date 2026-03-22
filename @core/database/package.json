@@ -9,7 +9,7 @@
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
-		"@idlebox/common": "^1.5.18",
+		"@idlebox/common": "^1.5.20",
 		"@core/protocol": "workspace:"
 	},
 	"devDependencies": {

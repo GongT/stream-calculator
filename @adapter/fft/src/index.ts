@@ -1,4 +1,4 @@
-import { Adapter, adapterHost, CalculatorNode, LineReader } from '@core/core';
+import { Adapter, CalculatorNode, LineReader } from '@core/core';
 import { createProtocolSocket, DataPayload, TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
 import { definePublicConstant } from '@idlebox/common';
 import { getPython } from '@shared/testing';
@@ -82,10 +82,10 @@ export class FFT extends CalculatorNode<TypeArray.S32> {
 	}
 }
 
-adapterHost.registerNode(FFT);
+application.adapters.registerNode(FFT);
 
 class FFTAdapter extends Adapter {
 	public override activate(): void | Promise<void> {}
 }
 
-adapterHost.registerAdapter(FFTAdapter);
+application.adapters.registerAdapter(FFTAdapter);

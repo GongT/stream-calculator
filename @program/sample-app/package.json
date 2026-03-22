@@ -8,10 +8,10 @@
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
-		"@core/core": "workspace:^",
-		"@adapter/sensor-sine": "workspace:^",
-		"@adapter/sensor-noise": "workspace:^",
-		"@adapter/fft": "workspace:^"
+		"@core/core": "workspace:",
+		"@adapter/sensor-sine": "workspace:",
+		"@adapter/sensor-noise": "workspace:",
+		"@adapter/fft": "workspace:"
 	},
 	"devDependencies": {
 		"@core/custom-rig": "workspace:",

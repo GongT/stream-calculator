@@ -1,0 +1,18 @@
+{
+	"name": "@adapter/output-web",
+	"exports": "./lib/index.js",
+	"type": "module",
+	"scripts": {
+		"build": "tsc -b src",
+		"watch": "tsc -b src -w",
+		"clean": "rimraf lib"
+	},
+	"dependencies": {
+		"@core/core": "workspace:",
+		"@core/protocol": "workspace:"
+	},
+	"devDependencies": {
+		"@core/custom-rig": "workspace:",
+		"@types/node": "^25.5.0"
+	}
+}

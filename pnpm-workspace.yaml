@@ -6,35 +6,39 @@ packages:
   - '@shared/*'
 
 enablePrePostScripts: true
+
+fetchRetries: 1000
+gitChecks: false
+
+hoist: false
+hoistPattern:
+  - ""
 hoistWorkspacePackages: false
+ignoreWorkspaceCycles: true
 
 ignoredOptionalDependencies:
   - fsevents
+networkConcurrency: 3
+nodeOptions: ''
 onlyBuiltDependencies:
   - '@biomejs/biome'
+  - '@parcel/watcher'
+  - bufferutil
+  - esbuild
 
-strictPeerDependencies: true
-
-hoist: false
 publicHoistPattern:
   - "@types/*"
   - "@biomejs/biome"
   - "source-map-support"
   - "@build-script/baseline-rig"
-hoistPattern:
-  - ""
+registry: https://registry.npmmirror.com
+savePrefix: '^'
 
 saveWorkspaceProtocol: rolling
-savePrefix: '^'
-ignoreWorkspaceCycles: true
-nodeOptions: ''
 
-fetchRetries: 1000
-networkConcurrency: 3
-gitChecks: false
-registry: https://registry.npmmirror.com
+strictPeerDependencies: true
 
-# overrides:
-#   "@idlebox/logger": "/data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger"
-#   "@idlebox/node": "/data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/node"
-#   "@idlebox/common": "/data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common"
+overrides:
+  #   "@idlebox/logger": "/data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger"
+  "@idlebox/common": "/data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common"
+  "@idlebox/node": "/data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/node"

@@ -1,42 +1,75 @@
-import { EnhancedAsyncDisposable } from '@idlebox/common';
-import { createLogger } from '@idlebox/logger';
-import { adapterHost } from '../adapter-helpers/adapter-host.js';
-import { HttpApiHost } from '../http-api/http-api-host.js';
-import type { IAppHost } from './activate.js';
+import type { IApiHost } from '@core/api';
+import { ApiHost } from '@core/api/private';
+import type { EventRegister, IAsyncDisposable } from '@idlebox/common';
+import { definePublicConstant, EnhancedAsyncDisposable, registerGlobalLifecycle } from '@idlebox/common';
+import { createLogger, type IMyLogger } from '@idlebox/logger';
+import { AdapterHost } from '../adapter-helpers/adapter-host.js';
 
-export class AppHost extends EnhancedAsyncDisposable implements IAppHost {
-	readonly api = new HttpApiHost();
-	readonly adapters = adapterHost;
+/**
+ * 应用程序宿主
+ * 各种适配器、API、数据流处理节点、数据处理模块的容器
+ * 基本没有逻辑
+ */
+export interface IAppHost {
+	/**
+	 * 程序即将推出，在所有清理之前同步执行
+	 */
+	readonly onBeforeDispose: EventRegister<void>;
 
+	/**
+	 * 程序即将推出，在所有清理之后同步执行
+	 */
+	readonly onPostDispose: EventRegister<void>;
+
+	/**
+	 * 注册资源到全局，不建议直接使用
+	 */
+	_register(d: IAsyncDisposable): void;
+
+	/**
+	 * HTTP、websocket宿主
+	 */
+	readonly api: IApiHost;
+
+	/**
+	 * 适配器宿主
+	 */
+	readonly adapters: AdapterHost;
+
+	/**
+	 * 日志
+	 */
+	readonly logger: IMyLogger;
+
+	printStatus(): void;
+}
+
+class AppHost extends EnhancedAsyncDisposable implements IAppHost {
 	readonly logger = createLogger('app');
+
+	readonly api = this._register(new ApiHost(this.logger.extend('api')), true);
+	readonly adapters = this._register(new AdapterHost(this.logger.extend('adapter')));
 
 	constructor() {
 		super('AppHost');
+		registerGlobalLifecycle(this);
 	}
 
-	async activate() {
-		await this.adapters.activate();
-		this.logger.debug`用户程序已激活`;
-	}
-
-	async start() {
-		this.logger.debug`流程定义已加载`;
-
-		const nodes = [];
-		for (const node of this.adapters.nodes) {
-			nodes.push(node);
-		}
-		await Promise.all(nodes.map((node) => node.__initialize()));
-
-		this.logger.info`开始数据流处理，总共${nodes.length}个节点`;
-		for (const node of nodes) {
-			node.resume();
-		}
-
-		this.logger.debug`数据流处理中`;
+	override async dispose() {
+		this.logger.log`正在清理资源...`;
+		await super.dispose();
+		this.logger.log`资源已清理完毕`;
 	}
 
 	printStatus() {
 		// TODO
 	}
+}
+
+/**
+ * 导出全局变量
+ */
+definePublicConstant(globalThis, 'application', new AppHost());
+declare global {
+	const application: IAppHost;
 }

@@ -1,13 +1,4 @@
-import type { EventRegister, IAsyncDisposable } from '@idlebox/common';
-import type { AdapterHost } from '../adapter-helpers/adapter-host.js';
-import type { HttpApiHost } from '../http-api/http-api-host.js';
-
-export interface IAppHost {
-	readonly onBeforeDispose: EventRegister<void>;
-	_register(d: IAsyncDisposable): void;
-	readonly api: HttpApiHost;
-	readonly adapters: AdapterHost;
-}
+import type { IAppHost } from './app-host.js';
 
 export interface IActivateProtocol {
 	startup(register: IAppHost): Promise<void> | void;

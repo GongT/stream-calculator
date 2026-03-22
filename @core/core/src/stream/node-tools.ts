@@ -3,7 +3,6 @@ import { createLogger } from '@idlebox/logger';
 import { isShuttingDown } from '@idlebox/node';
 import { execa, type Options as _ExecOptions } from 'execa';
 import { basename } from 'node:path';
-import { adapterHost } from '../adapter-helpers/adapter-host.js';
 import type { Writeable } from '../common/functions.js';
 import { makeLoggerStream } from '../common/logging-stream.js';
 
@@ -25,7 +24,7 @@ export abstract class AbstractBaseNode extends EnhancedAsyncDisposable {
 	constructor(displayName?: string) {
 		super();
 
-		const nodeInfo = adapterHost.getNodeInfo(this.constructor);
+		const nodeInfo = application.adapters.getNodeInfo(this.constructor);
 
 		this.adapter = nodeInfo.adapter;
 

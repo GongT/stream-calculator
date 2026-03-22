@@ -67,10 +67,13 @@ export abstract class BaseNode<T extends TypeArray.Any = TypeArray.Any> extends 
 	private async call_process(data: IDataFrame<T>) {
 		// this.logger.verbose` <<< ${data}`;
 
-		if (!(data.content instanceof this.expectDataType)) {
-			this.logger.error`数据类型不匹配: 期望 ${this.expectDataType.name}，但收到 ${data.content.constructor.name}`;
-			this.statistic.error++;
-			return;
+		const WantClass = this.expectDataType;
+		if (WantClass) {
+			if (data.content instanceof WantClass === false) {
+				this.logger.error`数据类型不匹配: 期望 ${WantClass.name}，但收到 ${data.content.constructor.name}`;
+				this.statistic.error++;
+				return;
+			}
 		}
 
 		this.statistic.received++;

@@ -57,24 +57,17 @@ export async function startup(host: IAppHost) {
 	// 	options: {},
 	// });
 
-	// streamPipeline(sensor1, resampler, fft, [fftRecord1, alert]);
-	// streamPipeline(sensor1, rawRecord1);
-
-	// streamPipeline(sensor2, resampler, fft, [fftRecord2, alert]);
-	// streamPipeline(sensor2, rawRecord2);
-	// streamPipeline(sensor2, fft);
-
 	sensor1.pipeTo(fft);
 	sensor2.pipeTo(fft);
 
-	for (let i = 1; i <= 10; i++) {
-		const fft = new FFT({ name: `fft-x${i + 1}` });
-		const sensor = new SensorNoise({
-			name: `noise-x${i}`,
-			sampleRate: 100000,
-			genreateTimer: 300,
-		});
+	// for (let i = 1; i <= 10; i++) {
+	// 	const fft = new FFT({ name: `fft-x${i + 1}` });
+	// 	const sensor = new SensorNoise({
+	// 		name: `noise-x${i}`,
+	// 		sampleRate: 100000,
+	// 		genreateTimer: 300,
+	// 	});
 
-		sensor.pipeTo(fft);
-	}
+	// 	sensor.pipeTo(fft);
+	// }
 }

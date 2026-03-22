@@ -1,4 +1,4 @@
-import { Adapter, adapterHost, SendorNode } from '@core/core';
+import { Adapter, SendorNode } from '@core/core';
 import { Interval } from '@idlebox/common';
 import { generateSineSensorData } from './math.js';
 
@@ -77,9 +77,9 @@ export class SensorSine extends SendorNode {
 		});
 	}
 }
-adapterHost.registerNode(SensorSine);
+application.adapters.registerNode(SensorSine);
 
 class SensorSineAdapter extends Adapter {
 	public override activate(): void | Promise<void> {}
 }
-adapterHost.registerAdapter(SensorSineAdapter);
+application.adapters.registerAdapter(SensorSineAdapter);

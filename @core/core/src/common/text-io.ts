@@ -19,7 +19,7 @@ abstract class AbstractTextReader {
 			this._onLine.fireNoError(line);
 		});
 		splitStream.on('end', () => {
-			this._onEnd.fireNoError();
+			if (!this._onEnd.hasDisposed) this._onEnd.fireNoError();
 		});
 		this.stream = splitStream;
 	}

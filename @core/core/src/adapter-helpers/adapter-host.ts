@@ -1,13 +1,5 @@
-import {
-	convertCaughtError,
-	EnhancedAsyncDisposable,
-	getErrorFrame,
-	globalSingletonStrong,
-	prettyPrintError,
-	registerGlobalLifecycle,
-	SoftwareDefectError,
-} from '@idlebox/common';
-import { createLogger } from '@idlebox/logger';
+import { convertCaughtError, EnhancedAsyncDisposable, getErrorFrame, prettyPrintError, SoftwareDefectError } from '@idlebox/common';
+import { type IMyLogger } from '@idlebox/logger';
 import { rememberDeclareation } from '../common/debug.js';
 import { reflectBinding } from '../package-reflect/binding.js';
 import type { BaseNode, BaseNodeConstructor } from '../stream/node.base.js';
@@ -36,14 +28,9 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 	private readonly _registry = new Set<AdapterConstructor>();
 	private readonly _instances = new Map<AdapterConstructor, Adapter>();
 	private readonly _nodeClasses = new Map<BaseNodeConstructor, Adapter>();
-	private readonly logger;
 
-	constructor() {
+	constructor(public readonly logger: IMyLogger) {
 		super('AdapterHost');
-
-		this.logger = createLogger(`adapter:host`);
-
-		registerGlobalLifecycle(this);
 	}
 
 	get instances() {
@@ -175,5 +162,3 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 		return null;
 	}
 }
-
-export const adapterHost = globalSingletonStrong('AdapterHost', () => new AdapterHost());

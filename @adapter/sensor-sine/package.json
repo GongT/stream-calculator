@@ -9,9 +9,9 @@
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
-		"@core/core": "workspace:^",
-		"@core/protocol": "workspace:^",
-		"@idlebox/common": "^1.5.18"
+		"@core/core": "workspace:",
+		"@core/protocol": "workspace:",
+		"@idlebox/common": "^1.5.20"
 	},
 	"devDependencies": {
 		"@core/custom-rig": "workspace:",

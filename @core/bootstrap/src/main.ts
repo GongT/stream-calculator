@@ -9,4 +9,5 @@ if (process.stderr.isTTY) {
 const { registerNodejsExitHandler } = await import('@idlebox/node');
 registerNodejsExitHandler();
 
-await import('./load-main-app.js');
+await import('./fragment/01-prefix.js');
+await import('./fragment/99-main.js');

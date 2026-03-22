@@ -9,13 +9,14 @@
 	},
 	"dependencies": {
 		"@idlebox/args": "^0.0.26",
-		"@idlebox/common": "^1.5.18",
+		"@idlebox/common": "^1.5.20",
 		"@idlebox/logger": "^0.0.22",
-		"@idlebox/node": "^1.4.27",
+		"@idlebox/node": "^1.4.29",
 		"@idlebox/source-map-support": "^0.0.19",
-		"@core/core": "workspace:^",
-		"@program/sample-app": "workspace:^",
-		"@shared/common": "workspace:^"
+		"@core/core": "workspace:",
+		"@program/sample-app": "workspace:",
+		"@program/sample-management": "workspace:",
+		"@shared/common": "workspace:"
 	},
 	"devDependencies": {
 		"@core/custom-rig": "workspace:",

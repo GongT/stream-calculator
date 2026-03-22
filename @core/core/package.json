@@ -3,16 +3,17 @@
 	"exports": "./lib/autoindex.generated.js",
 	"type": "module",
 	"scripts": {
-		"prebuild": "autoindex src/tsconfig.json",
+		"prebuild": "autoindex",
 		"build": "tsc -b src",
 		"watch": "tsc -b src -w",
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
 		"@core/protocol": "workspace:",
-		"@idlebox/common": "^1.5.18",
+		"@core/api": "workspace:",
+		"@idlebox/common": "^1.5.20",
 		"@idlebox/logger": "^0.0.22",
-		"@idlebox/node": "^1.4.27",
+		"@idlebox/node": "^1.4.29",
 		"@types/split2": "^4.2.3",
 		"execa": "^9.6.1",
 		"split2": "^4.2.0"

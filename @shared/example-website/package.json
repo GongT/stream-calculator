@@ -1,0 +1,23 @@
+{
+	"name": "@shared/example-website",
+	"exports": "./lib/index.js",
+	"type": "module",
+	"scripts": {
+		"prebuild": "codegen src",
+		"build": "tsc -b src",
+		"watch": "tsc -b src -w",
+		"start": "vite",
+		"clean": "rimraf lib"
+	},
+	"dependencies": {
+		"@build-script/codegen": "^1.0.21",
+		"preact": "^10.29.0",
+		"sass": "^1.98.0",
+		"vite": "^8.0.1"
+	},
+	"devDependencies": {
+		"@core/custom-rig": "workspace:",
+		"@preact/preset-vite": "^2.10.5",
+		"vite": "^8.0.1"
+	}
+}
