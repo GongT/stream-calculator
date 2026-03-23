@@ -4,7 +4,7 @@ import { Action, Payload } from '../networking/packet.decoupling.js';
 
 export interface IKeepAlivePayload {
 	/**
-	 * 毫秒时间戳
+	 * 微秒时间戳
 	 */
 	readonly timestamp: TimestampT;
 }
@@ -12,7 +12,7 @@ export interface IKeepAlivePayload {
 abstract class KeepAlivePayloadBase implements INetworkPayload, IKeepAlivePayload {
 	abstract readonly kind: Action;
 
-	constructor(public timestamp: TimestampT = Date.now()) {}
+	constructor(public timestamp: TimestampT = Number(process.hrtime.bigint() / 1000n)) {}
 
 	encode(): Buffer {
 		const buffer = Buffer.allocUnsafe(8);

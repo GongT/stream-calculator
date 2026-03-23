@@ -1,12 +1,16 @@
 import { convertCaughtError, EnhancedAsyncDisposable, getErrorFrame, prettyPrintError, SoftwareDefectError } from '@idlebox/common';
-import { type IMyLogger } from '@idlebox/logger';
+import type{  IMyLogger } from '@idlebox/logger';
 import { rememberDeclareation } from '../common/debug.js';
 import { reflectBinding } from '../package-reflect/binding.js';
-import type { BaseNode, BaseNodeConstructor } from '../stream/node.base.js';
+import type { INodeConstruct } from '../stream/node.abstract.js';
+import type { INode } from '../stream/types.js';
 import { Adapter, type IBaseAdapterOptions } from './adapter.js';
 
 type AdapterConstructor = new (options: IBaseAdapterOptions) => Adapter;
 
+/**
+ * @internal
+ */
 export interface INodeInfo {
 	readonly adapter: Adapter;
 	readonly constructorName: string;
@@ -27,7 +31,7 @@ const endingRowCol = /:\d+:\d+\)?$/;
 export class AdapterHost extends EnhancedAsyncDisposable {
 	private readonly _registry = new Set<AdapterConstructor>();
 	private readonly _instances = new Map<AdapterConstructor, Adapter>();
-	private readonly _nodeClasses = new Map<BaseNodeConstructor, Adapter>();
+	private readonly _nodeClasses = new Map<INodeConstruct, Adapter>();
 
 	constructor(public readonly logger: IMyLogger) {
 		super('AdapterHost');
@@ -37,7 +41,7 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 		return this._instances.values();
 	}
 
-	get nodes(): IteratorObject<BaseNode> {
+	get nodes(): IteratorObject<INode> {
 		return this._instances.values().flatMap((item) => item.getNodes());
 	}
 
@@ -76,7 +80,7 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 	}
 
 	getNodeInfo(constructor: Function): INodeInfo {
-		const adapter = this._nodeClasses.get(constructor as BaseNodeConstructor);
+		const adapter = this._nodeClasses.get(constructor as INodeConstruct);
 		if (!adapter) {
 			this.logger.info`${[...this._nodeClasses.keys().map((e) => e.name)]}`;
 			throw new Error(`未找到节点信息，构造函数: ${constructor.name} (是否正确使用 @adapterHost.registerNode 注册了节点？) `);
@@ -93,13 +97,13 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 		};
 	}
 
-	registerNode(node: BaseNodeConstructor) {
+	registerNode(node: INodeConstruct) {
 		const caller = getErrorFrame(new Error(), 1);
 		const filepath = caller.replace(prefix, '').replace(endingRowCol, '');
 		this.deferAddNodes.push([node, filepath]);
 	}
 
-	private readonly deferAddNodes: [BaseNodeConstructor, string][] = [];
+	private readonly deferAddNodes: [INodeConstruct, string][] = [];
 	private fulfillAddNodes() {
 		for (const [NodeClass, filepath] of this.deferAddNodes) {
 			const AdapterClass = this.getAdapterClassAt(filepath);
@@ -122,7 +126,7 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 	/**
 	 * @internal
 	 */
-	private _addNodeClass(node: BaseNodeConstructor, adapter: Adapter) {
+	private _addNodeClass(node: INodeConstruct, adapter: Adapter) {
 		const exists = this._nodeClasses.get(node);
 		if (exists) {
 			this.logger.verbose`节点${node.name}已经注册过了(${exists.options.packageJson.name})`;

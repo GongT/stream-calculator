@@ -1,78 +1,86 @@
-import { calculateBytesPerMillisecond, CalculatorNode } from '@core/core';
-import type { IDataFrame, TypeArray } from '@core/protocol';
-import { SoftwareDefectError } from '@idlebox/common';
+import { calculateDataPoints, calculateTimeDelta, CalculatorNode, concatTypedArrays } from '@core/core';
+import type { IDataFrame, TimestampT, TypeArray } from '@core/protocol';
 
 interface IOptions {
 	readonly name: string;
 	/**
-	 * 输出数据的时间片长度，单位毫秒
+	 * 输出数据的时间片长度，单位微秒
 	 */
-	readonly timeSlice: number;
+	readonly duration: TimestampT;
 }
 
 interface IBuffer {
-	timeCursor: number;
-	readonly rate: number;
-
-	contents: Buffer;
+	Class: TypeArray.C;
+	contents: TypeArray.Any;
+	startTime: number;
+	points: number;
 }
 
 /**
- * 时间对齐切片
+ * 重整包大小
  *
- * 经过此节点后，每个包的数据恒为timeSlice毫秒的数据
+ * 经过此节点后，每个包的数据恒为 duration 微秒的数据
+ * 可缩可放
+ *
+ * 此节点对functionNumber做多路复用
  */
-export class TimeSlice extends CalculatorNode<TypeArray.Any> {
-	private readonly timeSlice: number;
-
-	private readonly buffers = new Map<number, IBuffer>();
+export class FrameResizer extends CalculatorNode<TypeArray.Any> {
+	private readonly duration: TimestampT;
 
 	constructor(options: IOptions) {
 		super(options.name);
 
-		this.timeSlice = options.timeSlice;
+		this.duration = options.duration;
 	}
 
-	override resume() {
-		if (this.sources.length > 1) {
-			throw new Error('TimeSlice必须只有一个输入源');
-		}
-	}
-
-	private getBuffer(functionNumber: number, thatData: IDataFrame<TypeArray.Any>): IBuffer {
-		let buffer = this.buffers.get(functionNumber);
-		if (!buffer) {
-			let time = thatData.timestamp;
-			if (time % this.timeSlice !== 0) {
-				const timeDeltaMs = time % this.timeSlice;
-
-				// 对齐到前一个时间片
-				time = time - timeDeltaMs;
-
-				// 差出的数据用0填充
-				const padding = Buffer.alloc(calculateBytesPerMillisecond(thatData.rate, thatData.content.constructor) * timeDeltaMs);
-				const concatenatedBuffer = Buffer.concat([padding, Buffer.from(thatData.content.buffer)]).buffer;
-
-				const Class = thatData.content.constructor as typeof Uint8Array;
-				Object.assign(thatData, { content: new Class(concatenatedBuffer) }); // 强制重写只读属性
+	override process(data: IDataFrame<TypeArray.Any>) {
+		return this.multiplexFunction(data, (ctx: IBuffer, isNew) => {
+			if (isNew) {
+				ctx.Class = data.content.constructor as TypeArray.C;
+				ctx.contents = new ctx.Class(0);
+				ctx.startTime = 0;
+				ctx.points = calculateDataPoints(this.duration, data.rate);
 			}
-			buffer = {
-				timeCursor: time,
-				rate: thatData.rate,
-				contents: Buffer.alloc(),
-			};
-			this.buffers.set(functionNumber, buffer);
-		} else if (thatData.rate !== buffer.rate) {
-			throw new SoftwareDefectError(`同一functionNumber的数据采样率不一致，之前是 ${buffer.rate}Hz，现在是 ${thatData.rate}Hz`);
-		}
-		return buffer;
+
+			if (Math.abs(data.timestamp - ctx.startTime) > this.duration / 2) {
+				// 如果数据帧的timestamp与当前时间片的startTime相差过大
+				this.logger.warn`数据帧的timestamp与当前时间片的startTime相差过大，数据源的时钟不准确，报告时间=${data.timestamp}, 采样点计数时间=${ctx.startTime}`;
+			}
+
+			const { timestamp, remains } = this.cut(
+				{
+					...data,
+					timestamp: ctx.startTime,
+					content: concatTypedArrays([ctx.contents, data.content]),
+				},
+				ctx.points,
+			);
+
+			ctx.startTime = timestamp;
+			ctx.contents = remains;
+		});
 	}
 
-	override async process(data: IDataFrame<TypeArray.Any>) {
-		const buffer = this.getBuffer(data.functionNumber ?? 0, data);
+	private cut(data: IDataFrame<TypeArray.Any>, points: number) {
+		let cursor = data.timestamp;
+		while (data.content.length > points) {
+			const slice = data.content.slice(0, points);
 
+			this.emitData({
+				...data,
+				timestamp: Math.floor(cursor),
+				content: slice,
+			});
 
+			cursor += calculateTimeDelta(points, data.rate);
+			data.content = data.content.slice(points);
+		}
+
+		return {
+			remains: data.content,
+			timestamp: cursor,
+		};
 	}
 }
 
-application.adapters.registerNode(TimeSlice);
+application.adapters.registerNode(FrameResizer);

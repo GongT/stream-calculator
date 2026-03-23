@@ -76,7 +76,7 @@ export class DataPayload implements INetworkPayload, IDataPayload {
 		this.func = data.readUInt32BE(offset);
 		offset += 4;
 
-		this.timestamp = Number(data.readBigInt64BE(offset));
+		this.timestamp = Number(data.readBigUInt64BE(offset));
 		offset += 8;
 
 		this.type = String.fromCharCode(data.readUInt8(offset)) as TypeValue;

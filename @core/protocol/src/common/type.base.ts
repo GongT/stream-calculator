@@ -3,7 +3,7 @@ import * as _TypeArray from '../_internal/type.array.js';
 export { _TypeArray as TypeArray };
 
 /**
- * 时间戳类型，单位为毫秒
+ * 时间戳类型，单位为微秒
  */
 export type TimestampT = number;
 
@@ -14,22 +14,24 @@ export interface IWithType {
 /**
  * 数据帧
  */
-export interface IDataFrame<T = unknown /* TypeArray.Any */> {
+export interface IDataFrame<T = _TypeArray.Any> {
 	/**
 	 * 数据
 	 */
-	readonly content: T;
+	content: T;
 	/**
-	 * 数据起点时间戳，单位为毫秒
+	 * 数据起点时间戳，单位为微秒
 	 */
-	readonly timestamp: TimestampT;
+	timestamp: TimestampT;
 	/**
 	 * 数据采样率
 	 */
-	readonly rate: number;
+	rate: number;
 	/**
 	 * 功能编号，默认为0
 	 * 各个节点随意使用
+	 *
+	 * 不要设置成负数，可能造成意外结果
 	 */
 	functionNumber?: number;
 

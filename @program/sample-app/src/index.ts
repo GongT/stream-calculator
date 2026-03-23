@@ -12,11 +12,15 @@ export async function startup(host: IAppHost) {
 		},
 	});
 
+	
+
 	const sensor1 = new SensorNoise({
 		name: 'S1',
 		sampleRate: 100000,
 		genreateTimer: 300,
 	});
+
+
 	const sensor2 = new SensorSine({
 		name: 'S2',
 		frequency: 3,
@@ -27,7 +31,6 @@ export async function startup(host: IAppHost) {
 
 	const merge = new WaveMerger({
 		name: 'm1',
-		dataType: Int32Array,
 		method: 'add',
 	});
 

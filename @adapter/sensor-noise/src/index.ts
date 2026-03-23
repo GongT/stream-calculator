@@ -15,28 +15,26 @@ interface IOptions {
 	readonly sampleRate?: number;
 
 	/**
-	 * 生成数据的时间间隔，单位毫秒
+	 * 生成数据的时间间隔，单位微秒，但实际精度是毫秒
 	 */
 	readonly genreateTimer?: number;
 }
 
 export class SensorNoise extends SendorNode {
-	protected override expectDataType = Int32Array;
-
 	private readonly amplitude: number;
 	private readonly sampleRate: number;
 
 	private readonly timer;
 	private readonly intervalMs: number;
 
-	private previousTime: number = Date.now();
+	private previousMicroTime: number = Number(process.hrtime.bigint() / 1000n);
 
 	constructor(options: IOptions) {
 		super(options.name);
 
 		this.amplitude = options.amplitude ?? 1;
 		this.sampleRate = options.sampleRate ?? 44100;
-		this.intervalMs = options.genreateTimer ?? 1000;
+		this.intervalMs = Math.ceil((options.genreateTimer ?? 1000000) / 1000);
 
 		this.timer = new Interval(this.intervalMs);
 		this.timer.onTick(this.timerTick.bind(this));
@@ -48,14 +46,14 @@ export class SensorNoise extends SendorNode {
 	}
 
 	private timerTick() {
-		const currentStartTime = Date.now();
-		const elapsed = currentStartTime - this.previousTime;
+		const currentStartTime = Number(process.hrtime.bigint() / 1000n);
+		const elapsed = currentStartTime - this.previousMicroTime;
 
 		const data = generateNoiseSensorData(this.amplitude, elapsed, this.sampleRate);
 
-		this.previousTime = currentStartTime;
+		this.previousMicroTime = currentStartTime;
 
-		this.logger.verbose`产生了 ${data.length} 个数据，${data.byteLength} 字节，长度 ${elapsed}ms`;
+		this.logger.verbose`产生了 ${data.length} 个数据，${data.byteLength} 字节，长度 ${elapsed / 1000}ms`;
 
 		this.emitData({
 			content: data,

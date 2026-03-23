@@ -1,36 +1,53 @@
-/**
- * @internal
- */
-export interface IBaseStreamNode {
+import type { EventRegister } from '@idlebox/common';
+
+export type INode<R extends boolean | unknown = unknown, W extends boolean | unknown = unknown> = IBaseNode &
+	(R extends true ? IRNode : {}) &
+	(W extends true ? IWNode : {});
+
+interface IBaseNode {
+	/**
+	 * 用于日志输出的名称
+	 */
 	readonly displayName: string;
+	/**
+	 * 永久唯一标识
+	 */
 	readonly id: string;
+	/**
+	 * 运行时随机生成的唯一标识符
+	 */
+	readonly nodeGuid: string;
+	/**
+	 * 同类型第几个实例
+	 */
 	readonly serial: number;
 
 	/**
-	 * 表示该节点可以接收数据
-	 *
-	 * 例如计算器、记录器
+	 * @internal 内部接口
 	 */
-	readonly isReceiver: boolean;
+	initialize(): Promise<void>;
 
-	/**
-	 * 表示该节点可能产生数据
-	 *
-	 * 例如传感器、计算器
-	 */
-	readonly isSender: boolean;
-
-	pipeTo(node1: IBaseStreamNode, ...nodes: IBaseStreamNode[]): typeof node1;
+	readonly onError: EventRegister<Error>;
 }
 
-export interface IReadableStreamNode extends IBaseStreamNode {
+/**
+ * 表示该节点可能产生数据
+ *
+ * 例如传感器、计算器
+ */
+interface IRNode {
 	readonly isSender: true;
-}
-export interface IWritableStreamNode extends IBaseStreamNode {
-	readonly isReceiver: true;
+	readonly targets: readonly INode[];
+
+	pipeTo(node: INode<unknown, true>): typeof node;
 }
 
-export interface IReadWriteStreamNode extends IReadableStreamNode, IWritableStreamNode {
-	readonly isSender: true;
+/**
+ * 表示该节点可以接收数据
+ *
+ * 例如计算器、记录器
+ */
+interface IWNode {
 	readonly isReceiver: true;
+	readonly sources: readonly INode[];
 }

@@ -1,3 +1,4 @@
+import json
 import sys
 from importlib import metadata
 from inspect import getargs
@@ -27,10 +28,10 @@ def check(arr: list[np.ndarray]):
     return True
 
 
-async def main(size: int, method: MergeMethod, buffer_length: int):
+async def main(size: int, method: MergeMethod):
     server = ProtocolServer("merge", 0)
 
-    collect = DataCollect(size, buffer_length)
+    collect = DataCollect(size)
 
     method_func = None
     if method == MergeMethod.ADD:
@@ -44,9 +45,6 @@ async def main(size: int, method: MergeMethod, buffer_length: int):
         arr = collect.add_data(data)
         if arr is None:
             return
-
-        if not check([d.content for d in arr]):
-            raise ValueError("数据格式不一致，无法合并")
 
         new_content = method_func([d.content for d in arr])
 
@@ -63,7 +61,9 @@ async def main(size: int, method: MergeMethod, buffer_length: int):
 
     await server.start()
     print(str(server.port), flush=True)
-    print("FFT server is running...", file=sys.stderr, flush=True)
+    print("merge is running...", file=sys.stderr, flush=True)
+
+    print(json.dumps({"type": "listen", "port": server.port}), flush=True)
 
     await server.join()
 
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     import argparse
     import asyncio
 
-    parser = argparse.ArgumentParser(description="FFT Server")
+    parser = argparse.ArgumentParser(description="Merge Server")
     parser.add_argument(
         "--method",
         type=MergeMethod,
@@ -84,11 +84,6 @@ if __name__ == "__main__":
         type=int,
         help="数据组数",
     )
-    parser.add_argument(
-        "--buffer-length",
-        type=int,
-        help="处理缓冲区的时间长度，单位为毫秒",
-    )
     args = parser.parse_args()
 
-    asyncio.run(main(args.size, args.method, args.buffer_length))
+    asyncio.run(main(args.size, args.method))

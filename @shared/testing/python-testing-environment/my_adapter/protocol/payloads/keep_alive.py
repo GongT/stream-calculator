@@ -4,11 +4,11 @@ from typing import Self
 
 from ..base import PayloadKind
 from ..base.packet import AbstractPayload
-from ..helpers.timestamp import get_milliseconds
+from ..helpers.timestamp import get_microseconds
 
 
 class __KeepAliveBase(AbstractPayload, ABC):
-    def __init__(self, timestamp=get_milliseconds()):
+    def __init__(self, timestamp=get_microseconds()):
         super().__init__()
 
         self.timestamp = timestamp

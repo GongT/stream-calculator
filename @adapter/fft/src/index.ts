@@ -18,8 +18,6 @@ const spawnOptions = {
 } as const;
 
 export class FFT extends CalculatorNode<TypeArray.S32> {
-	protected override expectDataType = TypeArray.S32;
-
 	protected readonly communication!: ProtocolStream;
 	private readonly name: string;
 	private readonly mScale: number;
@@ -33,7 +31,7 @@ export class FFT extends CalculatorNode<TypeArray.S32> {
 		this.pScale = options.phaseScale ?? 1000;
 	}
 
-	protected override async initialize() {
+	protected override async _initialize() {
 		const python = await getPython();
 		const args = ['-m', 'my_programs.fft.spectrum.server', '--magnitude-scale', this.mScale.toFixed(2), '--phase-scale', this.pScale.toFixed(2)];
 

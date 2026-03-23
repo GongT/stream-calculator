@@ -7,8 +7,6 @@ interface IOptions {
 }
 
 export class PublishWeb extends CalculatorNode<TypeArray.S32> {
-	protected override expectDataType = null as any;
-
 	public readonly guid: string;
 
 	constructor(options: IOptions) {
@@ -16,7 +14,7 @@ export class PublishWeb extends CalculatorNode<TypeArray.S32> {
 		this.guid = options.guid;
 	}
 
-	protected override async initialize() {}
+	protected override async _initialize() {}
 
 	override async process(_data: IDataFrame<TypeArray.S32>) {}
 }

@@ -1,5 +1,5 @@
-from datetime import datetime
+import time
 
 
-def get_milliseconds(time=datetime.now()) -> int:
-    return int(time.microsecond / 1000)
+def get_microseconds() -> int:
+    return time.time_ns() // 1_000

@@ -1,4 +1,4 @@
-import { convertCaughtError, DeferredPromise, Emitter, EnhancedAsyncDisposable, prettyPrintError } from '@idlebox/common';
+import { convertCaughtError, DeferredPromise, Emitter, EnhancedAsyncDisposable, isNodeError, prettyPrintError } from '@idlebox/common';
 import { logger } from '@idlebox/logger';
 import type { Socket as TCPSocket } from 'node:net';
 import { debugDumpBuffer } from '../common/dump.js';
@@ -30,7 +30,7 @@ export class ProtocolStream extends EnhancedAsyncDisposable {
 		socket.on('data', this.handleData);
 
 		socket.on('error', (err) => {
-			logger.fatal`网络连接发生错误 ${err}`;
+			throw new Error(`网络连接发生错误`, { cause: err });
 		});
 	}
 
@@ -112,7 +112,11 @@ export class ProtocolStream extends EnhancedAsyncDisposable {
 		return new Promise<void>((resolve, reject) => {
 			this.socket.write(encoded, (err) => {
 				if (err) {
-					logger.warn`发送数据包失败 ${err}`;
+					if (isNodeError(err) && err.code === 'EPIPE') {
+						reject(err);
+						return;
+					}
+					logger.warn`发送数据包失败 [${(err as any)?.code}] ${err}`;
 					reject(err);
 				} else {
 					resolve();

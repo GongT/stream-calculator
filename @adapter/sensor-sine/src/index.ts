@@ -19,14 +19,12 @@ interface IOptions {
 	readonly sampleRate?: number;
 
 	/**
-	 * 生成数据的时间间隔，单位毫秒
+	 * 生成数据的时间间隔，单位微秒，但实际精度是毫秒
 	 */
 	readonly genreateTimer?: number;
 }
 
 export class SensorSine extends SendorNode {
-	protected override expectDataType = Int32Array;
-
 	private readonly frequency: number;
 	private readonly amplitude: number;
 	private readonly sampleRate: number;
@@ -34,7 +32,7 @@ export class SensorSine extends SendorNode {
 	private readonly timer;
 	private readonly intervalMs: number;
 
-	private previousTime: number = Date.now();
+	private previousTime: number = Number(process.hrtime.bigint() / 1000n);
 	private previousPhase = 0;
 
 	constructor(options: IOptions) {
@@ -43,7 +41,7 @@ export class SensorSine extends SendorNode {
 		this.frequency = options.frequency;
 		this.amplitude = options.amplitude ?? 1;
 		this.sampleRate = options.sampleRate ?? 44100;
-		this.intervalMs = options.genreateTimer ?? 1000;
+		this.intervalMs = Math.ceil((options.genreateTimer ?? 1_000_000) / 1000);
 
 		this.timer = new Interval(this.intervalMs);
 		this.timer.onTick(this.timerTick.bind(this));
@@ -55,7 +53,7 @@ export class SensorSine extends SendorNode {
 	}
 
 	private timerTick() {
-		const currentStartTime = Date.now();
+		const currentStartTime = Number(process.hrtime.bigint() / 1000n);
 		const elapsed = currentStartTime - this.previousTime;
 
 		const data = generateSineSensorData(this.frequency, this.previousPhase, this.amplitude, elapsed, this.sampleRate);
@@ -63,11 +61,11 @@ export class SensorSine extends SendorNode {
 		this.previousTime = currentStartTime;
 
 		// Update the phase based on the elapsed time and frequency
-		const phaseIncrement = (2 * Math.PI * this.frequency * elapsed) / 1000;
+		const phaseIncrement = (2 * Math.PI * this.frequency * elapsed) / 1_000_000;
 		this.previousPhase = (this.previousPhase + phaseIncrement) % (2 * Math.PI);
 
 		this.logger
-			.verbose`产生了 ${data.length} 个数据，${data.byteLength} 字节，长度 ${elapsed}ms，相位+${phaseIncrement.toFixed(0)}=${this.previousPhase.toFixed(2)}`;
+			.verbose`产生了 ${data.length} 个数据，${data.byteLength} 字节，长度 ${elapsed / 1000}ms，相位+${phaseIncrement.toFixed(0)}=${this.previousPhase.toFixed(2)}`;
 
 		this.emitData({
 			content: data,

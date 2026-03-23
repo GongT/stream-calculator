@@ -32,6 +32,25 @@ importers:
         specifier: ^3.1.14
         version: 3.1.14
 
+  '@adapter/buffer':
+    dependencies:
+      '@core/core':
+        specifier: 'workspace:'
+        version: link:../../@core/core
+      '@core/protocol':
+        specifier: 'workspace:'
+        version: link:../../@core/protocol
+      '@idlebox/common':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+        version: link:../../../baobao/@idlebox/common
+    devDependencies:
+      '@core/custom-rig':
+        specifier: 'workspace:'
+        version: link:../../@core/custom-rig
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.5.0
+
   '@adapter/fft':
     dependencies:
       '@core/core':
@@ -142,6 +161,25 @@ importers:
         version: 25.5.0
 
   '@adapter/sensor-sine':
+    dependencies:
+      '@core/core':
+        specifier: 'workspace:'
+        version: link:../../@core/core
+      '@core/protocol':
+        specifier: 'workspace:'
+        version: link:../../@core/protocol
+      '@idlebox/common':
+        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
+        version: link:../../../baobao/@idlebox/common
+    devDependencies:
+      '@core/custom-rig':
+        specifier: 'workspace:'
+        version: link:../../@core/custom-rig
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.5.0
+
+  '@adapter/time-align':
     dependencies:
       '@core/core':
         specifier: 'workspace:'
@@ -370,6 +408,9 @@ importers:
 
   '@program/sample-app':
     dependencies:
+      '@adapter/buffer':
+        specifier: 'workspace:'
+        version: link:../../@adapter/buffer
       '@adapter/fft':
         specifier: 'workspace:'
         version: link:../../@adapter/fft
@@ -382,6 +423,9 @@ importers:
       '@adapter/sensor-sine':
         specifier: 'workspace:'
         version: link:../../@adapter/sensor-sine
+      '@adapter/time-align':
+        specifier: 'workspace:'
+        version: link:../../@adapter/time-align
       '@adapter/wave-merge':
         specifier: 'workspace:'
         version: link:../../@adapter/wave-merge

@@ -36,3 +36,5 @@ export type F64 = Float64Array<ArrayBuffer>;
 export const F64: Constructor<F64> = Float64Array<ArrayBuffer>;
 
 export type Any = U8 | U16 | U32 | U64 | S8 | S16 | S32 | S64 | F16 | F32 | F64;
+
+export type C = (new (size: number) => Any) & { BYTES_PER_ELEMENT: number };

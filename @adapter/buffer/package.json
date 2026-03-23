@@ -1,6 +1,6 @@
 {
-	"name": "@adapter/time-align",
-	"description": "时间对齐器",
+	"name": "@adapter/buffer",
+	"description": "缓冲器",
 	"exports": "./lib/index.js",
 	"type": "module",
 	"scripts": {

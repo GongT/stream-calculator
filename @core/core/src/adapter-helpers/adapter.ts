@@ -1,5 +1,6 @@
 import { EnhancedAsyncDisposable, type DeepReadonly, type IPackageJson } from '@idlebox/common';
-import type { BaseNode } from '../stream/node.base.js';
+import type { AbstractNode } from '../stream/node.abstract.js';
+import type { INode } from '../stream/types.js';
 
 export interface IBaseAdapterOptions {
 	readonly packageJson: DeepReadonly<IPackageJson>;
@@ -10,7 +11,7 @@ export interface IBaseAdapterOptions {
  * Node的容器（列表）
  */
 export abstract class Adapter extends EnhancedAsyncDisposable {
-	private readonly nodes: BaseNode[] = [];
+	private readonly nodes: AbstractNode[] = [];
 
 	constructor(public readonly options: IBaseAdapterOptions) {
 		super(`Adapter<${options.packageJson.name}>`);
@@ -19,12 +20,12 @@ export abstract class Adapter extends EnhancedAsyncDisposable {
 	public abstract activate(): void | Promise<void>;
 
 	/** @internal */
-	_registerNodeInstance(node: BaseNode) {
+	_registerNodeInstance(node: AbstractNode) {
 		this._register(node);
 		this.nodes.push(node);
 	}
 
-	public getNodes(): ArrayIterator<BaseNode> {
+	public getNodes(): ArrayIterator<INode> {
 		return this.nodes.values();
 	}
 }

@@ -5,17 +5,15 @@ import { getPython } from '@shared/testing';
 
 interface IOptions {
 	readonly name: string;
-	readonly dataType: new () => TypeArray.Any;
-
 	/**
 	 *
 	 */
 	readonly method: 'add';
 	/**
-	 * 缓冲时间（毫秒），超过这个时间没有将所有输入收集齐，就产生错误
-	 * 默认10秒，最小1秒
+	 * 只关注指定 functionNumber 的包，其他包直接丢弃
+	 * 默认为0
 	 */
-	readonly bufferLength?: number;
+	readonly functionNumber?: number;
 }
 
 const spawnOptions = {
@@ -31,36 +29,33 @@ interface IListen {
 	port: number;
 }
 
+/**
+ * 波形合并器
+ *
+ * 将多个已经对齐的数据流合并成一个数据流输出
+ *
+ * 不做对齐、长度、类型的检查
+ *
+ * 此节点仅读取指定 functionNumber 的包，其他包直接丢弃
+ */
 export class WaveMerger extends CalculatorNode<TypeArray.Any> {
-	protected readonly expectDataType;
-
 	protected readonly communication!: ProtocolStream;
 	private readonly name: string;
 	private readonly method: string;
-	private readonly bufferLength: number;
+	private readonly functionNumber: number;
 
 	constructor(options: IOptions) {
 		super(options.name);
 
-		this.expectDataType = options.dataType;
 		this.name = options.name;
 		this.method = options.method;
-		this.bufferLength = options.bufferLength ?? 10000;
+		this.functionNumber = options.functionNumber ?? 0;
 	}
 
-	protected override async initialize() {
+	protected override async _initialize() {
 		const python = await getPython();
 
-		const args = [
-			'-m',
-			'my_programs.wave_merger.server',
-			'--size',
-			this.sources.length.toFixed(0),
-			'--method',
-			this.method,
-			'--buffer-length',
-			this.bufferLength.toFixed(0),
-		];
+		const args = ['-m', 'my_programs.wave_merger.server', '--size', this.sources.length.toFixed(0), '--method', this.method];
 
 		const process = this.spawnWorker([python, ...args], spawnOptions);
 		const outputReader = this._register(new JsonReader(process.stdout));
@@ -83,7 +78,12 @@ export class WaveMerger extends CalculatorNode<TypeArray.Any> {
 		this.logger.success`握手成功`;
 
 		socket.onNetworkPacket((packet) => {
-			this.emitData(packet.payloadAs(DataPayload));
+			const dataFrame = packet.payloadAs(DataPayload);
+			dataFrame.func = this.functionNumber;
+			this.emitData({
+				...dataFrame,
+				content: dataFrame.asTypedArray(),
+			});
 		});
 	}
 
@@ -101,9 +101,8 @@ export class WaveMerger extends CalculatorNode<TypeArray.Any> {
 			throw new SoftwareDefectError('数据来源节点信息丢失');
 		}
 
-		if (data.functionNumber) {
+		if (data.functionNumber !== this.functionNumber) {
 			this.logger.verbose`skip function number ${data.functionNumber} from ${srcNodeId}`;
-			this.emitData(data);
 			return;
 		}
 		const order = this.orderMap[srcNodeId];

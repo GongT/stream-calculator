@@ -13,7 +13,9 @@
 		"@adapter/sensor-noise": "workspace:",
 		"@adapter/wave-merge": "workspace:",
 		"@adapter/output-web": "workspace:",
-		"@adapter/fft": "workspace:"
+		"@adapter/fft": "workspace:",
+		"@adapter/time-align": "workspace:",
+		"@adapter/buffer": "workspace:"
 	},
 	"devDependencies": {
 		"@core/custom-rig": "workspace:",
