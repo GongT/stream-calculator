@@ -1,6 +1,7 @@
 import { convertCaughtError, EnhancedAsyncDisposable, getErrorFrame, prettyPrintError, SoftwareDefectError } from '@idlebox/common';
-import type{  IMyLogger } from '@idlebox/logger';
-import { rememberDeclareation } from '../common/debug.js';
+import type { IMyLogger } from '@idlebox/logger';
+import { findPackageJSON } from 'node:module';
+import { getDeclarationFile, rememberDeclareation } from '../common/debug.js';
 import { reflectBinding } from '../package-reflect/binding.js';
 import type { INodeConstruct } from '../stream/node.abstract.js';
 import type { INode } from '../stream/types.js';
@@ -86,13 +87,21 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 			throw new Error(`未找到节点信息，构造函数: ${constructor.name} (是否正确使用 @adapterHost.registerNode 注册了节点？) `);
 		}
 
+		const packageJson = adapter.options.packageJson;
+
+		if (!packageJson.description) {
+			const f = getDeclarationFile(adapter.constructor);
+			const pkgfile = f ? (findPackageJSON(f) ?? f) : adapter.constructor.name;
+			throw new SoftwareDefectError(`缺少 description 字段: ${pkgfile}`);
+		}
+
 		return {
 			constructorName: constructor.name,
 			adapter,
 			package: {
-				name: adapter.options.packageJson.name,
-				description: adapter.options.packageJson.description,
-				version: adapter.options.packageJson.version,
+				name: packageJson.name,
+				description: packageJson.description,
+				version: packageJson.version,
 			},
 		};
 	}

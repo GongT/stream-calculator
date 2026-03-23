@@ -8,11 +8,17 @@
 			"type": "node",
 			"request": "launch",
 			"name": "启动程序",
-			"skipFiles": ["<node_internals>/**"],
+			// "skipFiles": ["<node_internals>/**"],
 			"program": "${workspaceFolder}/@core/bootstrap/lib/main.js",
 			"args": ["--program", "@program/sample-app", "--backend", "@program/sample-management"],
 			"cwd": "${workspaceFolder}",
-			"outFiles": ["${workspaceFolder}/**/*.js"],
+			// "outFiles": ["${workspaceFolder}/**/*.js"],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "openOnSessionStart",
+			"smartStep": false,
+			"suppressMultipleSessionWarning": true,
+			"outputCapture": "console"
+			
 		},
 	],
 }

@@ -55,7 +55,7 @@ export class WaveMerger extends CalculatorNode<TypeArray.Any> {
 	protected override async _initialize() {
 		const python = await getPython();
 
-		const args = ['-m', 'my_programs.wave_merger.server', '--size', this.sources.length.toFixed(0), '--method', this.method];
+		const args = ['-m', 'cProfile', '-o', '/tmp/profile.txt', '-m', 'my_programs.wave_merger.server', '--size', this.sources.length.toFixed(0), '--method', this.method];
 
 		const process = this.spawnWorker([python, ...args], spawnOptions);
 		const outputReader = this._register(new JsonReader(process.stdout));

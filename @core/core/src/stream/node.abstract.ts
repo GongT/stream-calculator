@@ -6,6 +6,7 @@ import {
 	EnhancedAsyncDisposable,
 	ExitCode,
 	functionToDisposable,
+	inspectSymbol,
 	linux_case_hyphen,
 	prettyPrintError,
 	SoftwareDefectError,
@@ -17,11 +18,12 @@ import { isShuttingDown, shutdown } from '@idlebox/node';
 import { execa, type Options as _ExecOptions } from 'execa';
 import { randomUUID } from 'node:crypto';
 import { basename } from 'node:path';
-import type Stream from 'node:stream';
+import { Readable, Writable } from 'node:stream';
+import type { InspectContext } from 'node:util';
 import type { Writeable } from '../common/functions.js';
 import { getSerialNumber } from '../common/functions.js';
 import { makeLoggerStream } from '../common/logging-stream.js';
-import type { INode } from './types.js';
+import { privateStream, type INode, type INodeStatus } from './types.js';
 
 /**
  * @internal
@@ -49,12 +51,11 @@ export abstract class AbstractNode extends EnhancedAsyncDisposable implements IN
 
 	protected readonly adapter;
 
-	protected readonly statistic = {
+	public readonly statistic: INodeStatus = {
 		sent: 0,
 		sentBytes: 0,
 		received: 0,
 		receivedBytes: 0,
-		birth: Date.now(),
 		error: 0,
 	};
 
@@ -88,8 +89,6 @@ export abstract class AbstractNode extends EnhancedAsyncDisposable implements IN
 		this.adapter._registerNodeInstance(this);
 
 		this.logger.verbose`构造 | ${this.displayName} | serial = ${this.serial}`;
-
-		this.initialize();
 	}
 
 	// ------------------ 生命周期
@@ -102,25 +101,23 @@ export abstract class AbstractNode extends EnhancedAsyncDisposable implements IN
 	 * 当程序开始运行时会调用此方法，开始产生、处理数据
 	 * @virtual
 	 */
-	protected resume(): void {}
+	protected _resume(): void {}
 
 	private hasInitialized?: Promise<void>;
 
-	protected __manage_stream<T extends Stream>(stream: T): T {
+	public initialize() {
+		if (this.hasInitialized) return this.hasInitialized;
+
+		const stream = privateStream(this);
 		stream.on('error', (e) => {
 			if (!this._onError.hasDisposed) {
 				const err = convertCaughtError(e);
 				prettyPrintError(`${this.displayName} 处理出错`, err);
 				this._onError.fire(err);
-				(stream as any).destroy();
+				stream.destroy();
 				shutdown(ExitCode.EXECUTION);
 			}
 		});
-		return stream;
-	}
-
-	public initialize() {
-		if (this.hasInitialized) return this.hasInitialized;
 
 		const stackTrace = createStackTraceHolder('', this.constructor);
 		this.hasInitialized = Promise.race([this._initialize(), timeout(5000, '未响应')]).then(
@@ -142,11 +139,15 @@ export abstract class AbstractNode extends EnhancedAsyncDisposable implements IN
 		return this.hasInitialized;
 	}
 
+	public resume() {
+		this._resume();
+	}
+
 	// ------------------ 工具方法
 	protected fireError(e: Error) {
 		this._onError.fire(e);
 		if (this._onError.listenerCount() === 0) {
-			this.logger.error`发生错误但没有监听器: ${e.stack ?? e.message}`;
+			this.logger.error`发生错误但没有监听器: long<${e.stack ?? e.message}>`;
 			setTimeout(() => {
 				throw e;
 			}, 0);
@@ -159,6 +160,7 @@ export abstract class AbstractNode extends EnhancedAsyncDisposable implements IN
 
 	protected spawnWorker<Opt extends ExecOpts = ExecOpts>(commandline: string[], options: Opt) {
 		const proc = this.exec(commandline, options);
+		this.logger.info`process ${proc.pid} spawned.`;
 
 		proc.then(
 			(p) => {
@@ -202,18 +204,22 @@ export abstract class AbstractNode extends EnhancedAsyncDisposable implements IN
 			}
 		}
 
-		this._register(
-			functionToDisposable(function killProcess() {
-				process.kill();
+		const un = this._register(
+			functionToDisposable(() => {
+				this.logger.warn`正在杀死子进程 ${process.pid}...`;
+				process.kill('SIGINT');
+				return process;
 			}),
 		);
 
 		process.then(
 			(result) => {
 				this.logger.verbose`子进程 ${process.pid} 已退出: ${result.exitCode} / ${result.signal}`;
+				un.dispose();
 			},
 			(e) => {
 				this.logger.debug`子进程 ${process.pid} 异常退出: ${e.message}`;
+				un.dispose();
 			},
 		);
 
@@ -260,5 +266,46 @@ export abstract class AbstractNode extends EnhancedAsyncDisposable implements IN
 			if (isNew) ctx[functionNumber] = {};
 			return fn.call(this, ctx[functionNumber], isNew);
 		});
+	}
+
+	[inspectSymbol](depth: number, options: InspectContext) {
+		let str = options.stylize(`[Node ${this.id}/${this.serial}]`, 'special');
+		if (depth <= 0) {
+			return str;
+		}
+		str += ' ';
+		str += options.stylize(this.displayName, 'string');
+		str += ' {\n  stream: ';
+
+		const streamState = [];
+		const stream = privateStream(this);
+		if (stream instanceof Readable) {
+			streamState.push(`readable=${stream.readableLength}`);
+		}
+		if (stream instanceof Writable) {
+			streamState.push(`writable=${stream.writableLength}`);
+		}
+		if (stream.destroyed) {
+			streamState.push(`destroyed`);
+		}
+		if (stream.closed) {
+			streamState.push(`closed`);
+		}
+		if (stream.errored) {
+			streamState.push(`\x1B[38;5;9mError\x1B[0m`);
+		}
+
+		str += options.stylize(`[${stream.constructor.name}]`, 'special');
+		str += ' { ';
+		str += streamState.join(', ');
+		str += ' },\n';
+
+		str += `  send: ${options.stylize(this.statistic.sent.toString(), 'number')} frames ${options.stylize(this.statistic.sentBytes.toString(), 'number')} bytes,\n`;
+		str += `  receive: ${options.stylize(this.statistic.received.toString(), 'number')} frames ${options.stylize(this.statistic.receivedBytes.toString(), 'number')} bytes,\n`;
+		str += `  error: ${options.stylize(this.statistic.error.toString(), 'number')}\n`;
+
+		str += '}';
+
+		return str;
 	}
 }

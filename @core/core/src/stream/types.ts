@@ -1,8 +1,22 @@
 import type { EventRegister } from '@idlebox/common';
+import type { Duplex, Readable, Writable } from 'node:stream';
+
+export interface INodeStatus {
+	sent: number;
+	sentBytes: number;
+	received: number;
+	receivedBytes: number;
+	error: number;
+}
 
 export type INode<R extends boolean | unknown = unknown, W extends boolean | unknown = unknown> = IBaseNode &
 	(R extends true ? IRNode : {}) &
 	(W extends true ? IWNode : {});
+
+/** @internal */
+export function privateStream<T extends Readable | Writable | Duplex>(node: INode): T {
+	return (node as any).stream;
+}
 
 interface IBaseNode {
 	/**
@@ -27,7 +41,14 @@ interface IBaseNode {
 	 */
 	initialize(): Promise<void>;
 
+	/**
+	 * @internal 内部接口
+	 */
+	resume(): void;
+
 	readonly onError: EventRegister<Error>;
+
+	readonly statistic: Readonly<INodeStatus>;
 }
 
 /**

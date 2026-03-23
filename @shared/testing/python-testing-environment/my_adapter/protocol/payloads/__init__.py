@@ -1,15 +1,28 @@
+from typing import TYPE_CHECKING, TypeVar
+
 from ..base import PayloadKind
-from ..base.packet import AbstractPayload
-from .frame import DataFramePayload
-from .keep_alive import KeepAlivePayload, KeepAliveResponsePayload
+
+if TYPE_CHECKING:
+    from ..base.packet import AbstractPayload
+
+payload_registry: dict[PayloadKind, type["AbstractPayload"]] = {}
 
 
-def get_payload_class_from_kind(kind: PayloadKind) -> type[AbstractPayload]:
-    if kind == PayloadKind.KEEP_ALIVE:
-        return KeepAlivePayload
-    elif kind == PayloadKind.KEEP_ALIVE_RESPONSE:
-        return KeepAliveResponsePayload
-    elif kind == PayloadKind.DATA_FRAME:
-        return DataFramePayload
-    else:
-        raise ValueError(f"Unsupported payload kind: {kind}")
+def get_payload_class_from_kind(kind: PayloadKind) -> type["AbstractPayload"]:
+    if kind not in payload_registry:
+        raise ValueError(f"Unknown payload kind: {kind}")
+    return payload_registry[kind]
+
+
+T = TypeVar("T", bound=type["AbstractPayload"])
+
+
+def register_payload_class(cls: T) -> T:
+    instance = cls.__new__(cls)
+    kind = instance.get_type()
+    if kind in payload_registry:
+        raise ValueError(
+            f"Payload kind {kind} already registered for class {payload_registry[kind]}"
+        )
+    payload_registry[kind] = cls
+    return cls

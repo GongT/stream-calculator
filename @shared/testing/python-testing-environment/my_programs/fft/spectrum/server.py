@@ -13,6 +13,8 @@ async def main(magnitude_scale: float = 10.0, phase_scale: float = 1000.0):
 
     async def handle_request(payload: AbstractPayload, metadata: dict | None):
         data = payload.as_type(DataFramePayload)
+        
+        # print(f"Received data frame: timestamp={data.timestamp}, rate={data.rate}, length={len(data.content)}, type={data.content.dtype}", file=sys.stderr, flush=True)
 
         fft_result = compute_frequency_spectrum(
             data.content, data.rate, magnitude_scale, phase_scale
@@ -45,7 +47,7 @@ async def main(magnitude_scale: float = 10.0, phase_scale: float = 1000.0):
 
     await server.start()
     print(str(server.port), flush=True)
-    print("FFT server is running...", file=sys.stderr, flush=True)
+    print(f"FFT server is running... [port: {server.port}, magnitude_scale: {magnitude_scale}, phase_scale: {phase_scale}]", file=sys.stderr, flush=True)
 
     await server.join()
 
@@ -69,4 +71,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    asyncio.run(main(args.magnitude_scale, args.phase_scale))
+    try:
+        asyncio.run(main(args.magnitude_scale, args.phase_scale))
+    except InterruptedError:
+        print("服务器已停止", file=sys.stderr, flush=True)

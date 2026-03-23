@@ -7,10 +7,12 @@ from numpy.typing import NDArray
 from ..base import PayloadKind
 from ..base.packet import AbstractPayload
 from ..helpers.dtype import get_dtype, get_pack_format_from_dtype
+from . import register_payload_class
 
 _fmt = struct.Struct("!I Q c B I 4s")
 
 
+@register_payload_class
 class DataFramePayload(AbstractPayload):
     def __init__(
         self,
@@ -21,7 +23,9 @@ class DataFramePayload(AbstractPayload):
     ):
         super().__init__()
 
-        assert content.ndim == 1, f"在网络环境中仅支持一维数组，当前数组维度为 {content.ndim}"
+        assert (
+            content.ndim == 1
+        ), f"在网络环境中仅支持一维数组，当前数组维度为 {content.ndim}"
 
         self.content = content
         self.rate = rate
@@ -47,7 +51,12 @@ class DataFramePayload(AbstractPayload):
 
     def serialize(self) -> bytes:
         header = _fmt.pack(
-            self.function, self.timestamp, self.type.encode(), self.bit_depth, self.rate, b"DATA"
+            self.function,
+            self.timestamp,
+            self.type.encode(),
+            self.bit_depth,
+            self.rate,
+            b"DATA",
         )
 
         size = self.content.size

@@ -14,12 +14,11 @@ export abstract class FinalizedNode<T extends TypeArray.Any = TypeArray.Any> ext
 	private readonly _sources: (INode<true, unknown> & RS)[] = [];
 	readonly sources: readonly INode[] = this._sources;
 
-	private readonly stream = this.__manage_stream(
-		new Writable({
-			objectMode: true,
-			write: this._handleStreamData.bind(this),
-		}),
-	);
+	private readonly stream = new Writable({
+		highWaterMark: 1000,
+		objectMode: true,
+		write: this._handleStreamData.bind(this),
+	});
 
 	constructor(displayName?: string) {
 		super(displayName);
@@ -62,7 +61,7 @@ export abstract class FinalizedNode<T extends TypeArray.Any = TypeArray.Any> ext
 			await this.process(data, metadata);
 			callback();
 		} catch (e) {
-			this.logger.warn`出错node数据源list<${this._sources.map(item => item.displayName)}>\ndata = ${data}`;
+			this.logger.warn`出错node数据源list<${this._sources.map((item) => item.displayName)}>\ndata = ${data}`;
 
 			const err = convertCaughtError(e);
 			this.statistic.error++;

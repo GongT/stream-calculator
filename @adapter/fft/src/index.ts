@@ -17,7 +17,7 @@ const spawnOptions = {
 	encoding: 'utf8',
 } as const;
 
-export class FFT extends CalculatorNode<TypeArray.S32> {
+export class FFT extends CalculatorNode {
 	protected readonly communication!: ProtocolStream;
 	private readonly name: string;
 	private readonly mScale: number;
@@ -62,11 +62,11 @@ export class FFT extends CalculatorNode<TypeArray.S32> {
 			switch (dataFrame.func) {
 				case 1: // 频谱数据
 					this.logger.verbose`收到频谱数据，共${dataFrame.content.byteLength}字节`;
-					dataFrame.asTypedArray(TypeArray.S32);
+					this.emitData(dataFrame);
 					break;
 				case 2: // 相位数据
 					this.logger.verbose`收到相位数据，共${dataFrame.content.byteLength}字节`;
-					dataFrame.asTypedArray(TypeArray.S32);
+					this.emitData(dataFrame);
 					break;
 				default:
 					this.logger.warn`收到未知功能号的数据帧: ${dataFrame.func}`;

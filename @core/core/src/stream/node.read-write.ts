@@ -50,13 +50,12 @@ export abstract class CalculatorNode<T extends TypeArray.Any = TypeArray.Any> ex
 	constructor(displayName?: string) {
 		super(displayName);
 
-		this.stream = this.__manage_stream(
-			new Duplex({
-				objectMode: true,
-				read() {},
-				write: this._handleStreamData.bind(this),
-			}),
-		);
+		this.stream = new Duplex({
+			highWaterMark: 1000,
+			objectMode: true,
+			read() {},
+			write: this._handleStreamData.bind(this),
+		});
 	}
 
 	/**

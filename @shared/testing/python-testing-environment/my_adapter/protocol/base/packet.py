@@ -2,8 +2,8 @@ import json
 import struct
 from abc import ABC, abstractmethod
 from typing import Self, TypeVar
+from ..payloads import get_payload_class_from_kind
 
-from ...common import debug_output
 from . import PayloadKind
 
 
@@ -170,7 +170,7 @@ class NetworkPacket(Serializable):
         metadata_object = {}
         if metadata_bytes:
             metadata_object = json.loads(metadata_bytes.decode("utf-8"))
-
+        
         # 解析 payload_length 和 payload 数据
         payload_length: int = struct.unpack_from("!I", data, offset)[0]
         offset += 4
@@ -182,9 +182,6 @@ class NetworkPacket(Serializable):
         assert (
             data[offset:] == b"END"
         ), f"Invalid packet: missing END marker @{str(offset)}+3 (got {data[offset : ]!r})"
-
-        # 根据 action 创建对应的 Payload 实例
-        from ..payloads import get_payload_class_from_kind
 
         Class = get_payload_class_from_kind(action)
         payload = Class.deserialize(payload_data)

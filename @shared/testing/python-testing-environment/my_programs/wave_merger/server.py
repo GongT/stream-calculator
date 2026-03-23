@@ -1,7 +1,5 @@
 import json
 import sys
-from importlib import metadata
-from inspect import getargs
 
 import numpy as np
 
@@ -42,7 +40,7 @@ async def main(size: int, method: MergeMethod):
     async def handle_request(payload: AbstractPayload, metadata: dict | None):
         data = payload.as_type(DataFramePayload)
 
-        arr = collect.add_data(data)
+        arr, debug_len = collect.add_data(data)
         if arr is None:
             return
 
@@ -60,8 +58,11 @@ async def main(size: int, method: MergeMethod):
     server.on_data_received(handle_request)
 
     await server.start()
-    print(str(server.port), flush=True)
-    print("merge is running...", file=sys.stderr, flush=True)
+    print(
+        f"合并流正在工作 ... [port: {server.port}, method: {method}, size: {size}]",
+        file=sys.stderr,
+        flush=True,
+    )
 
     print(json.dumps({"type": "listen", "port": server.port}), flush=True)
 
@@ -86,4 +87,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    asyncio.run(main(args.size, args.method))
+    try:
+        asyncio.run(main(args.size, args.method))
+    except InterruptedError:
+        print("服务器已停止", file=sys.stderr, flush=True)

@@ -1,5 +1,4 @@
-import time
-from collections import defaultdict, deque
+from collections import deque
 
 from my_adapter.protocol.payloads.frame import DataFramePayload
 
@@ -9,13 +8,14 @@ class DataCollect:
         self.size = size
         self.buffers = {i: deque() for i in range(size)}
 
-    def add_data(self, data: DataFramePayload) -> None | list[DataFramePayload]:
+    def add_data(self, data: DataFramePayload):
         queue = self.buffers[data.function]
         queue.append(data)
 
-        return self.check_head()
+        max_length = max(len(queue) for queue in self.buffers.values())
+        return self.check_head(), max_length
 
-    def check_head(self) -> None | list[DataFramePayload]:
+    def check_head(self):
         for queue in self.buffers.values():
             if not queue:
                 return None

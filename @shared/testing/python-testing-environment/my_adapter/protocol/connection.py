@@ -2,9 +2,9 @@ import asyncio
 import socket
 import struct
 from traceback import print_exc
-from typing import Callable, Coroutine, Literal, Protocol
+from typing import Coroutine, Literal, Protocol
 
-from ..common import debug_dump_buffer, debug_output
+from ..common import debug_output
 from .base.encoder import ProtocolEncoder
 from .base.packet import AbstractPayload
 from .payloads.keep_alive import KeepAlivePayload, KeepAliveResponsePayload
@@ -126,52 +126,63 @@ class ProtocolServer:
 
         loop = asyncio.get_running_loop()
 
-        first_data = self.kind == "udp"
-
         data: bytes = b""
-        while True:
-            try:
-                if first_data:
-                    ndata, address = await loop.sock_recvfrom(sock, 10240)
-                    first_data = False
-                    debug_output(f"[UDP] Received first packet from {address}")
-                    sock.connect(address)
-                else:
-                    ndata = await loop.sock_recv(sock, 10240)
+
+        if self.kind == "udp":
+            ndata, address = await loop.sock_recvfrom(sock, 10240)
+            debug_output(f"[UDP] Received first packet from {address}")
+            sock.connect(address)
+            data = ndata
+
+        try:
+            while True:
+                while len(data) > 4:
+                    packet_length = struct.unpack_from("!I", data)[0]
+
+                    if len(data) < 4 + packet_length:
+                        break
+
+                    await self.work_on_packet(data[4 : 4 + packet_length])
+                    data = data[4 + packet_length :]
+
+                ndata = await loop.sock_recv(sock, 10240)
 
                 if not ndata:
                     debug_output("链接被对方关闭")
                     break
 
                 data += ndata
-                packet_length = struct.unpack_from("!I", data)[0]
-                if len(data) < 4 + packet_length:
-                    # debug_output(
-                    #     f"数据包未完整接收，等待更多数据... (当前长度: {len(data)}, 预期长度: {4 + packet_length})"
-                    # )
-                    # debug_dump_buffer(data, "=== ")
-                    continue
 
-                # debug_output(f"完整数据包! (长度: {packet_length} / {len(data)})")
-                # debug_dump_buffer(data[0 : 4 + packet_length], "<<< ")
+        except Exception:
+            debug_output(f"事件循环中发生错误:")
+            print_exc()
 
-                packet = self.encoder.decode(data[4 : 4 + packet_length])
-                data = data[4 + packet_length :]
+    async def work_on_packet(self, data):
 
-                if p := packet.try_get_payload(KeepAlivePayload):
-                    debug_output(
-                        f"Keep alive request received <{p.timestamp}>, sending response..."
-                    )
-                    await self.send(KeepAliveResponsePayload())
-                elif packet.try_get_payload(KeepAliveResponsePayload):
-                    debug_output("Keep alive response received")
-                else:
-                    # debug_output(f"Data frame received! ({packet.get_type()})")
-                    for callback in self._on_data_received:
-                        r = callback(packet.payload, metadata=packet.metadata)
-                        if r is not None:
-                            await r
-            except Exception:
-                debug_output(f"事件循环中发生错误:")
-                print_exc()
-                break
+        # debug_output(f"完整数据包! (长度: {packet_length} / {len(data)})")
+        # debug_dump_buffer(data[0 : 4 + packet_length], "<<< ")
+
+        packet = self.encoder.decode(data)
+
+        # decode_micros = time.time_ns() // 1000
+
+        if p := packet.try_get_payload(KeepAlivePayload):
+            debug_output(
+                f"Keep alive request received <{p.timestamp}>, sending response..."
+            )
+            await self.send(KeepAliveResponsePayload())
+        elif packet.try_get_payload(KeepAliveResponsePayload):
+            debug_output("Keep alive response received")
+        else:
+            # debug_output(f"Data frame received! ({packet.get_type()})")
+            for callback in self._on_data_received:
+                r = callback(packet.payload, metadata=packet.metadata)
+                if r is not None:
+                    await r
+                # now = time.time_ns() // 1000
+
+                # print(
+                #     f"事件循环: 接收数据包 ({packet.get_type()})，接收耗时 {decode_micros - start_micros} ，处理耗时 {now - decode_micros}",
+                #     file=sys.stderr,
+                #     flush=True,
+                # )

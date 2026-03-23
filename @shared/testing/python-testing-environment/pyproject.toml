@@ -12,6 +12,9 @@ scipy = "^1.17.1"
 numpy = "^2.4.3"
 
 
+[tool.poetry.group.dev.dependencies]
+snakeviz = "^2.2.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

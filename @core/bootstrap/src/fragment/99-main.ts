@@ -1,4 +1,4 @@
-import { ExitCode, interval, registerGlobalLifecycle, SoftwareDefectError } from '@idlebox/common';
+import { ExitCode, Interval, registerGlobalLifecycle, SoftwareDefectError } from '@idlebox/common';
 import { loadPackageByName } from '../tools/loader.js';
 import { logger } from '../tools/misc.js';
 import { applicationPackageName, backendPackageName, isDebug, isVerbose } from './00-args.js';
@@ -35,7 +35,7 @@ await Promise.all(nodes.map((node) => node.initialize()));
 
 logger.info`开始数据流处理，总共${nodes.length}个节点`;
 for (const node of nodes) {
-	(node as any).resume();
+	node.resume();
 }
 
 logger.debug`数据流处理中`;
@@ -43,13 +43,17 @@ logger.debug`数据流处理中`;
 await (application.api as any).start();
 
 if (process.stderr.isTTY && !isDebug && !isVerbose) {
-	registerGlobalLifecycle(
-		interval(
-			1000,
-			() => {
-				application.printStatus();
-			},
-			true,
-		),
-	);
+	// process.stdin.on('data', () => {
+	// 	process.stderr.write('\x1Bc');
+	// 	application.printStatus();
+	// });
+	const iv = new Interval(100);
+	registerGlobalLifecycle(iv);
+
+	iv.onTick(() => {
+		process.stderr.write('\x1Bc');
+		application.printStatus();
+	});
+
+	iv.resume();
 }

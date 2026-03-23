@@ -15,6 +15,6 @@ registerNodejsExitHandler({
 	},
 });
 registerNodejsGlobalTypedErrorHandler(SoftwareDefectError, (e) => {
-	prettyPrintError(e.message, e.cause!);
+	prettyPrintError(e.message, e?.cause ?? e);
 	shutdown(1);
 });

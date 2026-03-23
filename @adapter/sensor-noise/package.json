@@ -1,5 +1,6 @@
 {
 	"name": "@adapter/sensor-noise",
+	"description": "噪声传感器",
 	"exports": "./lib/index.js",
 	"type": "module",
 	"scripts": {

@@ -3,6 +3,7 @@ import { ApiHost } from '@core/api/private';
 import type { EventRegister, IAsyncDisposable } from '@idlebox/common';
 import { definePublicConstant, EnhancedAsyncDisposable, registerGlobalLifecycle } from '@idlebox/common';
 import { createLogger, type IMyLogger } from '@idlebox/logger';
+import { inspect } from 'util';
 import { AdapterHost } from '../adapter-helpers/adapter-host.js';
 
 /**
@@ -62,6 +63,12 @@ class AppHost extends EnhancedAsyncDisposable implements IAppHost {
 	}
 
 	printStatus() {
+		let count = 0;
+		for (const node of this.adapters.nodes) {
+			console.error(`${inspect(node, { colors: true })}`);
+			count++;
+		}
+		console.error(`节点数: ${count}`);
 		// TODO
 	}
 }

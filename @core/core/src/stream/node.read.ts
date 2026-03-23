@@ -4,6 +4,8 @@ import { AbstractNode } from './node.abstract.js';
 import { isWritableNode, type WS } from './private.js';
 import type { INode } from './types.js';
 
+const alertSize = 2000; // n个包，不一定多大
+
 /**
  * 只出不进的节点
  * 传感器
@@ -16,12 +18,11 @@ export abstract class SendorNode<T extends TypeArray.Any = TypeArray.Any> extend
 	private readonly _targets: (INode<unknown, true> & WS)[] = [];
 	readonly targets: readonly INode[] = this._targets;
 
-	private readonly stream = this.__manage_stream(
-		new Readable({
-			objectMode: true,
-			read() {},
-		}),
-	);
+	private readonly stream = new Readable({
+		highWaterMark: 1000,
+		objectMode: true,
+		read() {},
+	});
 
 	constructor(displayName?: string) {
 		super(displayName);
@@ -50,13 +51,12 @@ export abstract class SendorNode<T extends TypeArray.Any = TypeArray.Any> extend
 			metadata: metadata,
 		});
 
-		const alertSize = 1024 * 64;
 		if ((this.stream as Readable).readableLength > alertSize) {
 			this.logger.warn`节点 ${this.displayName} 输出缓冲区长度 ${(this.stream as Readable).readableLength} 超过警戒线 ${alertSize}`;
 		}
 	}
 
-	public pipeTo(node: INode<AbstractNode, true>): typeof node {
+	public pipeTo(node: INode<unknown, true>): typeof node {
 		if (!this.isSender) {
 			throw new Error(`Cannot pipe from non-readable node "${this.displayName}"`);
 		}
@@ -74,5 +74,14 @@ export abstract class SendorNode<T extends TypeArray.Any = TypeArray.Any> extend
 		node._sources.push(this);
 
 		return node;
+	}
+
+	override resume() {
+		super.resume();
+
+		if (this.targets.length === 0) {
+			this.logger.warn`输出没有连接到任何下游节点`;
+			this.stream.resume(); // 丢弃数据
+		}
 	}
 }
