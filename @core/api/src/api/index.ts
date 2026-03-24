@@ -1,8 +1,9 @@
 import { closableToDisposable, definePublicConstant, EnhancedAsyncDisposable, SoftwareDefectError } from '@idlebox/common';
 import type { IMyLogger } from '@idlebox/logger';
+import { existsSync, statSync } from 'node:fs';
 import { createServer, type Server } from 'node:http';
 import { HttpApiEndpoint, type IHttpApiEndpointOptions } from './http/api-endpoint.js';
-import { createExpress } from './http/create-app.js';
+import { createExpress, createStatic } from './http/create-app.js';
 import { HttpRawApiEndpoint, type IHttpRawApiEndpointOptions } from './http/raw-endpoint.js';
 import { WebSocketHost } from './socket/host.js';
 import type { WebSocketEndpoint, WebSocketHandler } from './socket/type.js';
@@ -20,6 +21,11 @@ export interface IApiHost {
 	 */
 	provideRaw(handler: IHttpRawApiEndpointOptions): void;
 	provideWebsocket(handler: Constructor<WebSocketEndpoint>): void;
+
+	/**
+	 * serve-file接口
+	 */
+	provideWebsite(path: string, dir: string): void;
 }
 
 const startingSlash = /^\/+/;
@@ -28,13 +34,30 @@ const startingSlash = /^\/+/;
  * API宿主
  *
  * http、websocket相关功能
- * 
+ *
  * @internal
  */
 export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 	public declare readonly wss: WebSocketHost;
+
 	constructor(private readonly logger: IMyLogger) {
 		super('ApiHost');
+	}
+
+	private readonly serveFiles = new Map<string, string>();
+	provideWebsite(path: string, dir: string): void {
+		if (!path.startsWith('/')) path = `/${path}`;
+
+		if (!path.endsWith('/')) path += '/';
+
+		if (path.startsWith('/api/')) throw new SoftwareDefectError(`页面路径不能以/api/开头: ${path}`);
+		if (path.startsWith('/ws/')) throw new SoftwareDefectError(`页面路径不能以/ws/开头: ${path}`);
+		if (this.serveFiles.has(path)) throw new SoftwareDefectError(`重复注册页面路径: ${path}`);
+
+		if (!existsSync(dir)) throw new SoftwareDefectError(`提供的页面路径不存在: ${dir}`);
+		if (!statSync(dir).isDirectory()) throw new SoftwareDefectError(`提供的页面路径不是目录: ${dir}`);
+
+		this.serveFiles.set(path, dir);
 	}
 
 	private readonly jsonEndpoints = new Map<string, HttpApiEndpoint<any, any>>();
@@ -47,9 +70,9 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 			this.logger,
 		);
 		this.logger.verbose`注册JSON接口: ${instance.displayName}`;
-		if (this.jsonEndpoints.has(instance.displayName)) {
-			throw new SoftwareDefectError(`重复注册JSON接口: ${instance.displayName}`);
-		}
+		if (this.jsonEndpoints.has(instance.displayName)) throw new SoftwareDefectError(`重复注册JSON接口: ${instance.displayName}`);
+		if (this.rawEndpoints.has(instance.displayName)) throw new SoftwareDefectError(`重复注册JSON接口（已经注册为Raw接口）: ${instance.displayName}`);
+
 		this.jsonEndpoints.set(instance.displayName, instance);
 	}
 
@@ -58,9 +81,9 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 		const instance = new HttpRawApiEndpoint(options, this.logger);
 		this.logger.verbose`注册Raw接口: ${instance.displayName}`;
 		const key = instance.displayName;
-		if (this.rawEndpoints.has(key)) {
-			throw new SoftwareDefectError(`重复注册Raw接口: ${key}`);
-		}
+		if (this.jsonEndpoints.has(instance.displayName)) throw new SoftwareDefectError(`重复注册接口（已经注册为JSON接口）: ${key}`);
+		if (this.rawEndpoints.has(key)) throw new SoftwareDefectError(`重复注册Raw接口: ${key}`);
+
 		this.rawEndpoints.set(key, instance);
 	}
 
@@ -84,7 +107,7 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 
 		const server = createServer();
 
-		if (this.jsonEndpoints.size || this.rawEndpoints.size) {
+		if (this.jsonEndpoints.size || this.rawEndpoints.size || this.serveFiles.size) {
 			this.startHttp(server);
 		}
 		if (this.websocketEndpoints.size) {
@@ -109,7 +132,11 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 			}
 			for (const handler of this.rawEndpoints.values()) {
 				this.logger.debug`注册HTTP接口: ${handler.METHOD} ${handler.path}`;
-				app[handler.method](handler.path, handler.getHandle(), handler.getErrorHandler());
+				api[handler.method](handler.path, handler.getHandle(), handler.getErrorHandler());
+			}
+			for (const [path, dir] of this.serveFiles) {
+				this.logger.debug`注册静态资源接口: ${path} -> ${dir}`;
+				app.use(path, createStatic(dir));
 			}
 
 			server.on('request', app);

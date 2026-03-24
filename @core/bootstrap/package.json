@@ -15,7 +15,8 @@
 		"@idlebox/source-map-support": "^0.0.19",
 		"@core/core": "workspace:",
 		"@program/sample-app": "workspace:",
-		"@program/sample-management": "workspace:"
+		"@program/sample-management": "workspace:",
+		"@program/example-website": "workspace:"
 	},
 	"devDependencies": {
 		"@core/custom-rig": "workspace:",

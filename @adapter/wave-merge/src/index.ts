@@ -1,7 +1,7 @@
 import { Adapter, CalculatorNode, JsonReader } from '@core/core';
-import { DataPayload, TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
+import { DataPayload, type IDataFrame, type ProtocolStream, type TypeArray } from '@core/protocol';
 import { definePublicConstant, SoftwareDefectError } from '@idlebox/common';
-import { getPython } from '../../../@program/testing/src/autoindex.generated';
+import { getPython } from '@shared/testing';
 
 interface IOptions {
 	readonly name: string;
@@ -64,7 +64,7 @@ export class WaveMerger extends CalculatorNode<TypeArray.Any> {
 
 		this.logger.success`发现服务器端口: ${port}`;
 
-		console.log(this.displayName)
+		console.log(this.displayName);
 		const socket = await this.createProtocolSocket({
 			address: `[::1]:${port}`,
 			agentName: `wave-merge-server-${this.name}`,

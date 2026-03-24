@@ -1,7 +1,8 @@
 import { ExitCode, Interval, registerGlobalLifecycle, SoftwareDefectError } from '@idlebox/common';
-import { loadPackageByName } from '../tools/loader.js';
+import { resolve } from 'path';
+import { loadPackageByName, resolvePackageByName } from '../tools/loader.js';
 import { logger } from '../tools/misc.js';
-import { applicationPackageName, backendPackageName, isDebug, isVerbose } from './00-args.js';
+import { applicationPackageName, backendPackageName, frontendPackageName, isDebug, isVerbose } from './00-args.js';
 
 const mainApp = await loadPackageByName(applicationPackageName, '主程序');
 const backendApp = backendPackageName ? await loadPackageByName(backendPackageName, '后端') : null;
@@ -16,6 +17,12 @@ if (backendApp) {
 	await backendApp.startup();
 } else {
 	logger.info`未指定后端程序`;
+}
+
+if (frontendPackageName) {
+	const frontendApp = await resolvePackageByName(frontendPackageName, '前端');
+	application.api.provideWebsite('/', resolve(frontendApp, 'dist'));
+	logger.info`前端程序已加载，路径: ${frontendApp}/dist`;
 }
 
 logger.debug`流程定义已加载`;

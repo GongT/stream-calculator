@@ -1,7 +1,7 @@
 import { Adapter, CalculatorNode, LineReader } from '@core/core';
-import { DataPayload, TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
+import { DataPayload, type TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
 import { definePublicConstant } from '@idlebox/common';
-import { getPython } from '../../../@program/testing/src/autoindex.generated';
+import { getPython } from '@shared/testing';
 
 interface IOptions {
 	readonly name: string;

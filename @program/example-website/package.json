@@ -1,11 +1,11 @@
 {
-	"name": "@shared/example-website",
-	"exports": "./lib/index.js",
+	"name": "@program/example-website",
+	"exports": "./lib/main.js",
 	"type": "module",
 	"scripts": {
 		"prebuild": "codegen src",
-		"build": "tsc -b src",
-		"watch": "tsc -b src -w",
+		"build": "vite build",
+		"watch": "vite build --watch",
 		"start": "vite",
 		"clean": "rimraf lib"
 	},

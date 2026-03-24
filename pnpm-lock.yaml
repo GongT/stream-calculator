@@ -222,6 +222,9 @@ importers:
 
   '@core/api':
     dependencies:
+      '@idlebox/args':
+        specifier: ^0.0.26
+        version: 0.0.26
       '@idlebox/common':
         specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
         version: link:../../../baobao/@idlebox/common
@@ -283,6 +286,9 @@ importers:
       '@idlebox/source-map-support':
         specifier: ^0.0.19
         version: 0.0.19
+      '@program/example-website':
+        specifier: 'workspace:'
+        version: link:../../@program/example-website
       '@program/sample-app':
         specifier: 'workspace:'
         version: link:../../@program/sample-app

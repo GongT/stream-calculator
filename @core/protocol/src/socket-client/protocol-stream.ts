@@ -124,7 +124,7 @@ export class ProtocolStream extends EnhancedAsyncDisposable {
 		return new Promise<void>((resolve, reject) => {
 			this.socket.write(encoded, (err) => {
 				if (err) {
-					if (this.disposed) {
+					if (this.disposing || this.disposed) {
 						return; // dont resolve or reject
 					}
 					if (isNodeError(err) && err.code === 'EPIPE') {

@@ -10,6 +10,7 @@ export const isDebug = debug > 0 || verbose > 0;
 
 export const app_name = args.single(['--program', '-p']);
 export const backendPackageName = args.single(['--backend', '-b']);
+export const frontendPackageName = args.single(['--frontend', '-F']);
 
 export const http_listen = args.single(['--http-listen']) || '38083';
 

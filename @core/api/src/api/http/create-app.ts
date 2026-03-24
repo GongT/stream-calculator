@@ -32,6 +32,10 @@ export function createExpress(initialize: Initialize) {
 	app.use(htmlErrorHandler);
 }
 
+export function createStatic(dir: string): express.Handler {
+	return express.static(dir);
+}
+
 function jsonNotFoundHandler(_req: express.Request, res: express.Response) {
 	res.status(404).json({ error: 'Not Found' });
 }

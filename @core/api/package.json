@@ -12,6 +12,7 @@
 		"clean": "rimraf lib"
 	},
 	"dependencies": {
+		"@idlebox/args": "^0.0.26",
 		"@idlebox/common": "^1.5.20",
 		"@idlebox/logger": "^0.0.22",
 		"@idlebox/node": "^1.4.29",
