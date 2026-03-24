@@ -1,5 +1,5 @@
 import { Adapter, CalculatorNode, LineReader } from '@core/core';
-import { createProtocolSocket, DataPayload, TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
+import { DataPayload, TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
 import { definePublicConstant } from '@idlebox/common';
 import { getPython } from '@shared/testing';
 
@@ -19,14 +19,12 @@ const spawnOptions = {
 
 export class FFT extends CalculatorNode {
 	protected readonly communication!: ProtocolStream;
-	private readonly name: string;
 	private readonly mScale: number;
 	private readonly pScale: number;
 
 	constructor(options: IOptions) {
 		super(options.name);
 
-		this.name = options.name;
 		this.mScale = options.magnitudeScale ?? 10;
 		this.pScale = options.phaseScale ?? 1000;
 	}
@@ -46,10 +44,10 @@ export class FFT extends CalculatorNode {
 
 		this.logger.success`发现服务器端口: ${listenPort}`;
 
-		const socket = await createProtocolSocket({
+		const socket = await this.createProtocolSocket({
 			address: `[::1]:${listenPort}`,
 			agentName: `fft-server-${this.name}`,
-			agentId: 0,
+			agentId: this.serial,
 		});
 		definePublicConstant(this, 'communication', socket);
 

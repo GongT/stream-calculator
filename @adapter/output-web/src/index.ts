@@ -1,4 +1,4 @@
-import { Adapter, CalculatorNode } from '@core/core';
+import { Adapter, FinalizedNode } from '@core/core';
 import type { IDataFrame, TypeArray } from '@core/protocol';
 
 interface IOptions {
@@ -6,7 +6,7 @@ interface IOptions {
 	readonly guid: string;
 }
 
-export class PublishWeb extends CalculatorNode<TypeArray.S32> {
+export class PublishWeb extends FinalizedNode<TypeArray.S32> {
 	public readonly guid: string;
 
 	constructor(options: IOptions) {

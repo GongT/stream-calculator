@@ -45,11 +45,11 @@ async def main(magnitude_scale: float = 10.0, phase_scale: float = 1000.0):
 
     server.on_data_received(handle_request)
 
-    await server.start()
+    await server.listen()
     print(str(server.port), flush=True)
     print(f"FFT server is running... [port: {server.port}, magnitude_scale: {magnitude_scale}, phase_scale: {phase_scale}]", file=sys.stderr, flush=True)
 
-    await server.join()
+    await server.start()
 
 
 if __name__ == "__main__":
@@ -71,7 +71,5 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    try:
-        asyncio.run(main(args.magnitude_scale, args.phase_scale))
-    except InterruptedError:
-        print("服务器已停止", file=sys.stderr, flush=True)
+    asyncio.run(main(args.magnitude_scale, args.phase_scale))
+ 

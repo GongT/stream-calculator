@@ -47,8 +47,8 @@ export abstract class CalculatorNode<T extends TypeArray.Any = TypeArray.Any> ex
 
 	private readonly stream;
 
-	constructor(displayName?: string) {
-		super(displayName);
+	constructor(name: string) {
+		super(name);
 
 		this.stream = new Duplex({
 			highWaterMark: 1000,

@@ -1,5 +1,5 @@
 import type { IDataFrame, IWithType, TypeArray } from '@core/protocol';
-import { convertCaughtError, prettyPrintError, SoftwareDefectError } from '@idlebox/common';
+import { convertCaughtError, prettyPrintError, Quit, SoftwareDefectError } from '@idlebox/common';
 import { Writable } from 'node:stream';
 import { AbstractNode } from './node.abstract.js';
 import type { RS } from './private.js';
@@ -20,8 +20,8 @@ export abstract class FinalizedNode<T extends TypeArray.Any = TypeArray.Any> ext
 		write: this._handleStreamData.bind(this),
 	});
 
-	constructor(displayName?: string) {
-		super(displayName);
+	constructor(name: string) {
+		super(name);
 		+this.stream;
 	}
 
@@ -61,6 +61,8 @@ export abstract class FinalizedNode<T extends TypeArray.Any = TypeArray.Any> ext
 			await this.process(data, metadata);
 			callback();
 		} catch (e) {
+			if (this.disposed) throw new Quit();
+
 			this.logger.warn`出错node数据源list<${this._sources.map((item) => item.displayName)}>\ndata = ${data}`;
 
 			const err = convertCaughtError(e);

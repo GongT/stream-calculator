@@ -24,8 +24,8 @@ export abstract class SendorNode<T extends TypeArray.Any = TypeArray.Any> extend
 		read() {},
 	});
 
-	constructor(displayName?: string) {
-		super(displayName);
+	constructor(name: string) {
+		super(name);
 		this._targets = [];
 	}
 
@@ -68,7 +68,7 @@ export abstract class SendorNode<T extends TypeArray.Any = TypeArray.Any> extend
 
 		this.logger.debug`        -> ${node.displayName}`;
 
-		this.stream.pipe(node.stream);
+		this.stream.pipe(node.stream, { end: false });
 
 		this._targets.push(node);
 		node._sources.push(this);

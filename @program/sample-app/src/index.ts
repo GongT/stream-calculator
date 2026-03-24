@@ -3,23 +3,13 @@ import { PublishWeb } from '@adapter/output-web';
 import { SensorNoise } from '@adapter/sensor-noise';
 import { SensorSine } from '@adapter/sensor-sine';
 import { WaveMerger } from '@adapter/wave-merge';
-import type { IAppHost } from '@core/core';
 
-export async function startup(host: IAppHost) {
-	host._register({
-		dispose() {
-			console.log('bye');
-		},
-	});
-
-	
-
+export async function startup() {
 	const sensor1 = new SensorNoise({
 		name: 'S1',
 		sampleRate: 100000,
 		genreateTimer: 300,
 	});
-
 
 	const sensor2 = new SensorSine({
 		name: 'S2',

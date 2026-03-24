@@ -4,6 +4,7 @@ import type { INode } from '../stream/types.js';
 
 export interface IBaseAdapterOptions {
 	readonly packageJson: DeepReadonly<IPackageJson>;
+	readonly nodeList: Array<INode>;
 }
 
 /**
@@ -21,8 +22,8 @@ export abstract class Adapter extends EnhancedAsyncDisposable {
 
 	/** @internal */
 	_registerNodeInstance(node: AbstractNode) {
-		this._register(node);
 		this.nodes.push(node);
+		this.options.nodeList.push(node);
 	}
 
 	public getNodes(): ArrayIterator<INode> {

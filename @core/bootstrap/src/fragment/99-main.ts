@@ -11,9 +11,9 @@ process.exitCode = ExitCode.EXECUTION;
 await application.adapters.activate();
 logger.debug`用户程序已激活`;
 
-await mainApp.startup(application);
+await mainApp.startup();
 if (backendApp) {
-	await backendApp.startup(application);
+	await backendApp.startup();
 } else {
 	logger.info`未指定后端程序`;
 }

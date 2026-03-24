@@ -5,7 +5,7 @@ export interface IConnectOptions {
 	readonly agentName: string;
 	readonly agentId: number;
 }
-interface ICreateOptions extends IConnectOptions {
+export interface ICreateOptions extends IConnectOptions {
 	readonly type?: 'udp' | 'tcp';
 }
 

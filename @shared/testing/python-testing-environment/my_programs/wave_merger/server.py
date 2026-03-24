@@ -57,7 +57,7 @@ async def main(size: int, method: MergeMethod):
 
     server.on_data_received(handle_request)
 
-    await server.start()
+    await server.listen()
     print(
         f"合并流正在工作 ... [port: {server.port}, method: {method}, size: {size}]",
         file=sys.stderr,
@@ -66,7 +66,7 @@ async def main(size: int, method: MergeMethod):
 
     print(json.dumps({"type": "listen", "port": server.port}), flush=True)
 
-    await server.join()
+    await server.start()
 
 
 if __name__ == "__main__":
@@ -87,7 +87,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    try:
-        asyncio.run(main(args.size, args.method))
-    except InterruptedError:
-        print("服务器已停止", file=sys.stderr, flush=True)
+    asyncio.run(main(args.size, args.method))

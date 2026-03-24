@@ -36,7 +36,7 @@ export class SensorNoise extends SendorNode {
 		this.sampleRate = options.sampleRate ?? 44100;
 		this.intervalMs = Math.ceil((options.genreateTimer ?? 1000000) / 1000);
 
-		this.timer = new Interval(this.intervalMs);
+		this.timer = this._register(new Interval(this.intervalMs));
 		this.timer.onTick(this.timerTick.bind(this));
 	}
 

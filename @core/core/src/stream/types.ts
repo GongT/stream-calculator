@@ -1,4 +1,4 @@
-import type { EventRegister } from '@idlebox/common';
+import type { EventRegister, IAsyncDisposable } from '@idlebox/common';
 import type { Duplex, Readable, Writable } from 'node:stream';
 
 export interface INodeStatus {
@@ -18,7 +18,7 @@ export function privateStream<T extends Readable | Writable | Duplex>(node: INod
 	return (node as any).stream;
 }
 
-interface IBaseNode {
+interface IBaseNode extends IAsyncDisposable {
 	/**
 	 * 用于日志输出的名称
 	 */

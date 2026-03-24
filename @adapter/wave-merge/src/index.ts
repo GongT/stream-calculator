@@ -1,5 +1,5 @@
 import { Adapter, CalculatorNode, JsonReader } from '@core/core';
-import { createProtocolSocket, DataPayload, TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
+import { DataPayload, TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
 import { definePublicConstant, SoftwareDefectError } from '@idlebox/common';
 import { getPython } from '@shared/testing';
 
@@ -40,14 +40,12 @@ interface IListen {
  */
 export class WaveMerger extends CalculatorNode<TypeArray.Any> {
 	protected readonly communication!: ProtocolStream;
-	private readonly name: string;
 	private readonly method: string;
 	private readonly functionNumber: number;
 
 	constructor(options: IOptions) {
 		super(options.name);
 
-		this.name = options.name;
 		this.method = options.method;
 		this.functionNumber = options.functionNumber ?? 0;
 	}
@@ -55,7 +53,7 @@ export class WaveMerger extends CalculatorNode<TypeArray.Any> {
 	protected override async _initialize() {
 		const python = await getPython();
 
-		const args = ['-m', 'cProfile', '-o', '/tmp/profile.txt', '-m', 'my_programs.wave_merger.server', '--size', this.sources.length.toFixed(0), '--method', this.method];
+		const args = ['-m', 'my_programs.wave_merger.server', '--size', this.sources.length.toFixed(0), '--method', this.method];
 
 		const process = this.spawnWorker([python, ...args], spawnOptions);
 		const outputReader = this._register(new JsonReader(process.stdout));
@@ -66,10 +64,11 @@ export class WaveMerger extends CalculatorNode<TypeArray.Any> {
 
 		this.logger.success`发现服务器端口: ${port}`;
 
-		const socket = await createProtocolSocket({
+		console.log(this.displayName)
+		const socket = await this.createProtocolSocket({
 			address: `[::1]:${port}`,
 			agentName: `wave-merge-server-${this.name}`,
-			agentId: 0,
+			agentId: this.serial,
 		});
 		definePublicConstant(this, 'communication', socket);
 

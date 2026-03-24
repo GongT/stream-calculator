@@ -1,5 +1,5 @@
-import { convertCaughtError, EnhancedAsyncDisposable, getErrorFrame, prettyPrintError, SoftwareDefectError } from '@idlebox/common';
-import type { IMyLogger } from '@idlebox/logger';
+import { convertCaughtError, EnhancedAsyncDisposable, functionToDisposable, getErrorFrame, prettyPrintError, SoftwareDefectError } from '@idlebox/common';
+import { type IMyLogger } from '@idlebox/logger';
 import { findPackageJSON } from 'node:module';
 import { getDeclarationFile, rememberDeclareation } from '../common/debug.js';
 import { reflectBinding } from '../package-reflect/binding.js';
@@ -34,8 +34,21 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 	private readonly _instances = new Map<AdapterConstructor, Adapter>();
 	private readonly _nodeClasses = new Map<INodeConstruct, Adapter>();
 
+	private readonly _nodes: Array<INode>;
+
 	constructor(public readonly logger: IMyLogger) {
 		super('AdapterHost');
+
+		const nodes: Array<INode> = [];
+		this._register(
+			functionToDisposable(async function destroyNodesEarly() {
+				for (const node of nodes) {
+					logger.debug`正在销毁节点 ${node.displayName} (${node.serial})...`;
+					await node.dispose();
+				}
+			}),
+		);
+		this._nodes = nodes;
 	}
 
 	get instances() {
@@ -43,7 +56,7 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 	}
 
 	get nodes(): IteratorObject<INode> {
-		return this._instances.values().flatMap((item) => item.getNodes());
+		return this._nodes.values();
 	}
 
 	async activate() {
@@ -76,7 +89,7 @@ export class AdapterHost extends EnhancedAsyncDisposable {
 
 	private async makeAdapterInstance(Adapter: AdapterConstructor) {
 		const packageJson = await reflectBinding.getPackageJson(Adapter);
-		const instance = new Adapter({ packageJson });
+		const instance = new Adapter({ packageJson, nodeList: this._nodes });
 		return instance;
 	}
 

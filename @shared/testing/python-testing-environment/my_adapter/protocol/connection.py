@@ -1,6 +1,8 @@
 import asyncio
 import socket
 import struct
+import sys
+from concurrent.futures import CancelledError
 from traceback import print_exc
 from typing import Coroutine, Literal, Protocol
 
@@ -43,7 +45,7 @@ class ProtocolServer:
     def on_data_received(self, callback: ProtocolCallback):
         self._on_data_received.append(callback)
 
-    async def start(self, port: int = 0):
+    async def listen(self, port: int = 0):
         """
         启动服务器
         """
@@ -60,11 +62,20 @@ class ProtocolServer:
 
         debug_output(f"Starting {self.kind.upper()} server on {self.port}...")
 
-        self.task = asyncio.ensure_future(self.start_server_event_loop())
-
-    async def join(self):
-        if self.task is not None:
+    async def start(self):
+        try:
+            self.task = self.start_server_event_loop()
             await self.task
+            del self.task
+        except asyncio.CancelledError:
+            debug_output("服务器事件循环已取消，正在关闭服务器...")
+            if self.sock is not None:
+                self.sock.close()
+                self.sock = None
+            if self.server is not None:
+                self.server.close()
+                self.server = None
+            debug_output("服务器已关闭")
 
     async def start_server_event_loop(self):
         if self.kind == "tcp":

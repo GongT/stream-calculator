@@ -1,4 +1,4 @@
-import { convertCaughtError, DeferredPromise, Emitter, EnhancedAsyncDisposable, isNodeError, prettyPrintError } from '@idlebox/common';
+import { convertCaughtError, DeferredPromise, Emitter, EnhancedAsyncDisposable, fromNativeDisposable, isNodeError, prettyPrintError } from '@idlebox/common';
 import { logger } from '@idlebox/logger';
 import type { Socket as TCPSocket } from 'node:net';
 import { debugDumpBuffer } from '../common/dump.js';
@@ -27,10 +27,17 @@ export class ProtocolStream extends EnhancedAsyncDisposable {
 
 		this.handleData = this.handleData.bind(this);
 
+		this._register(fromNativeDisposable(socket));
+
 		socket.on('data', this.handleData);
 
 		socket.on('error', (err) => {
 			throw new Error(`网络连接发生错误`, { cause: err });
+		});
+
+		this.onBeforeDispose(() => {
+			socket.off('data', this.handleData);
+			socket.removeAllListeners('error');
 		});
 	}
 
@@ -76,6 +83,10 @@ export class ProtocolStream extends EnhancedAsyncDisposable {
 		if (metadata !== undefined) {
 			packet.metadata = metadata;
 		}
+		if (this.disposed) {
+			// TODO
+			return;
+		}
 
 		await this.send(packet);
 	}
@@ -109,9 +120,13 @@ export class ProtocolStream extends EnhancedAsyncDisposable {
 	private send(packet: NetworkPacket) {
 		const encoded = packet.encode();
 		// debugDumpBuffer(encoded, '>>> ');
+
 		return new Promise<void>((resolve, reject) => {
 			this.socket.write(encoded, (err) => {
 				if (err) {
+					if (this.disposed) {
+						return; // dont resolve or reject
+					}
 					if (isNodeError(err) && err.code === 'EPIPE') {
 						reject(err);
 						return;

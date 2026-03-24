@@ -1,28 +1,9 @@
 import type { IDataFrame } from '@core/protocol';
-import {
-	convertCaughtError,
-	createStackTraceHolder,
-	Emitter,
-	EnhancedAsyncDisposable,
-	ExitCode,
-	functionToDisposable,
-	inspectSymbol,
-	linux_case_hyphen,
-	prettyPrintError,
-	SoftwareDefectError,
-	timeout,
-	TimeoutError,
-} from '@idlebox/common';
-import { createLogger } from '@idlebox/logger';
-import { isShuttingDown, shutdown } from '@idlebox/node';
-import { execa, type Options as _ExecOptions } from 'execa';
-import { randomUUID } from 'node:crypto';
-import { basename } from 'node:path';
+import { convertCaughtError, createStackTraceHolder, ExitCode, inspectSymbol, prettyPrintError, SoftwareDefectError, timeout, TimeoutError } from '@idlebox/common';
+import { shutdown } from '@idlebox/node';
 import { Readable, Writable } from 'node:stream';
 import type { InspectContext } from 'node:util';
-import type { Writeable } from '../common/functions.js';
-import { getSerialNumber } from '../common/functions.js';
-import { makeLoggerStream } from '../common/logging-stream.js';
+import { NodeTools } from './node-tools.js';
 import { privateStream, type INode, type INodeStatus } from './types.js';
 
 /**
@@ -30,26 +11,12 @@ import { privateStream, type INode, type INodeStatus } from './types.js';
  */
 export type INodeConstruct = new (...args: any[]) => AbstractNode;
 
-export interface ExecOpts extends Omit<_ExecOptions, 'stdio'> {
-	stdio?: never;
-}
-
 /** @internal */
-export abstract class AbstractNode extends EnhancedAsyncDisposable implements INode {
-	public readonly nodeGuid: string = randomUUID();
-
+export abstract class AbstractNode extends NodeTools implements INode {
 	isReceiver = false;
 	isSender = false;
 
-	protected readonly _onError = this._register(new Emitter<Error>());
 	public readonly onError = this._onError.event;
-
-	protected readonly logger;
-	public readonly serial: number;
-	public readonly id: string;
-	public override readonly displayName: string;
-
-	protected readonly adapter;
 
 	public readonly statistic: INodeStatus = {
 		sent: 0,
@@ -59,32 +26,8 @@ export abstract class AbstractNode extends EnhancedAsyncDisposable implements IN
 		error: 0,
 	};
 
-	constructor(displayName?: string) {
-		super();
-
-		const nodeInfo = application.adapters.getNodeInfo(this.constructor);
-
-		this.adapter = nodeInfo.adapter;
-
-		const bName = basename(nodeInfo.package.name);
-		let id = `${bName}:${nodeInfo.constructorName}`;
-		if (bName === linux_case_hyphen(nodeInfo.constructorName)) {
-			id = bName;
-		}
-		this.id = id;
-		this.serial = getSerialNumber(this.id);
-
-		let logger = createLogger(`node:${this.id}`);
-		if (this.serial) {
-			logger = logger.extend(this.serial.toString());
-		}
-		this.logger = logger;
-
-		if (displayName) {
-			this.displayName = `${nodeInfo.package.description}(${displayName})`;
-		} else {
-			this.displayName = nodeInfo.package.description;
-		}
+	constructor(name: string) {
+		super(name);
 
 		this.adapter._registerNodeInstance(this);
 
@@ -110,7 +53,7 @@ export abstract class AbstractNode extends EnhancedAsyncDisposable implements IN
 
 		const stream = privateStream(this);
 		stream.on('error', (e) => {
-			if (!this._onError.hasDisposed) {
+			if (!this._onError.disposed) {
 				const err = convertCaughtError(e);
 				prettyPrintError(`${this.displayName} 处理出错`, err);
 				this._onError.fire(err);
@@ -144,86 +87,8 @@ export abstract class AbstractNode extends EnhancedAsyncDisposable implements IN
 	}
 
 	// ------------------ 工具方法
-	protected fireError(e: Error) {
-		this._onError.fire(e);
-		if (this._onError.listenerCount() === 0) {
-			this.logger.error`发生错误但没有监听器: long<${e.stack ?? e.message}>`;
-			setTimeout(() => {
-				throw e;
-			}, 0);
-		}
-	}
-
 	public get stats(): Readonly<typeof this.statistic> {
 		return this.statistic;
-	}
-
-	protected spawnWorker<Opt extends ExecOpts = ExecOpts>(commandline: string[], options: Opt) {
-		const proc = this.exec(commandline, options);
-		this.logger.info`process ${proc.pid} spawned.`;
-
-		proc.then(
-			(p) => {
-				if (isShuttingDown()) return;
-
-				// TODO: update @idlebox/common
-				this.fireError(new Error(`子程序意外退出 (code=${p.exitCode || p.signal}): ${commandline.join(' ')}`));
-			},
-			(e) => {
-				if (isShuttingDown()) return;
-
-				this.fireError(new Error(`子程序意外退出\n   commandline = ${commandline.join(' ')}\n错误信息: ${e.message}`));
-			},
-		);
-
-		return proc;
-	}
-
-	protected exec<Opt extends ExecOpts = ExecOpts>(commandline: string[], opts: Opt) {
-		const options: Writeable<Opt> = { ...opts } as any;
-
-		const stdout_should_wrap = options.stdout === 'inherit';
-		const stderr_should_wrap = options.stderr === 'inherit';
-		if (stdout_should_wrap) options.stdout = 'pipe';
-		if (stderr_should_wrap) options.stderr = 'pipe';
-
-		if (!options.env) options.env = {};
-		Object.assign(options.env, {
-			PYTHONUNBUFFERED: '1',
-		});
-
-		const process = execa(commandline[0], commandline.slice(1), options);
-		this.logger.verbose`PID=${process.pid ?? '?'}`;
-
-		if (stdout_should_wrap || stderr_should_wrap) {
-			if (stdout_should_wrap) {
-				process.stdout?.pipe(makeLoggerStream(this.logger, 'stdout'));
-			}
-			if (stderr_should_wrap) {
-				process.stderr?.pipe(makeLoggerStream(this.logger, 'stderr'));
-			}
-		}
-
-		const un = this._register(
-			functionToDisposable(() => {
-				this.logger.warn`正在杀死子进程 ${process.pid}...`;
-				process.kill('SIGINT');
-				return process;
-			}),
-		);
-
-		process.then(
-			(result) => {
-				this.logger.verbose`子进程 ${process.pid} 已退出: ${result.exitCode} / ${result.signal}`;
-				un.dispose();
-			},
-			(e) => {
-				this.logger.debug`子进程 ${process.pid} 异常退出: ${e.message}`;
-				un.dispose();
-			},
-		);
-
-		return process;
 	}
 
 	protected getSourceNodeId(data: IDataFrame<any>) {
