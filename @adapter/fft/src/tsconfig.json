@@ -14,11 +14,11 @@
 		},
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@shared/testing/src/tsconfig.json"
+			"path": "../../../@core/protocol/src/tsconfig.json"
 		},
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@core/protocol/src/tsconfig.json"
+			"path": "../../../@program/testing/src/tsconfig.json"
 		}
 	]
 }

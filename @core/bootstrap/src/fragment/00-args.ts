@@ -27,11 +27,12 @@ function usage() {
 	console.log(`用法:
 	--program           主程序包名称，必须
 	--backend           后端包名称
+	--frontend          前端包名称
 	--http-listen       HTTP监听地址（端口号）
 	--debug, -d         调试输出
 	--verbose, -v       详细输出
 `); 
-	console.log(`示例: $0 --program @program/sample-app --backend @program/sample-management`);
+	console.log(`示例: $0 --program @program/sample-app --backend @program/sample-management --frontend @program/sample-frontend`);
 }
 
 export const applicationPackageName = app_name;

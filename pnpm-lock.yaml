@@ -64,7 +64,7 @@ importers:
         version: link:../../../baobao/@idlebox/common
       '@shared/testing':
         specifier: 'workspace:'
-        version: link:../../@shared/testing
+        version: link:../../@program/testing
     devDependencies:
       '@core/custom-rig':
         specifier: 'workspace:'
@@ -211,7 +211,7 @@ importers:
         version: link:../../../baobao/@idlebox/common
       '@shared/testing':
         specifier: 'workspace:'
-        version: link:../../@shared/testing
+        version: link:../../@program/testing
     devDependencies:
       '@core/custom-rig':
         specifier: 'workspace:'
@@ -289,9 +289,6 @@ importers:
       '@program/sample-management':
         specifier: 'workspace:'
         version: link:../../@program/sample-management
-      '@shared/common':
-        specifier: 'workspace:'
-        version: link:../../@shared/common
     devDependencies:
       '@core/custom-rig':
         specifier: 'workspace:'
@@ -406,6 +403,28 @@ importers:
         specifier: ^25.5.0
         version: 25.5.0
 
+  '@program/example-website':
+    dependencies:
+      '@build-script/codegen':
+        specifier: ^1.0.21
+        version: 1.0.21
+      preact:
+        specifier: ^10.29.0
+        version: 10.29.0
+      sass:
+        specifier: ^1.98.0
+        version: 1.98.0
+      vite:
+        specifier: ^8.0.1
+        version: 8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(sass@1.98.0)(yaml@2.8.2)
+    devDependencies:
+      '@core/custom-rig':
+        specifier: 'workspace:'
+        version: link:../../@core/custom-rig
+      '@preact/preset-vite':
+        specifier: ^2.10.5
+        version: 2.10.5(@babel/core@7.29.0)(preact@10.29.0)(vite@8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(sass@1.98.0)(yaml@2.8.2))
+
   '@program/sample-app':
     dependencies:
       '@adapter/buffer':
@@ -453,48 +472,7 @@ importers:
         specifier: ^25.5.0
         version: 25.5.0
 
-  '@shared/common':
-    dependencies:
-      '@idlebox/common':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common
-        version: link:../../../baobao/@idlebox/common
-      '@idlebox/node':
-        specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/node
-        version: link:../../../baobao/@idlebox/node
-    devDependencies:
-      '@build-script/autoindex':
-        specifier: ^0.0.21
-        version: 0.0.21
-      '@core/custom-rig':
-        specifier: 'workspace:'
-        version: link:../../@core/custom-rig
-      '@types/node':
-        specifier: ^25.5.0
-        version: 25.5.0
-
-  '@shared/example-website':
-    dependencies:
-      '@build-script/codegen':
-        specifier: ^1.0.21
-        version: 1.0.21
-      preact:
-        specifier: ^10.29.0
-        version: 10.29.0
-      sass:
-        specifier: ^1.98.0
-        version: 1.98.0
-      vite:
-        specifier: ^8.0.1
-        version: 8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(sass@1.98.0)(yaml@2.8.2)
-    devDependencies:
-      '@core/custom-rig':
-        specifier: 'workspace:'
-        version: link:../../@core/custom-rig
-      '@preact/preset-vite':
-        specifier: ^2.10.5
-        version: 2.10.5(@babel/core@7.29.0)(preact@10.29.0)(vite@8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(sass@1.98.0)(yaml@2.8.2))
-
-  '@shared/testing':
+  '@program/testing':
     dependencies:
       '@idlebox/common':
         specifier: /data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/common

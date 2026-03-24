@@ -9,10 +9,6 @@
 	"references": [
 		{
 			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../../@shared/common/src/tsconfig.json"
-		},
-		{
-			"$id": "package-tools/monorepo-tsconfig",
 			"path": "../../core/src/tsconfig.json"
 		},
 		{

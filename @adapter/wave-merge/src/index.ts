@@ -1,7 +1,7 @@
 import { Adapter, CalculatorNode, JsonReader } from '@core/core';
 import { DataPayload, TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
 import { definePublicConstant, SoftwareDefectError } from '@idlebox/common';
-import { getPython } from '@shared/testing';
+import { getPython } from '../../../@program/testing/src/autoindex.generated';
 
 interface IOptions {
 	readonly name: string;

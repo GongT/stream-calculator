@@ -1,6 +1,6 @@
+import { REPO_ROOT } from '@core/core';
 import { prettyPrintError, SoftwareDefectError } from '@idlebox/common';
 import { registerNodejsExitHandler, registerNodejsGlobalTypedErrorHandler, shutdown, workingDirectory } from '@idlebox/node';
-import { REPO_ROOT } from '@shared/common';
 import { logger } from '../tools/misc.js';
 
 workingDirectory.chdir(REPO_ROOT);

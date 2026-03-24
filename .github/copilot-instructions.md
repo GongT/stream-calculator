@@ -19,9 +19,7 @@
 ## Monorepo Layout
 - `@core/*`: core logic.
 - `@adapter/*`: data source, transform, and output adapters (nodes registered into adapter host).
-- `@program/*`: runnable compositions of adapters, backend wiring and API logic.
-- `@shared/*`: shared utilities, testing support, examples.
-  - `@shared/common` is a mistake and should be avoided for new code.
+- `@program/*`: backend wiring, API logic and frontend.
 
 Any other folder at root level is going to be documentation or configuration.
 

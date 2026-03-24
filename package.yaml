@@ -12,7 +12,7 @@ scripts:
   watch: tsc -b ./tsconfig.everything.json -w
   start: DEBUG="app app:* adapter adapter:* node node:* text text:*" nodemon
     ./@core/bootstrap/lib/main.js -- --program @program/sample-app --backend
-    @program/sample-management
+    @program/sample-management --frontend @program/example-website
   clean: pnpm run --if-present --recursive clean
 dependencies:
   "@biomejs/biome": ^2.4.8
