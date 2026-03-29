@@ -1,9 +1,16 @@
-import { Adapter, FinalizedNode } from '@core/core';
+import { Adapter, FinalizedNode, WebSocketEndpoint } from '@core/core';
 import type { IDataFrame, TypeArray } from '@core/protocol';
+import type WebSocket from 'ws';
 
 interface IOptions {
 	readonly name: string;
 	readonly guid: string;
+}
+
+class PublishServer extends WebSocketEndpoint {
+	override async connection(socket: WebSocket) {
+		socket.send(Buffer.from('Hello, WebSocket!'));
+	}
 }
 
 export class PublishWeb extends FinalizedNode<TypeArray.S32> {
@@ -14,7 +21,9 @@ export class PublishWeb extends FinalizedNode<TypeArray.S32> {
 		this.guid = options.guid;
 	}
 
-	protected override async _initialize() {}
+	protected override async _initialize() {
+		application.api.provideWebsocket('example-publisher', PublishServer);
+	}
 
 	override async process(_data: IDataFrame<TypeArray.S32>) {}
 }

@@ -2,13 +2,12 @@ import { closableToDisposable, definePublicConstant, EnhancedAsyncDisposable, So
 import type { IMyLogger } from '@idlebox/logger';
 import { existsSync, statSync } from 'node:fs';
 import { createServer, type Server } from 'node:http';
+import type { WebSocketServer } from 'ws';
 import { HttpApiEndpoint, type IHttpApiEndpointOptions } from './http/api-endpoint.js';
 import { createExpress, createStatic } from './http/create-app.js';
 import { HttpRawApiEndpoint, type IHttpRawApiEndpointOptions } from './http/raw-endpoint.js';
-import { WebSocketHost } from './socket/host.js';
-import type { WebSocketEndpoint, WebSocketHandler } from './socket/type.js';
-
-type Constructor<T> = new (...args: any[]) => T;
+import { createWebsocketServer } from './socket/create-wss.js';
+import type { WebSocketEndpoint } from './socket/type.js';
 
 export interface IApiHost {
 	/**
@@ -20,12 +19,14 @@ export interface IApiHost {
 	 * 底层HTTP接口，直接操作响应，例如下载文件等
 	 */
 	provideRaw(handler: IHttpRawApiEndpointOptions): void;
-	provideWebsocket(handler: Constructor<WebSocketEndpoint>): void;
+	provideWebsocket(name: string, Class: new (...args: ConstructorParameters<typeof WebSocketEndpoint>) => WebSocketEndpoint): void;
 
 	/**
 	 * serve-file接口
 	 */
 	provideWebsite(path: string, dir: string): void;
+
+	start(): void;
 }
 
 const startingSlash = /^\/+/;
@@ -38,10 +39,12 @@ const startingSlash = /^\/+/;
  * @internal
  */
 export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
-	public declare readonly wss: WebSocketHost;
+	public declare readonly wss: WebSocketServer;
+	private readonly wssLogger;
 
 	constructor(private readonly logger: IMyLogger) {
 		super('ApiHost');
+		this.wssLogger = this.logger.extend('wss');
 	}
 
 	private readonly serveFiles = new Map<string, string>();
@@ -69,7 +72,7 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 			},
 			this.logger,
 		);
-		this.logger.verbose`注册JSON接口: ${instance.displayName}`;
+		this.logger.verbose`注册JSON接口类: ${instance.displayName}`;
 		if (this.jsonEndpoints.has(instance.displayName)) throw new SoftwareDefectError(`重复注册JSON接口: ${instance.displayName}`);
 		if (this.rawEndpoints.has(instance.displayName)) throw new SoftwareDefectError(`重复注册JSON接口（已经注册为Raw接口）: ${instance.displayName}`);
 
@@ -79,7 +82,7 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 	private readonly rawEndpoints = new Map<string, HttpRawApiEndpoint>();
 	provideRaw(options: IHttpRawApiEndpointOptions): void {
 		const instance = new HttpRawApiEndpoint(options, this.logger);
-		this.logger.verbose`注册Raw接口: ${instance.displayName}`;
+		this.logger.verbose`注册Raw接口类: ${instance.displayName}`;
 		const key = instance.displayName;
 		if (this.jsonEndpoints.has(instance.displayName)) throw new SoftwareDefectError(`重复注册接口（已经注册为JSON接口）: ${key}`);
 		if (this.rawEndpoints.has(key)) throw new SoftwareDefectError(`重复注册Raw接口: ${key}`);
@@ -88,16 +91,22 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 	}
 
 	private readonly websocketEndpoints = new Map<string, WebSocketEndpoint>();
-	provideWebsocket(handler: Constructor<WebSocketEndpoint>): void {
-		const instance = new handler();
-		this.logger.verbose`注册WebSocket接口: ${instance.name}`;
+	provideWebsocket(name: string, Class: new (...args: ConstructorParameters<typeof WebSocketEndpoint>) => WebSocketEndpoint): void {
+		const instance = new Class(name, this.wssLogger);
+		this.logger.verbose`注册WebSocket接口类: ${instance.name}`;
 		if (this.websocketEndpoints.has(instance.name)) {
 			throw new SoftwareDefectError(`重复注册WebSocket接口: ${instance.name}`);
 		}
-		this.websocketEndpoints.set(instance.name, instance);
+		this.websocketEndpoints.set(name, instance);
 	}
 
+	private started = false;
 	async start() {
+		if (this.started) {
+			throw new SoftwareDefectError('重复启动API服务');
+		}
+		this.started = true;
+
 		if (this.jsonEndpoints.size === 0 && this.rawEndpoints.size === 0 && this.websocketEndpoints.size === 0) {
 			return this.useless();
 		}
@@ -127,16 +136,16 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 	private startHttp(server: Server) {
 		createExpress((app, api) => {
 			for (const handler of this.jsonEndpoints.values()) {
-				this.logger.debug`注册JSON接口: ${handler.path}`;
+				this.logger.debug`JSON接口: ${handler.path}`;
 				api.post(handler.path, handler.getHandle(), handler.getErrorHandler());
 			}
 			for (const handler of this.rawEndpoints.values()) {
-				this.logger.debug`注册HTTP接口: ${handler.METHOD} ${handler.path}`;
+				this.logger.debug`HTTP接口: ${handler.METHOD} ${handler.path}`;
 				api[handler.method](handler.path, handler.getHandle(), handler.getErrorHandler());
 			}
 			for (const [path, dir] of this.serveFiles) {
-				this.logger.debug`注册静态资源接口: ${path} -> ${dir}`;
-				app.use(path, createStatic(dir));
+				this.logger.debug`静态资源接口: ${path} -> ${dir}`;
+				app.use(path, ...createStatic(dir, path === '/'));
 			}
 
 			server.on('request', app);
@@ -144,12 +153,13 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 	}
 
 	private startWebsocket(server: Server) {
-		const mapper = new Map<string, WebSocketHandler>();
-		for (const handler of this.websocketEndpoints.values()) {
-			this.logger.debug`注册WebSocket接口: ${handler.name}`;
-			mapper.set(handler.name, handler.handle);
+		const wss = createWebsocketServer(server, this.wssLogger);
+
+		for (const endpoint of this.websocketEndpoints.values()) {
+			this.logger.debug`WebSocket接口: ${endpoint.name}`;
+			wss.add(endpoint);
 		}
-		const wss = new WebSocketHost(this.logger.extend('wss'), server, mapper);
+
 		this._register(wss);
 		definePublicConstant(this, 'wss', wss);
 	}

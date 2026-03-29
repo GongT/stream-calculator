@@ -56,6 +56,9 @@ Any other folder at root level is going to be documentation or configuration.
 - Each Node can have multiple stream passing in and out, then may have different data type and frame rate.
 - The data may not contiguous, there can be gaps or overlaps between frames, this issue can be handled by the TimeAlign adapter if needed. Nodes can assume that the input stream is always valid and no overlap or gap. The user has the responsibility to use TimeAlign adapter.
 
+#### Client And Api
+
+- Frontend, api and websocket is provided at port `38083`.
 
 ## Build And Run
 - Install dependencies from repo root: `pnpm install`.

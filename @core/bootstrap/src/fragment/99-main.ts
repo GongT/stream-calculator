@@ -23,6 +23,8 @@ if (frontendPackageName) {
 	const frontendApp = await resolvePackageByName(frontendPackageName, '前端');
 	application.api.provideWebsite('/', resolve(frontendApp, 'dist'));
 	logger.info`前端程序已加载，路径: ${frontendApp}/dist`;
+} else {
+	logger.info`未指定前端程序`;
 }
 
 logger.debug`流程定义已加载`;
@@ -47,13 +49,17 @@ for (const node of nodes) {
 
 logger.debug`数据流处理中`;
 
-await (application.api as any).start();
+application.api.start();
 
 if (process.stderr.isTTY && !isDebug && !isVerbose) {
-	// process.stdin.on('data', () => {
-	// 	process.stderr.write('\x1Bc');
-	// 	application.printStatus();
-	// });
+	process.stdin.on('data', () => {
+		process.stderr.write('\x1Bc');
+		application.printStatus();
+	});
+	process.on('SIGRTMIN+8', () => {
+		process.stderr.write('\x1Bc');
+		application.printStatus();
+	});
 	const iv = new Interval(100);
 	registerGlobalLifecycle(iv);
 

@@ -8,6 +8,10 @@
 		"clean": ""
 	},
 	"dependencies": {
-		"@build-script/baseline-rig": "^1.1.2"
+		"@build-script/baseline-rig": "^1.1.2",
+		"@mpis/run": "^0.0.26",
+		"@mpis/typescript": "^0.0.23",
+		"typescript": "^6.0.2",
+		"@build-script/autoindex": "^0.0.21"
 	}
 }

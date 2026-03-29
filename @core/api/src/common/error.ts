@@ -26,4 +26,5 @@ export enum ApiErrorCode {
 
 	InvalidInput = 1000,
 	InvalidOutput = 1001,
+	NotExists = 1002,
 }

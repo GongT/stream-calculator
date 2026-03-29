@@ -4,7 +4,7 @@
 	"scripts": {
 		"build": "codegen src",
 		"watch": "codegen src -w",
-		"clean": "rimraf lib"
+		"clean": "mpis-run clean"
 	},
 	"dependencies": {
 		"@build-script/codegen": "^1.0.21",

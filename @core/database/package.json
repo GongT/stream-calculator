@@ -3,17 +3,15 @@
 	"exports": "./lib/autoindex.generated.js",
 	"type": "module",
 	"scripts": {
-		"prebuild": "autoindex src/tsconfig.json",
-		"build": "tsc -b src",
-		"watch": "tsc -b src -w",
-		"clean": "rimraf lib"
+		"build": "mpis-run build",
+		"watch": "mpis-run watch",
+		"clean": "mpis-run clean"
 	},
 	"dependencies": {
 		"@idlebox/common": "^1.5.20",
 		"@core/protocol": "workspace:"
 	},
 	"devDependencies": {
-		"@build-script/autoindex": "^0.0.21",
 		"@core/custom-rig": "workspace:",
 		"@types/node": "^25.5.0"
 	}

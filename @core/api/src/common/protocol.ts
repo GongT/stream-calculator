@@ -1,7 +1,9 @@
+import type { ApiErrorCode } from './error.js';
+
 export type IStandardResponse<T> = IErrorResponse | ISuccessResponse<T> | IPagedResponse<T>;
 
 export interface IErrorResponse {
-	code: number;
+	code: ApiErrorCode;
 	message: string;
 	details?: any;
 	_stack?: string;

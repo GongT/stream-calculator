@@ -63,21 +63,34 @@ export abstract class FinalizedNode<T extends TypeArray.Any = TypeArray.Any> ext
 		} catch (e) {
 			if (this.disposed) throw new Quit();
 
-			this.logger.warn`出错node数据源list<${this._sources.map((item) => item.displayName)}>\ndata = ${data}`;
-
 			const err = convertCaughtError(e);
-			this.statistic.error++;
+			Object.defineProperty(err, 'sources', {
+				get: () => this._sources.map((item) => item.displayName),
+			});
 
+			this._handle_error(Object.assign(err, { data }), callback);
+		}
+	}
+
+	private _handle_error(err: Error & { data: IDataFrame<T> }, callback: (err?: Error) => void = () => {}) {
+		this.statistic.error++;
+
+		if (this._onError.listenerCount() === 0) {
+			// nothing to do
+		} else {
 			try {
-				if (this._onError.listenerCount() === 0) {
-					return callback(err);
-				}
 				this._onError.fire(err);
-				callback();
+
+				// 成功自处理
+				return callback();
 			} catch (err2) {
-				prettyPrintError(`[${this.displayName}] Error in error handler of node`, convertCaughtError(err2));
-				callback(err);
+				err = Object.assign(convertCaughtError(err2), { cause: err, data: err.data });
 			}
 		}
+
+		this.logger.warn`出错node数据源list<${this._sources.map((item) => item.displayName)}>\ndata = ${err.data}`;
+		prettyPrintError(`[${this.displayName}] Error in error handler of node`, convertCaughtError(err));
+
+		callback(err);
 	}
 }

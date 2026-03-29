@@ -18,6 +18,10 @@
 		{
 			"$id": "package-tools/monorepo-tsconfig",
 			"path": "../../../@program/sample-management/src/tsconfig.json"
+		},
+		{
+			"$id": "package-tools/monorepo-tsconfig",
+			"path": "../../../@program/example-website/src/tsconfig.json"
 		}
 	]
 }

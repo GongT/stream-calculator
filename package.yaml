@@ -10,15 +10,15 @@ scripts:
   postinstall: package-tools monorepo-link-binaries --recursive
   build: tsc -b ./tsconfig.everything.json
   watch: tsc -b ./tsconfig.everything.json -w
-  start: DEBUG="app app:* adapter adapter:* node node:* text text:*" nodemon
-    ./@core/bootstrap/lib/main.js -- --program @program/sample-app --backend
-    @program/sample-management --frontend @program/example-website
+  start: >-
+    DEBUG="app app:* api api:* adapter adapter:* node node:* text text:*"
+    nodemon ./@core/bootstrap/lib/main.js -- --program @program/sample-app
+    --backend @program/sample-management --frontend @program/example-website
   clean: pnpm run --if-present --recursive clean
 dependencies:
-  "@biomejs/biome": ^2.4.8
-  rimraf: ^6.1.3
-  typescript: ^5.9.3
+  '@biomejs/biome': ^2.4.8
+  '@mpis/monorepo': ^0.0.23
 devDependencies:
-  "@build-script/package-tools": ^0.0.25
-  "@types/debug": ^4.1.13
+  '@build-script/package-tools': ^0.0.25
+  '@types/debug': ^4.1.13
   nodemon: ^3.1.14

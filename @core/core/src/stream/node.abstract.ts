@@ -53,13 +53,14 @@ export abstract class AbstractNode extends NodeTools implements INode {
 
 		const stream = privateStream(this);
 		stream.on('error', (e) => {
-			if (!this._onError.disposed) {
-				const err = convertCaughtError(e);
-				prettyPrintError(`${this.displayName} 处理出错`, err);
-				this._onError.fire(err);
-				stream.destroy();
-				shutdown(ExitCode.EXECUTION);
+			if (this.disposing || this.disposed) {
+				return;
 			}
+			const err = convertCaughtError(e);
+			prettyPrintError(`${this.displayName} 处理出错`, err);
+			this._onError.fire(err);
+			stream.destroy();
+			shutdown(ExitCode.EXECUTION);
 		});
 
 		const stackTrace = createStackTraceHolder('', this.constructor);

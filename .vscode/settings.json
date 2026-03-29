@@ -44,4 +44,13 @@
 		},
 	],
 	"json.schemaDownload.enable": true,
+	"remote.portsAttributes": {
+		"38083": {
+			"label": "Application",
+			"onAutoForward": "openPreview",
+		},
+	},
+	"remote.otherPortsAttributes": {
+		"onAutoForward": "ignore",
+	},
 }

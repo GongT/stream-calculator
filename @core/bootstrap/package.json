@@ -3,9 +3,9 @@
 	"bin": "./lib/main.js",
 	"type": "module",
 	"scripts": {
-		"build": "tsc -b src",
-		"watch": "tsc -b src -w",
-		"clean": "rimraf lib"
+		"build": "mpis-run build",
+		"watch": "mpis-run watch",
+		"clean": "mpis-run clean"
 	},
 	"dependencies": {
 		"@idlebox/args": "^0.0.26",

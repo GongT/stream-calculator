@@ -1,8 +1,9 @@
 import type { IApiHost } from '@core/api';
 import { ApiHost } from '@core/api/private';
 import type { EventRegister, IAsyncDisposable } from '@idlebox/common';
-import { definePublicConstant, EnhancedAsyncDisposable, registerGlobalLifecycle, sleep } from '@idlebox/common';
+import { definePublicConstant, EnhancedAsyncDisposable, LinuxErrorCode, registerGlobalLifecycle, sleep } from '@idlebox/common';
 import { createLogger, type IMyLogger } from '@idlebox/logger';
+import { registerNodejsGlobalErrorCodeHandler } from '@idlebox/node';
 import { inspect } from 'util';
 import { AdapterHost } from '../adapter-helpers/adapter-host.js';
 
@@ -57,6 +58,10 @@ class AppHost extends EnhancedAsyncDisposable implements IAppHost {
 	}
 
 	override async dispose() {
+		registerNodejsGlobalErrorCodeHandler(LinuxErrorCode.EPIPE, () => {
+			// ignore pipe error
+		});
+
 		this.logger.log`正在清理资源...`;
 		await super.dispose();
 		await sleep(50);
