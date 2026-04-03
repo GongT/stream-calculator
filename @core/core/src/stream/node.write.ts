@@ -2,7 +2,7 @@ import type { IDataFrame, IWithType, TypeArray } from '@core/protocol';
 import { convertCaughtError, prettyPrintError, Quit, SoftwareDefectError } from '@idlebox/common';
 import { Writable } from 'node:stream';
 import { AbstractNode } from './node.abstract.js';
-import type { RS } from './private.js';
+import type { IStreamObject, RS } from './private.js';
 import type { INode } from './types.js';
 
 /**
@@ -42,23 +42,21 @@ export abstract class FinalizedNode<T extends TypeArray.Any = TypeArray.Any> ext
 		}
 	}
 
-	private async _handleStreamData(data: IDataFrame<T>, _enc: any, callback: (err?: Error) => void) {
+	private async _handleStreamData(data: IStreamObject<T>, _enc: any, callback: (err?: Error) => void) {
 		// this.logger.verbose` <<< ${data}`;
 
-		const contentAsTyped = data.content as TypeArray.Any;
-
-		const metadata = (data as any).metadata;
+		const contentTypedArray = data.frame.content;
 
 		this.statistic.received++;
 
-		if (contentAsTyped.byteLength) {
-			this.statistic.receivedBytes += contentAsTyped.byteLength;
+		if (contentTypedArray.byteLength) {
+			this.statistic.receivedBytes += contentTypedArray.byteLength;
 		}
 
-		if (data.functionNumber === undefined) data.functionNumber = 0;
+		if (data.frame.functionNumber === undefined) data.frame.functionNumber = 0;
 
 		try {
-			await this.process(data, metadata);
+			await this.process(data.frame, data.metadata);
 			callback();
 		} catch (e) {
 			if (this.disposed) throw new Quit();
@@ -68,7 +66,7 @@ export abstract class FinalizedNode<T extends TypeArray.Any = TypeArray.Any> ext
 				get: () => this._sources.map((item) => item.displayName),
 			});
 
-			this._handle_error(Object.assign(err, { data }), callback);
+			this._handle_error(Object.assign(err, { data: data.frame }), callback);
 		}
 	}
 

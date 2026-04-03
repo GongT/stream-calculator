@@ -1,6 +1,6 @@
 import { Adapter, SendorNode } from '@core/core';
 import { Interval } from '@idlebox/common';
-import { generateSineSensorData } from './math.js';
+import { createSineBuffer, sliceSineBuffer } from './math.js';
 
 interface IOptions {
 	readonly name: string;
@@ -31,9 +31,10 @@ export class SensorSine extends SendorNode {
 
 	private readonly timer;
 	private readonly intervalMs: number;
+	private readonly sineBuffer;
 
 	private previousTime: number = Number(process.hrtime.bigint() / 1000n);
-	private previousPhase = 0;
+	private sampleOffset = 0;
 
 	constructor(options: IOptions) {
 		super(options.name);
@@ -42,6 +43,8 @@ export class SensorSine extends SendorNode {
 		this.amplitude = options.amplitude ?? 1;
 		this.sampleRate = options.sampleRate ?? 44100;
 		this.intervalMs = Math.ceil((options.genreateTimer ?? 1_000_000) / 1000);
+
+		this.sineBuffer = createSineBuffer(this.frequency, this.amplitude, this.sampleRate);
 
 		this.timer = this._register(new Interval(this.intervalMs));
 		this.timer.onTick(this.timerTick.bind(this));
@@ -56,16 +59,14 @@ export class SensorSine extends SendorNode {
 		const currentStartTime = Number(process.hrtime.bigint() / 1000n);
 		const elapsed = currentStartTime - this.previousTime;
 
-		const data = generateSineSensorData(this.frequency, this.previousPhase, this.amplitude, elapsed, this.sampleRate);
+		const totalSamples = Math.floor((elapsed / 1_000_000) * this.sampleRate);
+		const data = sliceSineBuffer(this.sineBuffer, this.sampleOffset, totalSamples);
 
 		this.previousTime = currentStartTime;
-
-		// Update the phase based on the elapsed time and frequency
-		const phaseIncrement = (2 * Math.PI * this.frequency * elapsed) / 1_000_000;
-		this.previousPhase = (this.previousPhase + phaseIncrement) % (2 * Math.PI);
+		this.sampleOffset += totalSamples;
 
 		this.logger
-			.verbose`产生了 ${data.length} 个数据，${data.byteLength} 字节，长度 ${elapsed / 1000}ms，相位+${phaseIncrement.toFixed(0)}=${this.previousPhase.toFixed(2)}`;
+			.verbose`产生了 ${data.length} 个数据，${data.byteLength} 字节，长度 ${elapsed / 1000}ms，样本偏移=${this.sampleOffset}`;
 
 		this.emitData({
 			content: data,

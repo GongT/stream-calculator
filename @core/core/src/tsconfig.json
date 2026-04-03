@@ -11,10 +11,6 @@
 		{
 			"$id": "package-tools/monorepo-tsconfig",
 			"path": "../../protocol/src/tsconfig.json"
-		},
-		{
-			"$id": "package-tools/monorepo-tsconfig",
-			"path": "../../api/src/tsconfig.json"
 		}
 	]
 }

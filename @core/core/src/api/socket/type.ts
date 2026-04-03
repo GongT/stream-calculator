@@ -1,5 +1,4 @@
 import { EnhancedAsyncDisposable } from '@idlebox/common';
-import type { IMyLogger } from '@idlebox/logger';
 import type { WebSocket } from 'ws';
 
 export interface IWebSocketEndpointOptions {
@@ -8,14 +7,16 @@ export interface IWebSocketEndpointOptions {
 
 export abstract class WebSocketEndpoint extends EnhancedAsyncDisposable {
 	protected readonly logger;
-	constructor(
-		public readonly name: string,
-		logger: IMyLogger,
-	) {
+	constructor(public readonly name: string) {
 		super(`api:ws:${name}`);
 
-		this.logger = logger.extend(name);
+		this.logger = application.api.wssLogger.extend(name);
 	}
+
+	/**
+	 * @virtual
+	 */
+	async initialize(): Promise<void> {}
 
 	/**
 	 * 处理WebSocket连接

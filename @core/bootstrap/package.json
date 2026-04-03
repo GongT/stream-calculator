@@ -2,17 +2,21 @@
 	"name": "@core/bootstrap",
 	"bin": "./lib/main.js",
 	"type": "module",
+	"exports": {
+		".": "./lib/main.js",
+		"./package.json": "./package.json"
+	},
 	"scripts": {
 		"build": "mpis-run build",
 		"watch": "mpis-run watch",
 		"clean": "mpis-run clean"
 	},
 	"dependencies": {
-		"@idlebox/args": "^0.0.26",
-		"@idlebox/common": "^1.5.20",
-		"@idlebox/logger": "^0.0.22",
-		"@idlebox/node": "^1.4.29",
-		"@idlebox/source-map-support": "^0.0.19",
+		"@idlebox/args": "^0.0.27",
+		"@idlebox/common": "^1.5.24",
+		"@idlebox/logger": "^0.0.25",
+		"@idlebox/node": "^1.4.32",
+		"@idlebox/source-map-support": "^0.0.21",
 		"@core/core": "workspace:",
 		"@program/sample-app": "workspace:",
 		"@program/sample-management": "workspace:",

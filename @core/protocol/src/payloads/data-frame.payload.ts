@@ -1,9 +1,12 @@
 import type { IDataFrame, TimestampT, TypeArray } from '../common/type.base.js';
-import { getTypeAndBitDepth, getTypedArrayClass, type BitDepthValue, type INetworkPayload, type TypeValue } from '../common/type.network.js';
+import { getTypeAndBitDepth, getTypedArrayClass, type BitDepthValue, type INetworkEncode, type INetworkPayload, type TypeValue } from '../common/type.network.js';
 import { Action, Payload } from '../networking/packet.decoupling.js';
 import { swapToLocalEndian, swapToNetworkEndian } from '../networking/swap-array.js';
 
-export interface IDataPayload {
+/**
+ * 数据载荷，包含一个数据帧和一些必要的元信息
+ */
+export interface IDataPayload extends INetworkEncode {
 	readonly func: number;
 	readonly timestamp: TimestampT;
 	readonly type: TypeValue;
@@ -21,7 +24,7 @@ const emptyFrame: IDataFrame<TypeArray.Any> = {
 };
 
 /**
- *
+ * 数据载荷类，用于封装数据帧并提供编码和解码功能
  */
 export class DataPayload implements INetworkPayload, IDataPayload {
 	public func = 0;
@@ -45,6 +48,14 @@ export class DataPayload implements INetworkPayload, IDataPayload {
 				this.content = Buffer.from(buffer.content.buffer);
 			}
 		}
+	}
+
+	private readonly _flow: string[] = [];
+	get flow(): readonly string[] {
+		return this._flow;
+	}
+	flowTo(nextId: string): readonly string[] {
+		return [...this._flow, nextId];
 	}
 
 	encode(): Buffer {

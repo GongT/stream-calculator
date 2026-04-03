@@ -1,8 +1,8 @@
 import { convertCaughtError, oneDay, prettyFormatError } from '@idlebox/common';
 import express from 'express';
 import { extname } from 'node:path';
-import { ApiErrorCode } from '../../common/error.js';
-import type { IErrorResponse } from '../../common/protocol.js';
+import { ApiErrorCode } from '../common/error.js';
+import type { IErrorResponse } from '../common/protocol.js';
 
 type Initialize = (app: express.Application, api: express.Application) => void;
 

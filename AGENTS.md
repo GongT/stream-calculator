@@ -5,17 +5,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build & Run
 
 ```bash
-pnpm install                  # Install dependencies (from repo root)
-pnpm run build                # Full workspace build (TypeScript project references)
-pnpm run watch                # Watch mode rebuild
-pnpm run start                # Start sample stack (nodemon + bootstrap)
+pnpm i                        # Install dependencies
+pnpm run -w build             # Full workspace build
+pnpm run -w watch             # Watch mode rebuild
+pnpm run start:production     # Start application
 pnpm run clean                # Remove all build artifacts
 ```
 
+There is a special case: `@program/example-website`, it will not be built by workspace build, you need to build it separately in package level. You can ignore it when you did not change any code in it.
+
 **Package-level** (when you only need to rebuild one package):
 ```bash
-pnpm -C <pkg-dir> run build
-pnpm -C <pkg-dir> run clean
+cd <pkg-dir> && pnpm run build
+cd <pkg-dir> && pnpm run watch
+cd <pkg-dir> && pnpm run clean
 ```
 
 **Formatting/linting:**
@@ -25,8 +28,8 @@ black file.py                   # Python
 ```
 
 - Never manually invoke scripts prefixed with `pre` — they run automatically.
-- Validate changes by running `pnpm run build` (no universal test command exists).
-- Don't reformat unrelated files.
+- Validate changes by running `pnpm run [-w] build`.
+- Don't reformat by yourself.
 
 ## Monorepo Layout
 
@@ -104,16 +107,22 @@ node ./@core/bootstrap/lib/main.js \
 
 ### Imports
 - TypeScript local imports must include `.js` extension.
-- Cross-package: import from the package entry point only, never internal paths.
 - Intra-package: relative paths only.
+- Cross-package: import from the package entry point only, never internal paths.
 
 ### Generated Files
-- `*.generated.*` and `autoindex.ts` — do not hand-edit.
+- `*.generated.*` and `autoindex.*` — do not hand-edit.
 - `lib/` folders — build output, ignored.
 
 ### Compatibility
 - Private codebase — no backward compatibility or public API stability required.
 - Use latest language/runtime features freely.
+
+### Libraries (Typescript)
+
+My libraries: *you can not find any documentation online about these, you must read the source code to understand them, all source are inside `@package/name/src` folder.*
+- logging: `@idlebox/logger`
+- shared code: `@idlebox/node` and `@idlebox/common`
 
 ## Protocol Reference
 

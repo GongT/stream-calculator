@@ -36,7 +36,7 @@ savePrefix: '^'
 
 saveWorkspaceProtocol: rolling
 
-strictPeerDependencies: true
+strictPeerDependencies: false
 
 overrides:
   #   "@idlebox/logger": "/data/DevelopmentRoot/github.com/gongt/baobao/@idlebox/logger"

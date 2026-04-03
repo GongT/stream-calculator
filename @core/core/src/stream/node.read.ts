@@ -1,7 +1,7 @@
-import type { IDataFrame, IWithType, TypeArray } from '@core/protocol';
+import { DataPayload, IDataFrame, IWithType, TypeArray } from '@core/protocol';
 import { Readable } from 'node:stream';
 import { AbstractNode } from './node.abstract.js';
-import { isWritableNode, type WS } from './private.js';
+import { isWritableNode, type IStreamObject, type WS } from './private.js';
 import type { INode } from './types.js';
 
 const alertSize = 2000; // n个包，不一定多大
@@ -33,23 +33,34 @@ export abstract class SendorNode<T extends TypeArray.Any = TypeArray.Any> extend
 	 * @param data 新产生的数据
 	 * @param metadata 可选的元数据，会被下游的process收到
 	 */
-	protected emitData(data: IDataFrame<T>, metadata?: IWithType) {
+	protected emitData(data: DataPayload | IDataFrame<T>, metadata?: IWithType) {
 		// this.logger.verbose` >>> ${data}`;
 
-		const contentAsTyped = data.content as TypeArray.Any;
-
-		if (data.functionNumber === undefined) data.functionNumber = 0;
+		let frame;
+		if (data instanceof DataPayload) {
+			frame = {
+				content: data.asTypedArray<T>(),
+				functionNumber: data.func ?? 0,
+				rate: data.rate,
+				timestamp: data.timestamp,
+				flow: data.flowTo(this.nodeGuid),
+			} satisfies IDataFrame<T>;
+		} else {
+			frame = {
+				...data,
+				flow: data.flow ? [...data.flow, this.nodeGuid] : [this.nodeGuid],
+			} satisfies IDataFrame<T>;
+		}
 
 		this.statistic.sent++;
-		if (contentAsTyped.byteLength) {
-			this.statistic.sentBytes += contentAsTyped.byteLength;
+		if (data.content.byteLength) {
+			this.statistic.sentBytes += data.content.byteLength;
 		}
 
 		(this.stream as Readable).push({
-			...data,
-			flow: data.flow ? [...data.flow, this.nodeGuid] : [this.nodeGuid],
+			frame: frame,
 			metadata: metadata,
-		});
+		} satisfies IStreamObject<T>);
 
 		if ((this.stream as Readable).readableLength > alertSize) {
 			this.logger.warn`节点 ${this.displayName} 输出缓冲区长度 ${(this.stream as Readable).readableLength} 超过警戒线 ${alertSize}`;

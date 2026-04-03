@@ -8,7 +8,7 @@
 		"clean": "mpis-run clean"
 	},
 	"dependencies": {
-		"@idlebox/common": "^1.5.20",
+		"@idlebox/common": "^1.5.24",
 		"@core/protocol": "workspace:"
 	},
 	"devDependencies": {

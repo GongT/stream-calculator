@@ -19,7 +19,7 @@ export interface IApiHost {
 	 * 底层HTTP接口，直接操作响应，例如下载文件等
 	 */
 	provideRaw(handler: IHttpRawApiEndpointOptions): void;
-	provideWebsocket(name: string, Class: new (...args: ConstructorParameters<typeof WebSocketEndpoint>) => WebSocketEndpoint): void;
+	provideWebsocket(name: string, instance: WebSocketEndpoint): void;
 
 	/**
 	 * serve-file接口
@@ -27,6 +27,11 @@ export interface IApiHost {
 	provideWebsite(path: string, dir: string): void;
 
 	start(): void;
+
+	/**
+	 * @internal
+	 */
+	readonly wssLogger: IMyLogger;
 }
 
 const startingSlash = /^\/+/;
@@ -40,7 +45,7 @@ const startingSlash = /^\/+/;
  */
 export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 	public declare readonly wss: WebSocketServer;
-	private readonly wssLogger;
+	readonly wssLogger;
 
 	constructor(private readonly logger: IMyLogger) {
 		super('ApiHost');
@@ -91,8 +96,7 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 	}
 
 	private readonly websocketEndpoints = new Map<string, WebSocketEndpoint>();
-	provideWebsocket(name: string, Class: new (...args: ConstructorParameters<typeof WebSocketEndpoint>) => WebSocketEndpoint): void {
-		const instance = new Class(name, this.wssLogger);
+	provideWebsocket(name: string, instance: WebSocketEndpoint): void {
 		this.logger.verbose`注册WebSocket接口类: ${instance.name}`;
 		if (this.websocketEndpoints.has(instance.name)) {
 			throw new SoftwareDefectError(`重复注册WebSocket接口: ${instance.name}`);
@@ -120,7 +124,7 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 			this.startHttp(server);
 		}
 		if (this.websocketEndpoints.size) {
-			this.startWebsocket(server);
+			await this.startWebsocket(server);
 		}
 
 		const port_or_path = process.env.HTTP_LISTEN || '38083';
@@ -152,8 +156,10 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 		});
 	}
 
-	private startWebsocket(server: Server) {
+	private async startWebsocket(server: Server) {
 		const wss = createWebsocketServer(server, this.wssLogger);
+
+		await Promise.all(this.websocketEndpoints.values().map((instance) => instance.initialize()));
 
 		for (const endpoint of this.websocketEndpoints.values()) {
 			this.logger.debug`WebSocket接口: ${endpoint.name}`;

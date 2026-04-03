@@ -1,3 +1,4 @@
+import type { IDataFrame } from '@core/protocol';
 import type { Readable, Writable } from 'node:stream';
 import { AbstractNode } from './node.abstract.js';
 import type { INode } from './types.js';
@@ -20,3 +21,7 @@ export function isWritableNode(node: INode): node is INode<unknown, true> & WS {
 }
 
 /** @internal */
+export interface IStreamObject<T> {
+	readonly frame: IDataFrame<T>;
+	readonly metadata?: any;
+}

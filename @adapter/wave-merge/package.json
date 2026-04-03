@@ -11,7 +11,7 @@
 	"dependencies": {
 		"@core/core": "workspace:",
 		"@core/protocol": "workspace:",
-		"@idlebox/common": "^1.5.20",
+		"@idlebox/common": "^1.5.24",
 		"@shared/testing": "workspace:"
 	},
 	"devDependencies": {

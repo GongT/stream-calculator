@@ -8,9 +8,9 @@
 		"clean": "mpis-run clean"
 	},
 	"dependencies": {
-		"@idlebox/common": "^1.5.20",
-		"@idlebox/logger": "^0.0.22",
-		"@idlebox/node": "^1.4.29",
+		"@idlebox/common": "^1.5.24",
+		"@idlebox/logger": "^0.0.25",
+		"@idlebox/node": "^1.4.32",
 		"execa": "^9.6.1"
 	},
 	"devDependencies": {

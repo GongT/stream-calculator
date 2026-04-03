@@ -9,13 +9,13 @@
 		"clean": "mpis-run clean"
 	},
 	"dependencies": {
-		"@build-script/codegen": "^1.0.21",
-		"@idlebox/browser": "^0.0.57",
+		"@build-script/codegen": "^1.0.24",
+		"@idlebox/browser": "^0.0.58",
 		"sass": "^1.98.0",
-		"vite": "^8.0.1"
+		"vite": "^8.0.3"
 	},
 	"devDependencies": {
 		"@core/custom-rig": "workspace:",
-		"vite": "^8.0.1"
+		"vite": "^8.0.3"
 	}
 }

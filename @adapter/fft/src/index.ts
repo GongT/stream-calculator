@@ -1,5 +1,5 @@
 import { Adapter, CalculatorNode, LineReader } from '@core/core';
-import { DataPayload, type TypeArray, type IDataFrame, type ProtocolStream } from '@core/protocol';
+import { DataPayload, type IDataFrame, type ProtocolStream, type TypeArray } from '@core/protocol';
 import { definePublicConstant } from '@idlebox/common';
 import { getPython } from '@shared/testing';
 

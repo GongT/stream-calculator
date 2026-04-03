@@ -1,11 +1,10 @@
-import type { IApiHost } from '@core/api';
-import { ApiHost } from '@core/api/private';
 import type { EventRegister, IAsyncDisposable } from '@idlebox/common';
 import { definePublicConstant, EnhancedAsyncDisposable, LinuxErrorCode, registerGlobalLifecycle, sleep } from '@idlebox/common';
 import { createLogger, type IMyLogger } from '@idlebox/logger';
 import { registerNodejsGlobalErrorCodeHandler } from '@idlebox/node';
-import { inspect } from 'util';
+import { inspect } from 'node:util';
 import { AdapterHost } from '../adapter-helpers/adapter-host.js';
+import { ApiHost, type IApiHost } from '../api/index.js';
 
 /**
  * 应用程序宿主

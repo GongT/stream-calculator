@@ -1,0 +1,41 @@
+{
+	"$schema": "../../../node_modules/@mpis/run/commands.schema.json",
+	"commands": {
+		"autoindex": {
+			"title": "Automatic Indexing",
+			"command": {
+				"package": "@build-script/autoindex",
+				"binary": "autoindex",
+				"arguments": ["--config"],
+			},
+		},
+
+		/**
+		 *
+		 */
+		"codegen": {
+			"title": "Code Generation",
+			"command": {
+				"package": "@build-script/codegen",
+				"binary": "codegen",
+				"arguments": ["src"],
+			},
+		},
+
+		/**
+		 *
+		 */
+		"typescript": {
+			"title": "Compile TypeScript",
+			"command": {
+				"package": "@mpis/typescript",
+				"binary": "mpis-tsc",
+			},
+			"watch": ["-w"],
+			"cwd": ".",
+			"env": {},
+		},
+	},
+	"build": ["typescript"],
+	"clean": ["lib"],
+}

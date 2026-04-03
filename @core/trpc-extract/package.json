@@ -3,12 +3,11 @@
 	"type": "module",
 	"scripts": {
 		"build": "codegen src",
-		"watch": "codegen src -w",
-		"clean": "mpis-run clean"
+		"watch": "codegen src -w"
 	},
 	"dependencies": {
-		"@build-script/codegen": "^1.0.21",
-		"@idlebox/common": "^1.5.20",
+		"@build-script/codegen": "^1.0.24",
+		"@idlebox/common": "^1.5.24",
 		"ts-morph": "^27.0.2"
 	},
 	"devDependencies": {

@@ -1,0 +1,4 @@
+{
+	"$schema": "../../../node_modules/@build-script/typescript/typescript.schema.json",
+	"project": "./src",
+}

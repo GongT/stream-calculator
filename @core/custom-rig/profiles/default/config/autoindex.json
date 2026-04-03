@@ -1,0 +1,4 @@
+{
+	"$schema": "../../../node_modules/@build-script/autoindex/autoindex.schema.json",
+	"project": "./src",
+}

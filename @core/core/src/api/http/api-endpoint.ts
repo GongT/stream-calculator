@@ -1,6 +1,6 @@
 import type { IMyLogger } from '@idlebox/logger';
 import { z, type ZodType } from 'zod';
-import { ApiError, ApiErrorCode } from '../../common/error.js';
+import { ApiError, ApiErrorCode } from '../common/error.js';
 import type { ExpressErrorRequestHandler, ExpressMiddleware } from './express-types.js';
 
 export interface ApiRequestContext {
