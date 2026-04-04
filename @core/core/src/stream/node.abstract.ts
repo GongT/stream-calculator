@@ -141,6 +141,8 @@ export abstract class AbstractNode extends NodeTools implements INode {
 		}
 		str += ' ';
 		str += options.stylize(this.displayName, 'string');
+		str += ' ';
+		str += options.stylize(this.nodeGuid, 'string');
 		str += ' {\n  stream: ';
 
 		const streamState = [];

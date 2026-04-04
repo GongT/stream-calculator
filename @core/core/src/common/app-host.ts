@@ -73,7 +73,16 @@ class AppHost extends EnhancedAsyncDisposable implements IAppHost {
 			console.error(`${inspect(node, { colors: true })}`);
 			count++;
 		}
-		console.error(`节点数: ${count}`);
+
+		const l = this.api.listenTo;
+		let h: string;
+		if (typeof l === 'string') {
+			h = `API监听在 ${l}`;
+		} else {
+			h = `HTTP: http://0.0.0.0:${l}`;
+		}
+
+		console.error(`节点数: ${count} | ${h}`);
 		// TODO
 	}
 }

@@ -38,6 +38,10 @@
 		{
 			"$id": "package-tools/monorepo-tsconfig",
 			"path": "../../../@adapter/buffer/src/tsconfig.json"
+		},
+		{
+			"$id": "package-tools/monorepo-tsconfig",
+			"path": "../../../@adapter/resampler/src/tsconfig.json"
 		}
 	]
 }

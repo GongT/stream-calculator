@@ -42,6 +42,8 @@ for (const node of application.adapters.nodes) {
 
 await Promise.all(nodes.map((node) => node.initialize()));
 
+application.printStatus();
+
 logger.info`开始数据流处理，总共${nodes.length}个节点`;
 for (const node of nodes) {
 	node.resume();
@@ -60,7 +62,7 @@ if (process.stderr.isTTY && !isDebug && !isVerbose) {
 		process.stderr.write('\x1Bc');
 		application.printStatus();
 	});
-	const iv = new Interval(100);
+	const iv = new Interval(1000);
 	registerGlobalLifecycle(iv);
 
 	iv.onTick(() => {

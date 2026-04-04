@@ -10,6 +10,7 @@ scripts:
     @core/custom-rig
   build: tsc -b ./tsconfig.everything.json
   watch: tsc -b ./tsconfig.everything.json -w
+  watch:web: cd @program/example-website && vite build --watch
   start: node scripts/start.devel.js
   start:production: node scripts/start.js
   clean: pnpm run --if-present --recursive clean
@@ -21,4 +22,5 @@ devDependencies:
   '@types/debug': ^4.1.13
   dotenv: ^17.4.0
   execa: ^9.6.1
+  speedscope: ^1.25.0
   typescript: ^6.0.2

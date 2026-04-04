@@ -3,6 +3,7 @@
 	"exports": "./lib/autoindex.generated.js",
 	"type": "module",
 	"scripts": {
+		"prebuild": "mpis-run build",
 		"build": "mpis-run build",
 		"watch": "mpis-run watch",
 		"clean": "mpis-run clean"

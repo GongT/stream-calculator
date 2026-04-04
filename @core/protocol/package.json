@@ -1,6 +1,9 @@
 {
 	"name": "@core/protocol",
-	"exports": "./lib/autoindex.generated.js",
+	"exports": {
+		"./browser": "./lib/browser/index.js",
+		".": "./lib/autoindex.generated.js"
+	},
 	"type": "module",
 	"scripts": {
 		"build": "mpis-run build",

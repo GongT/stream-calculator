@@ -41,7 +41,7 @@ export interface IDataFrame<T = _TypeArray.Any> {
 	 *
 	 * 这个字段【不会】出现在网络传输中
 	 */
-	readonly flow?: readonly string[];
+	readonly flow: readonly string[];
 
 	/**
 	 * 元数据，可以携带任意数据

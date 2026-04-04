@@ -1,10 +1,14 @@
-import { DataPayload, IDataFrame, IWithType, TypeArray } from '@core/protocol';
+import { DataPayload, type IDataFrame, type IWithType, type TypeArray } from '@core/protocol';
 import { Readable } from 'node:stream';
 import { AbstractNode } from './node.abstract.js';
 import { isWritableNode, type IStreamObject, type WS } from './private.js';
 import type { INode } from './types.js';
 
-const alertSize = 2000; // n个包，不一定多大
+// const alertSize = 2000; // n个包，不一定多大
+
+export interface IDataFrameToEmit<T extends TypeArray.Any> extends Omit<IDataFrame<T>, 'flow'> {
+	readonly flow?: readonly string[];
+}
 
 /**
  * 只出不进的节点
@@ -12,7 +16,7 @@ const alertSize = 2000; // n个包，不一定多大
  *
  * 应该调用 this.emitData 来发出数据
  */
-export abstract class SendorNode<T extends TypeArray.Any = TypeArray.Any> extends AbstractNode implements INode<true, false> {
+export abstract class SensorNode<T extends TypeArray.Any = TypeArray.Any> extends AbstractNode implements INode<true, false> {
 	override readonly isSender = true;
 
 	private readonly _targets: (INode<unknown, true> & WS)[] = [];
@@ -33,7 +37,7 @@ export abstract class SendorNode<T extends TypeArray.Any = TypeArray.Any> extend
 	 * @param data 新产生的数据
 	 * @param metadata 可选的元数据，会被下游的process收到
 	 */
-	protected emitData(data: DataPayload | IDataFrame<T>, metadata?: IWithType) {
+	protected emitData(data: DataPayload | IDataFrameToEmit<T>, metadata?: IWithType) {
 		// this.logger.verbose` >>> ${data}`;
 
 		let frame;
@@ -62,9 +66,9 @@ export abstract class SendorNode<T extends TypeArray.Any = TypeArray.Any> extend
 			metadata: metadata,
 		} satisfies IStreamObject<T>);
 
-		if ((this.stream as Readable).readableLength > alertSize) {
-			this.logger.warn`节点 ${this.displayName} 输出缓冲区长度 ${(this.stream as Readable).readableLength} 超过警戒线 ${alertSize}`;
-		}
+		// if ((this.stream as Readable).readableLength > alertSize) {
+		// 	this.logger.warn`节点 ${this.displayName} 输出缓冲区长度 ${(this.stream as Readable).readableLength} 超过警戒线 ${alertSize}`;
+		// }
 	}
 
 	public pipeTo(node: INode<unknown, true>): typeof node {

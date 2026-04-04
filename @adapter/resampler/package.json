@@ -1,6 +1,7 @@
 {
 	"name": "@adapter/resampler",
-	"exports": "./lib/index.js",
+	"description": "重采样器",
+	"exports": "./lib/resampler.js",
 	"type": "module",
 	"scripts": {
 		"build": "mpis-run build",
@@ -8,7 +9,8 @@
 		"clean": "mpis-run clean"
 	},
 	"dependencies": {
-		"@core/core": "workspace:"
+		"@core/core": "workspace:",
+		"@core/protocol": "workspace:"
 	},
 	"devDependencies": {
 		"@core/custom-rig": "workspace:",

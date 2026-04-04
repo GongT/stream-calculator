@@ -5,9 +5,40 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>测试页面</title>
+<style>
+  body { margin: 0; padding: 16px; font-family: sans-serif; background: #1a1a2e; color: #eee; }
+  h1 { margin: 0 0 16px; font-size: 1.2rem; }
+  #app { display: flex; flex-direction: column; gap: 16px; }
+  .chart-card {
+    background: #16213e;
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .chart-card h2 { margin: 0 0 8px; font-size: 0.95rem; color: #a0c4ff; }
+  .chart-card canvas { width: 100% !important; height: 220px !important; }
+
+  #stats{
+    white-space: pre;
+  }
+</style>
 </head>
 <body>
-<div id="app"></div>
-<script type="module" src="/src/main.tsx"></script>
+<div id="app">
+  <h1>实时数据监控</h1>
+  <div class="chart-card">
+    <h2>数据 (func=0)</h2>
+    <canvas id="chart0"></canvas>
+  </div>
+  <div class="chart-card">
+    <h2>频谱数据 (func=1)</h2>
+    <canvas id="chart1"></canvas>
+  </div>
+  <div class="chart-card">
+    <h2>相位数据 (func=2)</h2>
+    <canvas id="chart2"></canvas>
+  </div>
+  <div id="stats"></div>
+</div>
+<script type="module" src="/src/main.ts"></script>
 </body>
 </html>

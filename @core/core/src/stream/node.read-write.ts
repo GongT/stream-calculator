@@ -1,9 +1,9 @@
 import type { IDataFrame, IWithType, TypeArray } from '@core/protocol';
 import { Duplex, PassThrough } from 'node:stream';
 import { AbstractNode } from './node.abstract.js';
-import { SendorNode } from './node.read.js';
+import { SensorNode, type IDataFrameToEmit } from './node.read.js';
 import { FinalizedNode } from './node.write.js';
-import type { RS, WS } from './private.js';
+import type { IStreamObject, RS, WS } from './private.js';
 import type { INode } from './types.js';
 
 /** @internal */
@@ -31,7 +31,7 @@ export abstract class CalculatorNode<T extends TypeArray.Any = TypeArray.Any> ex
 	declare readonly pipeTo: (target: INode<unknown, true>) => typeof target;
 	protected declare readonly assertSingleInput: () => void;
 	static {
-		copyPrototype(SendorNode, CalculatorNode);
+		copyPrototype(SensorNode, CalculatorNode);
 		copyPrototype(FinalizedNode, CalculatorNode);
 	}
 	// HACK COPY
@@ -62,7 +62,7 @@ export abstract class CalculatorNode<T extends TypeArray.Any = TypeArray.Any> ex
 	 * @param data 新产生的数据
 	 * @param metadata 可选的元数据，会被下游的process收到
 	 */
-	protected declare readonly emitData: (data: IDataFrame<T>, metadata?: IWithType) => void;
+	protected declare readonly emitData: (data: IDataFrameToEmit<T>, metadata?: IWithType) => void;
 
 	/**
 	 * 处理接收到的数据
@@ -90,7 +90,14 @@ export abstract class CalculatorNode<T extends TypeArray.Any = TypeArray.Any> ex
 		}
 
 		// 替换stream
-		(this as any).stream = new PassThrough({ objectMode: true });
+		const guid = this.nodeGuid;
+		(this as any).stream = new PassThrough({
+			objectMode: true,
+			transform(chunk: IStreamObject<any>, _, callback) {
+				(chunk.frame.flow as string[]).push(guid);
+				callback(null, chunk);
+			},
+		});
 
 		// 重连输入输出
 		for (const source of this._sources) {

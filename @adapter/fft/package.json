@@ -1,7 +1,7 @@
 {
 	"name": "@adapter/fft",
 	"description": "傅里叶变换",
-	"exports": "./lib/index.js",
+	"exports": "./lib/fft-calc.js",
 	"type": "module",
 	"scripts": {
 		"build": "mpis-run build",

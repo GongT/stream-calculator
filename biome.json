@@ -41,7 +41,11 @@
 			},
 			"style": {
 				"noParameterAssign": "off",
-				"noNonNullAssertion": "warn",
+				"noNonNullAssertion": {
+					"fix": "none",
+					"level": "info",
+					"options": {}
+				},
 				"useShorthandFunctionType": "off",
 				"noUselessElse": "off",
 				"noUnusedTemplateLiteral": "off",

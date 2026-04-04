@@ -19,7 +19,7 @@ export interface IApiHost {
 	 * 底层HTTP接口，直接操作响应，例如下载文件等
 	 */
 	provideRaw(handler: IHttpRawApiEndpointOptions): void;
-	provideWebsocket(name: string, instance: WebSocketEndpoint): void;
+	provideWebsocket(instance: WebSocketEndpoint): void;
 
 	/**
 	 * serve-file接口
@@ -46,10 +46,15 @@ const startingSlash = /^\/+/;
 export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 	public declare readonly wss: WebSocketServer;
 	readonly wssLogger;
+	public readonly listenTo: string | number;
 
 	constructor(private readonly logger: IMyLogger) {
 		super('ApiHost');
 		this.wssLogger = this.logger.extend('wss');
+
+		const port_or_path = process.env.HTTP_LISTEN || '38083';
+		const port = Number.parseInt(port_or_path, 10);
+		this.listenTo = Number.isNaN(port) ? port_or_path : port;
 	}
 
 	private readonly serveFiles = new Map<string, string>();
@@ -77,7 +82,7 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 			},
 			this.logger,
 		);
-		this.logger.verbose`注册JSON接口类: ${instance.displayName}`;
+		this.logger.debug`注册JSON接口类: ${instance.displayName}`;
 		if (this.jsonEndpoints.has(instance.displayName)) throw new SoftwareDefectError(`重复注册JSON接口: ${instance.displayName}`);
 		if (this.rawEndpoints.has(instance.displayName)) throw new SoftwareDefectError(`重复注册JSON接口（已经注册为Raw接口）: ${instance.displayName}`);
 
@@ -87,7 +92,7 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 	private readonly rawEndpoints = new Map<string, HttpRawApiEndpoint>();
 	provideRaw(options: IHttpRawApiEndpointOptions): void {
 		const instance = new HttpRawApiEndpoint(options, this.logger);
-		this.logger.verbose`注册Raw接口类: ${instance.displayName}`;
+		this.logger.debug`注册Raw接口类: ${instance.displayName}`;
 		const key = instance.displayName;
 		if (this.jsonEndpoints.has(instance.displayName)) throw new SoftwareDefectError(`重复注册接口（已经注册为JSON接口）: ${key}`);
 		if (this.rawEndpoints.has(key)) throw new SoftwareDefectError(`重复注册Raw接口: ${key}`);
@@ -96,12 +101,13 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 	}
 
 	private readonly websocketEndpoints = new Map<string, WebSocketEndpoint>();
-	provideWebsocket(name: string, instance: WebSocketEndpoint): void {
-		this.logger.verbose`注册WebSocket接口类: ${instance.name}`;
-		if (this.websocketEndpoints.has(instance.name)) {
-			throw new SoftwareDefectError(`重复注册WebSocket接口: ${instance.name}`);
+	provideWebsocket(instance: WebSocketEndpoint): void {
+		const id = `${instance.name}:${instance.path}`;
+		this.logger.debug`注册WebSocket接口类: ${id}`;
+		if (this.websocketEndpoints.has(id)) {
+			throw new SoftwareDefectError(`重复注册WebSocket接口: ${id}`);
 		}
-		this.websocketEndpoints.set(name, instance);
+		this.websocketEndpoints.set(id, instance);
 	}
 
 	private started = false;
@@ -127,13 +133,9 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 			await this.startWebsocket(server);
 		}
 
-		const port_or_path = process.env.HTTP_LISTEN || '38083';
-		const port = Number.parseInt(port_or_path, 10);
-		const listenTo = Number.isNaN(port) ? port_or_path : port;
-
-		server.listen(listenTo, () => {
+		server.listen(this.listenTo, () => {
 			this._register(closableToDisposable(server));
-			this.logger.info`HTTP服务已启动，监听 http://0.0.0.0:${listenTo}`;
+			this.logger.info`HTTP服务已启动，监听 http://0.0.0.0:${this.listenTo}`;
 		});
 	}
 
@@ -162,7 +164,6 @@ export class ApiHost extends EnhancedAsyncDisposable implements IApiHost {
 		await Promise.all(this.websocketEndpoints.values().map((instance) => instance.initialize()));
 
 		for (const endpoint of this.websocketEndpoints.values()) {
-			this.logger.debug`WebSocket接口: ${endpoint.name}`;
 			wss.add(endpoint);
 		}
 

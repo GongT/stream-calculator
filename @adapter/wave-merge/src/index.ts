@@ -107,7 +107,7 @@ export class WaveMerger extends CalculatorNode<TypeArray.Any> {
 		const order = this.orderMap[srcNodeId];
 		const prevNode = this.sources[order];
 		if (!prevNode) {
-			this.logger.error`无法找到数据来源节点: ${srcNodeId}`;
+			this.logger.error`无法找到数据来源节点: ${srcNodeId}list<${this.sources.map((s) => s.nodeGuid)}>`;
 			throw new SoftwareDefectError(`无法找到数据来源节点: ${srcNodeId}`);
 		}
 

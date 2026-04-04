@@ -21,6 +21,7 @@ const emptyFrame: IDataFrame<TypeArray.Any> = {
 	content: new Uint8Array(0),
 	rate: 0,
 	timestamp: 0,
+	flow: [],
 };
 
 /**
@@ -80,6 +81,30 @@ export class DataPayload implements INetworkPayload, IDataPayload {
 		offset += 4;
 
 		return Buffer.concat([header, swapToNetworkEndian(this.content, this.bit_depth)]);
+	}
+
+	encodeLocalEndian(): Buffer {
+		const header = Buffer.allocUnsafe(4 + 8 + 1 + 1 + 4 + 4);
+		let offset = 0;
+		header.writeUInt32LE(this.func, offset);
+		offset += 4;
+
+		header.writeBigUInt64LE(BigInt(this.timestamp), offset);
+		offset += 8;
+
+		header.writeUInt8(this.type.charCodeAt(0), offset);
+		offset += 1;
+
+		header.writeInt8(this.bit_depth, offset);
+		offset += 1;
+
+		header.writeUInt32LE(this.rate, offset);
+		offset += 4;
+
+		HEADER_MARKER.copy(header, offset);
+		offset += 4;
+
+		return Buffer.concat([header, this.content]);
 	}
 
 	decode(data: Buffer<ArrayBuffer>): void {

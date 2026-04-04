@@ -32,6 +32,8 @@ export class ProtocolStream extends EnhancedAsyncDisposable {
 		socket.on('data', this.handleData);
 
 		socket.on('error', (err) => {
+			if (this.disposing || this.disposed) return;
+
 			throw new Error(`网络连接发生错误`, { cause: err });
 		});
 

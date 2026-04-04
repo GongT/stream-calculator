@@ -7,6 +7,13 @@ export interface IWebSocketEndpointOptions {
 
 export abstract class WebSocketEndpoint extends EnhancedAsyncDisposable {
 	protected readonly logger;
+
+	/**
+	 * 处理WebSocket连接
+	 */
+	abstract connection(socket: WebSocket): Promise<void> | void;
+	abstract readonly path: string;
+
 	constructor(public readonly name: string) {
 		super(`api:ws:${name}`);
 
@@ -17,9 +24,4 @@ export abstract class WebSocketEndpoint extends EnhancedAsyncDisposable {
 	 * @virtual
 	 */
 	async initialize(): Promise<void> {}
-
-	/**
-	 * 处理WebSocket连接
-	 */
-	abstract connection(socket: WebSocket): Promise<void> | void;
 }

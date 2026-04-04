@@ -9,7 +9,7 @@ import type { IDataFrame, TypeArray } from './type.base.js';
  * 持续时间 = 数据长度（点数） / 采样率
  *
  * @param frame 数据帧
-	* @returns 持续时间，单位为微秒
+ * @returns 持续时间，单位为微秒
  */
 export function durationOf(frame: IDataFrame<TypeArray.Any>): number {
 	return (1_000_000 * frame.content.length) / frame.rate;
@@ -21,16 +21,13 @@ export function durationOf(frame: IDataFrame<TypeArray.Any>): number {
  * 下一帧的起始时间戳 = 当前帧的起始时间戳 + 当前帧的持续时间
  *
  * @param frame 数据帧
-	* @returns 时间戳，单位为微秒
+ * @returns 时间戳，单位为微秒
  */
 export function timestampAfter(frame: IDataFrame<TypeArray.Any>): number {
 	return frame.timestamp + durationOf(frame);
 }
 
-export function getPayloadFrameFromNetwork<T extends TypeArray.Any = TypeArray.Any>(
-	packet: NetworkPacket,
-	Type?: new (...args: any[]) => T,
-): IDataFrame<T> {
+export function getPayloadFrameFromNetwork<T extends TypeArray.Any = TypeArray.Any>(packet: NetworkPacket, Type?: new (...args: any[]) => T): IDataFrame<T> {
 	if (packet.action !== Action.DATA) {
 		throw new Error(`getPayloadFrameFromNetwork只接受Action.DATA类型的包，当前包类型为${packet.action}`);
 	}
@@ -42,5 +39,6 @@ export function getPayloadFrameFromNetwork<T extends TypeArray.Any = TypeArray.A
 		timestamp: payload.timestamp,
 		rate: payload.rate,
 		functionNumber: payload.func,
+		flow: [],
 	};
 }

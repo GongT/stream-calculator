@@ -13,5 +13,11 @@
 		},
 		"jsx": "react-jsx",
 		"jsxImportSource": "preact"
-	}
+	},
+	"references": [
+		{
+			"$id": "package-tools/monorepo-tsconfig",
+			"path": "../../../@core/protocol/src/tsconfig.json"
+		}
+	]
 }

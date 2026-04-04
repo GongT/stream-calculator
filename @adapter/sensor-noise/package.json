@@ -1,7 +1,7 @@
 {
 	"name": "@adapter/sensor-noise",
 	"description": "噪声传感器",
-	"exports": "./lib/index.js",
+	"exports": "./lib/sensor-noise.js",
 	"type": "module",
 	"scripts": {
 		"build": "mpis-run build",

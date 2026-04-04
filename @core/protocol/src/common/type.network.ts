@@ -1,4 +1,3 @@
-import { logger } from '@idlebox/logger';
 import type { Action } from '../networking/packet.decoupling.js';
 import type { IDataFrame, TypeArray } from './type.base.js';
 
@@ -67,7 +66,6 @@ for (const [type, bitDepths] of Object.entries(typetree)) {
 export function getTypeAndBitDepth(instance: TypeArray.Any): readonly [TypeValue, BitDepthValue] {
 	const result = reverseSearch.get(instance.constructor as any);
 	if (!result) {
-		logger.warn`支持的类型list<${reverseSearch.keys()}>`
 		throw new Error(`不支持的类型数组: ${instance.constructor?.name ?? 'null'}`);
 	}
 	return result;

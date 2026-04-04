@@ -1,4 +1,4 @@
-import { Adapter, SendorNode } from '@core/core';
+import { Adapter, SensorNode } from '@core/core';
 import { Interval } from '@idlebox/common';
 import { generateNoiseSensorData } from './math.js';
 
@@ -17,10 +17,10 @@ interface IOptions {
 	/**
 	 * 生成数据的时间间隔，单位微秒，但实际精度是毫秒
 	 */
-	readonly genreateTimer?: number;
+	readonly generateTimer?: number;
 }
 
-export class SensorNoise extends SendorNode {
+export class SensorNoise extends SensorNode {
 	private readonly amplitude: number;
 	private readonly sampleRate: number;
 
@@ -34,7 +34,7 @@ export class SensorNoise extends SendorNode {
 
 		this.amplitude = options.amplitude ?? 1;
 		this.sampleRate = options.sampleRate ?? 44100;
-		this.intervalMs = Math.ceil((options.genreateTimer ?? 1000000) / 1000);
+		this.intervalMs = Math.ceil((options.generateTimer ?? 1000000) / 1000);
 
 		this.timer = this._register(new Interval(this.intervalMs));
 		this.timer.onTick(this.timerTick.bind(this));

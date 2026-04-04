@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chart.js — Large Int32Array</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { margin: 0; background: #1a1a2e; display: flex; align-items: center; justify-content: center; height: 100vh; }
+    canvas { width: 100vw; height: 400px; }
+  </style>
+</head>
+<body>
+<canvas id="chart"></canvas>
+<script>
+// ── 1. 生成模拟 Int32Array 数据（100,000 个采样点）────────────────────────
+const SAMPLE_COUNT = 100_000;
+const rawData = new Int32Array(SAMPLE_COUNT);
+
+let v = 0;
+for (let i = 0; i < SAMPLE_COUNT; i++) {
+  v += (Math.random() - 0.5) * 200;
+  v = Math.max(-32768, Math.min(32767, v));
+  rawData[i] = v | 0;
+}
+
+// ── 2. 转换为 {x, y} 格式 —— parsing:false + decimation 的硬性要求 ────────
+// 注意：这里 x 直接用采样索引（相当于隐式时间轴），不显示在图上
+const points = new Array(SAMPLE_COUNT);
+for (let i = 0; i < SAMPLE_COUNT; i++) {
+  points[i] = { x: i, y: rawData[i] };
+}
+
+// ── 3. 图表配置 ────────────────────────────────────────────────────────────
+const config = {
+  type: 'line',
+  data: {
+    datasets: [{
+      label: 'Signal (Int32)',
+      data: points,
+      borderColor: '#00d4ff',
+      borderWidth: 1,
+      pointRadius: 0,   // 不绘制散点
+      fill: false,
+      tension: 0,       // 折线，不贝塞尔插值
+    }]
+  },
+  options: {
+    animation: false,   // 禁动画
+    parsing: false,     // 告诉 Chart.js 数据已是 {x,y}，跳过解析步骤
+                        // ↑ 这是 decimation 插件能工作的前提条件
+
+    responsive: true,
+    maintainAspectRatio: false,
+
+    interaction: {
+      mode: 'nearest',
+      axis: 'x',
+      intersect: false,
+    },
+
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true },
+      decimation: {
+        enabled: true,
+        algorithm: 'lttb', // Largest-Triangle-Three-Buckets
+        samples: 1000,     // 渲染时压缩到约 1000 个点
+        threshold: 1000,
+      },
+    },
+
+    scales: {
+      x: {
+        type: 'linear',
+        display: false,  // 完全隐藏 X 轴
+      },
+      y: {
+        display: true,
+        ticks: { color: '#aaa' },
+        grid:  { color: 'rgba(255,255,255,0.08)' },
+      },
+    },
+  },
+};
+
+// ── 4. 渲染 ───────────────────────────────────────────────────────────────
+const ctx = document.getElementById('chart').getContext('2d');
+new Chart(ctx, config);
+</script>
+</body>
+</html>

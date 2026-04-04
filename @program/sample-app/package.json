@@ -15,6 +15,7 @@
 		"@adapter/output-web": "workspace:",
 		"@adapter/fft": "workspace:",
 		"@adapter/time-align": "workspace:",
+		"@adapter/resampler": "workspace:",
 		"@adapter/buffer": "workspace:"
 	},
 	"devDependencies": {

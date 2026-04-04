@@ -6,8 +6,10 @@ export default defineConfig(() => {
 	return {
 		plugins: [],
 		define: {
-			'import.meta.env?.PROD': isProd.toString(),
 			'import.meta.env.PROD': isProd.toString(),
+		},
+		build: {
+			minify: false,
 		},
 	};
 });

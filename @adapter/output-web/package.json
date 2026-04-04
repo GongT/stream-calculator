@@ -1,7 +1,7 @@
 {
 	"name": "@adapter/output-web",
 	"description": "前端推流",
-	"exports": "./lib/index.js",
+	"exports": "./lib/output-web.js",
 	"type": "module",
 	"scripts": {
 		"build": "mpis-run build",

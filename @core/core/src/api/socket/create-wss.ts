@@ -12,30 +12,24 @@ export interface IWebSocketHost {
  * @internal
  */
 export function createWebsocketServer(httpServer: Server, logger: IMyLogger): IWebSocketHost {
-	logger.verbose`创建WebSocket服务器`;
+	logger.debug`创建WebSocket服务器`;
 
 	const handlers = new Map<string, WebSocketEndpoint>();
 
 	const verifyClient: WebSocket.VerifyClientCallbackSync = (info) => {
 		if (!info.req.url) return false;
 
-		let pathname: string;
-		try {
-			const u = new URL(info.req.url);
-			pathname = u.pathname;
-			if (!pathname.startsWith('/ws/')) {
-				logger.verbose`拒绝WebSocket连接: URL必须以/ws/开头 ${info.req.url}`;
-				return false;
-			}
-			pathname = pathname.slice(4);
-		} catch {
-			logger.verbose`拒绝WebSocket连接: 无效的URL ${info.req.url}`;
+		let pathname: string = info.req.url;
+		if (!pathname.startsWith('/ws/')) {
+			logger.warn`拒绝WebSocket连接: URL必须以/ws/开头 ${info.req.url}`;
 			return false;
 		}
+		pathname = pathname.slice(4);
 
 		const handle = handlers.get(pathname);
 		if (!handle) {
-			logger.verbose`拒绝WebSocket连接: 未知路径 ${info.req.url}`;
+			console.log(handlers);
+			logger.warn`拒绝WebSocket连接: 未知路径 ${info.req.url}`;
 			return false;
 		}
 
@@ -52,6 +46,7 @@ export function createWebsocketServer(httpServer: Server, logger: IMyLogger): IW
 	});
 
 	wss.on('connection', async (socket, req) => {
+		logger.debug`WebSocket连接已建立! ${req.url}`;
 		const handler = req.endpoint;
 		if (!handler) {
 			logger.error`WebSocket连接缺少处理对象: ${req.url}`;
@@ -69,17 +64,17 @@ export function createWebsocketServer(httpServer: Server, logger: IMyLogger): IW
 
 	return {
 		add(handler: WebSocketEndpoint) {
-			handlers.set(handler.name, handler);
+			handlers.set(handler.path, handler);
 		},
 		dispose() {
 			return new Promise((resolve, reject) => {
 				logger.log`关闭WebSocket服务器`;
 				wss.close((err) => {
 					if (err) {
-						logger.verbose`long<${err.message}>`;
+						logger.warn`关闭WebSocket服务器失败: ${err.message}`;
 						reject(err);
 					} else {
-						logger.verbose`WebSocket服务器已关闭`;
+						logger.debug`WebSocket服务器已关闭`;
 						resolve();
 					}
 				});

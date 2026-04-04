@@ -63,7 +63,7 @@ Three node base classes in `@core/core/src/stream/`:
 
 | Class | Direction | Usage |
 |---|---|---|
-| `SendorNode` | Output only | Data generators/sensors — call `emitData(frame, metadata?)` |
+| `SensorNode` | Output only | Data generators/sensors — call `emitData(frame, metadata?)` |
 | `FinalizedNode` | Input only | Data sinks — override `process(frame, metadata?)` |
 | `CalculatorNode` | Both | Transforms — receives and re-emits data |
 

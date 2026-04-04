@@ -1,7 +1,7 @@
 {
 	"name": "@adapter/sensor-sine",
 	"description": "正弦波发生器",
-	"exports": "./lib/index.js",
+	"exports": "./lib/sensor-sine.js",
 	"type": "module",
 	"scripts": {
 		"build": "mpis-run build",

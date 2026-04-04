@@ -1,15 +1,23 @@
-import { CalculatorNode } from '@core/core';
+import { CalculatorNode, SensorNode } from '@core/core';
 import type { IDataFrame, TimestampT, TypeArray } from '@core/protocol';
 import assert from 'node:assert';
 
 export function createFrameAlign(name: string) {
 	const controller = new FrameAlignController();
 
-	return () =>
-		new FrameAlign({
-			name,
-			controller,
-		});
+	return {
+		makeStream(subname: string) {
+			return new FrameAlign({
+				name: `${name}:${subname}`,
+				controller,
+			});
+		},
+		wrap(node: SensorNode) {
+			const align = this.makeStream(node.name);
+			node.pipeTo(align);
+			return align;
+		},
+	};
 }
 
 class FrameAlignController {
